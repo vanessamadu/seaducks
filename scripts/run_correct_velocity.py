@@ -10,13 +10,13 @@ import os
 
 def main():
 
-    file_path = os.path.join('./seaducks/data', 'drifter_full.h5')
-    output_path = os.path.join('./seaducks/data', 'corrected_velocity_drifter_full.h5')
+    file_path = os.path.join('data', 'drifter_full.h5')
+    output_path = os.path.join('data', 'corrected_velocity_drifter_full.h5')
 
     dataset = pd.read_hdf(file_path)
     # data correction
-    dataset[:,'u']/=100
-    dataset[:,'v']/=100
+    dataset.loc[:,'u']/=100
+    dataset.loc[:,'v']/=100
     dataset.to_hdf(output_path, key="drifter", mode='w')
 
 if __name__ == '__main__':
