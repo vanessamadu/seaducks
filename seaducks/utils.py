@@ -66,7 +66,22 @@ def iho_region_geometry(iho_file_path: str,iho_region: str) -> Polygon:
         print(f'{iho_region} is not a valid IHO region')
         return None
     
-    
+# -------------- other processing --------------- #
+
+def discard_undrogued_drifters(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Discards data associated with undrogued drifters
+
+    Parameters:
+    - df: A pandas DataFrame.
+
+    Returns:
+    - A pandas DataFrame including only drogued drifters.
+    """
+    drogue_mask = df["drogue"].values
+    return df[drogue_mask]
+
+
 
 
     
