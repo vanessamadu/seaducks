@@ -3,7 +3,7 @@ import pandas as pd
 import numpy as np
 import logging
 from seaducks.filtering import filter_covariates
-from seaducks.utils import identify_time_series_segments
+from seaducks.utils import identify_time_series_segments,downsample_to_daily
 from seaducks.config import config
 import time
 
@@ -33,7 +33,8 @@ def time_series_processing(file_path: str, output_path: str, sample_proportion: 
     5. Discard observations with lat/lon variance estimates greater than or equal to 0.5 degrees.
     6. Group the data into 6-hourly segments based on the 'id' and 'time' columns.
     7. Apply a Butterworth filter to each segment.
-    8. Save the processed dataset to the specified output path in HDF5 format.
+    8. Downsample the dataset to daily resolution (include only midnight observations)
+    9. Save the processed dataset to the specified output path in HDF5 format.
 
     Logging:
     --------
@@ -86,6 +87,10 @@ def time_series_processing(file_path: str, output_path: str, sample_proportion: 
         print(f'6-hourly segments identified')
         filtered_dataset = dataset.groupby(['id', 'segment_id'], group_keys=False).apply(filter_covariates, include_groups=False)
         print('applied Butterworth filter to each segment')
+
+        # downsample to daily resolution
+        filtered_dataset = downsample_to_daily(filtered_dataset)
+        print('filtered data downsampled to daily')
 
         filtered_dataset.to_hdf(path_or_buf=output_path, key="drifter", mode='w')
         print('saved filtered data')
