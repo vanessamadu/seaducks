@@ -7,7 +7,6 @@ import numpy as np
 ## spatial filtering
 import geopandas as gpd
 from shapely.geometry import Point, Polygon
-from seaducks.utils import identify_time_series_segments
 
 # ------------- temporal processing --------------- #
 
