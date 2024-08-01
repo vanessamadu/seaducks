@@ -1,8 +1,5 @@
 # seaducks/filtering.py
-## general
-import sys
 
-## temporal filtering
 import numpy as np
 import pandas as pd
 from scipy import signal
