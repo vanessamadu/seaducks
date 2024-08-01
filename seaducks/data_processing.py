@@ -2,7 +2,7 @@
 import pandas as pd
 import numpy as np
 import logging
-from seaducks.filtering import filter_covariates
+from seaducks.filtering import temporal_filter_covariates
 from seaducks.utils import identify_time_series_segments,downsample_to_daily
 from seaducks.config import config
 import time
@@ -78,14 +78,10 @@ def time_series_processing(file_path: str, output_path: str, sample_proportion: 
             dataset.loc[extreme_val_mask,var] = np.nan
         print(f'extreme values set to nan')
 
-        # discard observations with lat/lon variance estimate >= 0.5 degrees
-        dataset = dataset.query('lon_var<0.5 and lat_var<0.5').copy()
-        print(f'observations with high variance lat/lon estimates discarded')
-
         # group the data for each drifter id into time series segments 
         dataset.loc[:,'segment_id'] = dataset.groupby('id')['time'].transform(identify_time_series_segments)
         print(f'6-hourly segments identified')
-        filtered_dataset = dataset.groupby(['id', 'segment_id'], group_keys=False).apply(filter_covariates, include_groups=False)
+        filtered_dataset = dataset.groupby(['id', 'segment_id'], group_keys=False).apply(temporal_filter_covariates, include_groups=False)
         print('applied Butterworth filter to each segment')
 
         # downsample to daily resolution

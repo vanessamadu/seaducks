@@ -4,6 +4,9 @@ import numpy as np
 import pandas as pd
 from scipy import signal
 
+from shapely import points,Polygon
+from seaducks.utils import iho_region_geometry
+
 # ------------- Temporal Filtering ------------ #
 def butterworth_filter(time_series: np.ndarray, latitude: np.ndarray, order: int=5) -> np.ndarray: 
     """
@@ -56,7 +59,7 @@ def butterworth_filter(time_series: np.ndarray, latitude: np.ndarray, order: int
             out[nan_mask] = np.nan
     return out
 
-def filter_covariates(df: pd.DataFrame) -> pd.DataFrame:
+def temporal_filter_covariates(df: pd.DataFrame) -> pd.DataFrame:
     """
     Applies the butterworth_filter function to each covariate column in the DataFrame.
 
@@ -88,4 +91,18 @@ def filter_covariates(df: pd.DataFrame) -> pd.DataFrame:
 
 # ---------------- Spatial Filtering ------------------ #
 
+def spatial_filter_covariates(df: pd.DataFrame, region: Polygon,lon_lim_W: float =-83, lon_lim_E: float = 40) -> pd.DataFrame:
 
+    # discard observations with lat/lon variance estimate >= 0.5 degrees
+    df = df.query('lon_var<0.5 and lat_var<0.5').copy()
+    print(f'observations with high variance lat/lon estimates discarded')
+    # remove data outside of the interval [-83,40]
+    df = df.query('@lon_lim_W < lon < @lon_lim_E').cop()
+    # convert the drifter coordinates to shapely.geometry.Point objects
+    drifter_locs = points(df[["lon","lat"]].values).tolist() # (lon,lat) in (x,y) form for geometry
+    # restrict the data to in the 
+    region_mask = [loc.within(region) for loc in drifter_locs]
+    df = df[region_mask].copy() 
+    # discard undersampled regions
+
+    return 
