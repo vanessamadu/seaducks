@@ -1,6 +1,15 @@
 # seaducks/utils.py
+## general
+import logging
 import pandas as pd
 import numpy as np
+
+## spatial filtering
+import geopandas as gpd
+from shapely.geometry import Point, Polygon
+from seaducks.utils import identify_time_series_segments
+
+# ------------- temporal processing --------------- #
 
 def identify_time_series_segments(timevec:pd.Series,cut_off: int = 6) -> np.ndarray:
     """
@@ -32,3 +41,33 @@ def downsample_to_daily(df: pd.DataFrame) -> pd.DataFrame:
     """
     midnight_mask = df["time"].dt.hour == 0
     return df[midnight_mask]
+
+# --------------- spatial processing ----------------- #
+
+def iho_region_geometry(iho_file_path: str,iho_region: str) -> Polygon:
+    """
+    Returns the convex hull of the geometry for a specified IHO region.
+
+    Parameters:
+    - iho_file_path: The file path to the IHO shapefile.
+    - iho_region: The name of the IHO region to retrieve.
+
+    Returns:
+    - The convex hull of the specified IHO region's geometry if found.
+    - None if the region is not found or an error occurs.
+    """
+
+    world_seas = gpd.read_file(iho_file_path)
+    try:
+        # Set the index to "NAME" and locate the specified region
+        region = world_seas.set_index("NAME").loc[iho_region]
+        return region["geometry"].convex_hull
+    except KeyError:
+        logging.error(f'{iho_region} is not a valid IHO region')
+        print(f'{iho_region} is not a valid IHO region')
+        return None
+    
+    
+
+
+    
