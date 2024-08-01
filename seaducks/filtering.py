@@ -1,8 +1,18 @@
 # seaducks/filtering.py
+## general
+import sys
+
+## temporal filtering
 import numpy as np
 import pandas as pd
 from scipy import signal
 
+## spatial filtering
+import geopandas as gpd
+from shapely.geometry import Point
+from seaducks.utils import identify_time_series_segments
+
+# ------------- Temporal Filtering ------------ #
 def butterworth_filter(time_series: np.ndarray, latitude: np.ndarray, order: int=5) -> np.ndarray: 
     """
     Applies a 1D Butterworth filter to each column of the input time series data.
@@ -83,3 +93,7 @@ def filter_covariates(df: pd.DataFrame) -> pd.DataFrame:
 
     df[vars_to_filter] = filtered_vars
     return df
+
+# ---------------- Spatial Filtering ------------------ #
+
+
