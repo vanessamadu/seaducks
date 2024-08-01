@@ -18,3 +18,17 @@ def identify_time_series_segments(timevec:pd.Series,cut_off: int = 6) -> np.ndar
     mask = np.insert(mask,0,False)
     segments = np.cumsum(mask)
     return segments
+
+def downsample_to_daily(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Downsamples the data to a daily temporal resolution by only including rows 
+    where the hour of 'time' column is zero (midnight).
+
+    Parameters:
+    - df: A pandas DataFrame containing the data to be downsampled.
+
+    Returns:
+    - A pandas DataFrame with the downsampled data.
+    """
+    midnight_mask = df["time"].dt.hour == 0
+    return df[midnight_mask]
