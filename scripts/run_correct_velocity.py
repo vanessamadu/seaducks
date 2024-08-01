@@ -1,6 +1,7 @@
 # scripts/correct_velocity.py
 '''
 description:    script to correct the drifter velocity after inherited incorrect initial processing
+                only run on `drifter_full.h5`
 
     ->  divide drifter velocities by 100 to correct initial processing that multiplied 
         cm/s by 100 to get m/s
