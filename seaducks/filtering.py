@@ -33,7 +33,7 @@ def butterworth_filter(time_series: np.ndarray, latitude: np.ndarray, order: int
     nyquist_freq = 0.5*sample_freq 
 
     if time_series_len < order * 6:
-        out = out*np.nan # discard time series segment
+        out = out*np.nan # discard time series segment if too short
     else:
         # perform daily filtering (moving BW filter over four six hourly observations)
         for ii in range(0,time_series_len,4):
@@ -76,8 +76,8 @@ def filter_covariates(df: pd.DataFrame) -> pd.DataFrame:
     for var in time_dependent_vars:
         if var + '_filtered' not in df.columns:
             df[var + '_filtered'] = df[var].copy()
-    
     vars_to_filter = [var + '_filtered' for var in time_dependent_vars]
+    
     time_series = df[vars_to_filter].values
     filtered_vars = butterworth_filter(time_series,lat)
 
