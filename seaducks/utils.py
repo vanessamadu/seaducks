@@ -8,6 +8,12 @@ import numpy as np
 import geopandas as gpd
 from shapely.geometry import Point, Polygon
 
+# ------------- admin ------------ #
+
+def herald(msg):
+    logging.info(msg)
+    print(msg)
+
 # ------------- temporal processing --------------- #
 
 def identify_time_series_segments(timevec:pd.Series,cut_off: int = 6) -> np.ndarray:
