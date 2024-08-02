@@ -2,7 +2,7 @@
 import pandas as pd
 import numpy as np
 from shapely import Polygon,points
-from seaducks.filtering import temporal_filter
+from seaducks.filtering import apply_butterworth_filter
 from seaducks.utils import downsample_to_daily,herald,discard_undrogued_drifters,identify_time_series_segments
 from seaducks.utils import discard_undersampled_regions
 from seaducks.config import config
@@ -154,7 +154,7 @@ def data_filtering(region: Polygon,file_path: str, output_path: str, sample_prop
         ## group the data for each drifter id into time series segments 
         df.loc[:,'segment_id'] = df.groupby('id')['time'].transform(identify_time_series_segments)
         herald('6-hourly segments identified')
-        df = df.groupby(['id', 'segment_id'], group_keys=False).apply(temporal_filter, include_groups=False).copy()
+        df = df.groupby(['id', 'segment_id'], group_keys=False).apply(apply_butterworth_filter, include_groups=False).copy()
         herald('applied Butterworth filter to each segment')
 
         # 6) downsample to daily temporal resolution

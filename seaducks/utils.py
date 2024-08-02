@@ -6,7 +6,7 @@ import numpy as np
 
 ## spatial filtering
 import geopandas as gpd
-from shapely.geometry import Point, Polygon
+from shapely.geometry import Polygon
 
 # ------------- admin ------------ #
 
