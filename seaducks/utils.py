@@ -101,7 +101,7 @@ def discard_undersampled_regions(df : pd.DataFrame, bin_size: float = 1, min_obs
     df.loc[:,"lon_bin"] = pd.cut(df["lon"], lon_grid)
     df.loc[:,"lat_bin"] = pd.cut(df["lat"], lat_grid)
 
-    bin_counts = df.groupby(["lon_bin", "lat_bin"], sort=False).size()
+    bin_counts = df.groupby(["lon_bin", "lat_bin"], sort=False, observed=False).size()
     bin_counts.name = 'bin_counts'
     # assign the number of drifters in the grid box to drifters in that box
     df = df.join(bin_counts, on = ["lon_bin","lat_bin"])
