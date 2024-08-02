@@ -68,7 +68,7 @@ def data_filtering(region: Polygon,file_path: str, output_path: str, sample_prop
         # 6) downsample to daily temporal resolution
         df = downsample_to_daily(df).copy()
 
-        df.to_hdf(path_or_buf=output_path, key="drifter", mode='w')
+        df.to_hdf(path_or_buf=output_path, key="drifter", mode='w',format="table")
         herald('saved filtered data')
 
         elapsed_time = time.time() - overall_start_time
