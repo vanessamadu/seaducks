@@ -72,8 +72,24 @@ def iho_region_geometry(iho_file_path: str,iho_region: str) -> Polygon:
         print(f'{iho_region} is not a valid IHO region')
         return None
     
-def detect_undersampled_regions(bin_size: float = 1, min_observations: int = 25):
-    pass
+def detect_undersampled_regions(df : pd.DataFrame, bin_size: float = 1, min_observations: int = 25):
+    
+    df = df.copy()
+    # set up grid
+    lat_grid = np.arange(-90,90 + bin_size,bin_size)
+    lon_grid = np.arange(-180,180 + bin_size,bin_size)
+
+    df.loc[:,"lon_bin"] = pd.cut(df["lon"], lon_grid)
+    df.loc[:,"lat_bin"] = pd.cut(df["lat"], lat_grid)
+
+    bin_counts = df.groupby(["lon_bin", "lat_bin"], sort=False).size()
+    bin_counts.name = 'bin_counts'
+    # assign the number of drifters in the grid box to drifters in that box
+    df = df.join(bin_counts, on = ["lon_bin","lat_bin"])
+    sufficiently_sampled_mask = df['bin_counts'] > min_observations
+
+    return df[sufficiently_sampled_mask]
+
 # -------------- other processing --------------- #
 
 def discard_undrogued_drifters(df: pd.DataFrame) -> pd.DataFrame:
