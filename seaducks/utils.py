@@ -73,7 +73,26 @@ def iho_region_geometry(iho_file_path: str,iho_region: str) -> Polygon:
         return None
     
 def discard_undersampled_regions(df : pd.DataFrame, bin_size: float = 1, min_observations: int = 25):
-    
+    """
+    Discards undersampled regions from a DataFrame based on spatial binning.
+
+    Parameters
+    ----------
+    df : pd.DataFrame
+        The input DataFrame containing 'lon'and 'lat' columns.
+    bin_size : float, optional
+        The size of the bins for longitude and latitude in degrees. Default is 1 degree.
+    min_observations : int, optional
+        The minimum number of observations required for a bin to be considered 
+        sufficiently sampled. Default is 25.
+
+    Returns
+    -------
+    pd.DataFrame
+        A DataFrame with undersampled regions discarded, containing only rows from bins 
+        with at least the specified minimum number of observations.
+    """
+       
     df = df.copy()
     # set up grid
     lat_grid = np.arange(-90,90 + bin_size,bin_size)
