@@ -10,7 +10,7 @@ from shapely.geometry import Point, Polygon
 
 # ------------- admin ------------ #
 
-def herald(msg):
+def herald(msg:str):
     logging.info(msg)
     print(msg)
 
@@ -72,6 +72,8 @@ def iho_region_geometry(iho_file_path: str,iho_region: str) -> Polygon:
         print(f'{iho_region} is not a valid IHO region')
         return None
     
+def detect_undersampled_regions(bin_size: float = 1, min_observations: int = 25):
+    pass
 # -------------- other processing --------------- #
 
 def discard_undrogued_drifters(df: pd.DataFrame) -> pd.DataFrame:
