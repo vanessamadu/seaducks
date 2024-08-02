@@ -72,7 +72,7 @@ def iho_region_geometry(iho_file_path: str,iho_region: str) -> Polygon:
         print(f'{iho_region} is not a valid IHO region')
         return None
     
-def detect_undersampled_regions(df : pd.DataFrame, bin_size: float = 1, min_observations: int = 25):
+def discard_undersampled_regions(df : pd.DataFrame, bin_size: float = 1, min_observations: int = 25):
     
     df = df.copy()
     # set up grid
