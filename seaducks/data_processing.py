@@ -1,8 +1,10 @@
 # seaducks/data_processing.py
 import pandas as pd
+import numpy as np
 from shapely import Polygon,points
-from seaducks.filtering import temporal_filter_covariates
-from seaducks.utils import identify_time_series_segments,downsample_to_daily,herald,discard_undrogued_drifters
+from seaducks.filtering import temporal_filter
+from seaducks.utils import downsample_to_daily,herald,discard_undrogued_drifters,identify_time_series_segments
+from seaducks.utils import discard_undersampled_regions
 from seaducks.config import config
 import time
 '''
@@ -116,6 +118,18 @@ def data_filtering(region: Polygon,file_path: str, output_path: str, sample_prop
             herald('data sampled successfully')
         herald(f'{sample_proportion*100}% of the dataset | new dataset shape: {df.shape}')
 
+        # 0) data-preprocess: clean and convert
+        ## convert from cm/s -> m/s 
+        df.loc[:, 'u']/=100
+        df.loc[:, 'v']/=100
+        herald("drifter velocity converted to m/s successfully")
+
+        ## set extreme values to NaN
+        for var in ['u','v','Tx','Ty','Wy','Wx']:
+            extreme_val_mask = df[var] < -900
+            df.loc[extreme_val_mask,var] = np.nan
+        herald(f'extreme values set to nan')
+
         # 1) discard undrogued drifters
         df = discard_undrogued_drifters(df).copy()
         herald('undrogued drifters discarded successfully')
@@ -131,9 +145,27 @@ def data_filtering(region: Polygon,file_path: str, output_path: str, sample_prop
         region_mask = [loc.within(region) for loc in drifter_locs]
         df = df[region_mask].copy() 
 
+        # 4) discard data in undersampled regions
+        df = discard_undersampled_regions(df).copy()
 
+        # 5) split time series into six hourly segments for each drifter. discard segments that are 
+        #    very short. Apply a fifth order Butterworth filter.
+            
+        ## group the data for each drifter id into time series segments 
+        df.loc[:,'segment_id'] = df.groupby('id')['time'].transform(identify_time_series_segments)
+        herald('6-hourly segments identified')
+        df = df.groupby(['id', 'segment_id'], group_keys=False).apply(temporal_filter, include_groups=False).copy()
+        herald('applied Butterworth filter to each segment')
+
+        # 6) downsample to daily temporal resolution
+        df = downsample_to_daily(df).copy()
+
+        df.to_hdf(path_or_buf=output_path, key="drifter", mode='w')
+        herald('saved filtered data')
+
+        elapsed_time = time.time() - overall_start_time
+        herald(f"Filtering {sample_proportion*100}% of the data took : {elapsed_time:.2f} seconds")
 
     except Exception as e:
-        pass
+        herald(f'an error has occured: {e}')
 
-    # 1) Discard undrogued drifters

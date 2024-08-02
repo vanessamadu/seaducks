@@ -59,7 +59,7 @@ def butterworth_filter(time_series: np.ndarray, latitude: np.ndarray, order: int
             out[nan_mask] = np.nan
     return out
 
-def temporal_filter_covariates(df: pd.DataFrame) -> pd.DataFrame:
+def temporal_filter(df: pd.DataFrame) -> pd.DataFrame:
     """
     Applies the butterworth_filter function to each covariate column in the DataFrame.
 
