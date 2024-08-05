@@ -9,7 +9,7 @@ from seaducks.config import config
 import time
     
 def data_filtering(region: Polygon,file_path: str, output_path: str, sample_proportion: float = 1,seed=config['random_state'],
-                   lon_lim_W: float =-83, lon_lim_E: float = 40):
+                   lon_lim_W: float =-83, lon_lim_E: float = -40):
     
     overall_start_time = time.time()
 
@@ -34,7 +34,7 @@ def data_filtering(region: Polygon,file_path: str, output_path: str, sample_prop
 
         ## set extreme values to NaN
         for var in ['u','v','Tx','Ty','Wy','Wx']:
-            extreme_val_mask = df[var] < -900
+            extreme_val_mask = np.abs(df[var] )> 900
             df.loc[extreme_val_mask,var] = np.nan
         herald(f'extreme values set to nan')
 
@@ -60,16 +60,20 @@ def data_filtering(region: Polygon,file_path: str, output_path: str, sample_prop
         #    very short. Apply a fifth order Butterworth filter.
             
         ## group the data for each drifter id into time series segments 
+    
         df.loc[:,'segment_id'] = df.groupby('id')['time'].transform(identify_time_series_segments)
         herald('6-hourly segments identified')
-        df = df.groupby(['id', 'segment_id'], group_keys=False).apply(apply_butterworth_filter, include_groups=False).copy()
+        
+        variables = list(df.columns)
+        df = df.groupby(['id', 'segment_id'])[variables].apply(apply_butterworth_filter).copy()
         herald('applied Butterworth filter to each segment')
 
         # 6) downsample to daily temporal resolution
         df = downsample_to_daily(df).copy()
-
-        df.to_hdf(path_or_buf=output_path, key="drifter", mode='w',format="table")
+        herald('data downsampled to daily')
+        df.to_hdf(path_or_buf=output_path, key="drifter", mode='w',format="fixed")
         herald('saved filtered data')
+        
 
         elapsed_time = time.time() - overall_start_time
         herald(f"Filtering {sample_proportion*100}% of the data took : {elapsed_time:.2f} seconds")
