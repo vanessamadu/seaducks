@@ -38,25 +38,14 @@ def data_filtering(region: Polygon,file_path: str, output_path: str, sample_prop
             df.loc[extreme_val_mask,var] = np.nan
         herald(f'extreme values set to nan')
 
-        # 1) discard undrogued drifters
-        df = discard_undrogued_drifters(df).copy()
-        herald('undrogued drifters discarded successfully')
-
-        # 2) discard observations with a lat or lon variance estimate > 0.25 degrees
-        df = df.query('lon_var<0.25 and lat_var<0.25').copy()
-        herald('observations with variance lat/lon estimates more than 0.25 degrees discarded')
-
-        #3) discard data that is not in the North Atlantic and in the region [83W, 40W]
+        # 1) discard data that is not in the North Atlantic and in the region [83W, 40W]
         # remove data outside of the interval [-83,40]
         df = df.query('@lon_lim_W < lon < @lon_lim_E').copy()
         drifter_locs = points(df[["lon","lat"]].values).tolist() # (lon,lat) in (x,y) form for geometry
         region_mask = [loc.within(region) for loc in drifter_locs]
         df = df[region_mask].copy() 
 
-        # 4) discard data in undersampled regions
-        df = discard_undersampled_regions(df).copy()
-
-        # 5) split time series into six hourly segments for each drifter. discard segments that are 
+        # 2) split time series into six hourly segments for each drifter. discard segments that are 
         #    very short. Apply a fifth order Butterworth filter.
             
         ## group the data for each drifter id into time series segments 
@@ -66,6 +55,18 @@ def data_filtering(region: Polygon,file_path: str, output_path: str, sample_prop
         variables = list(df.columns)
         df = df.groupby(['id', 'segment_id'])[variables].apply(apply_butterworth_filter).copy()
         herald('applied Butterworth filter to each segment')
+
+
+        # 3) discard undrogued drifters
+        df = discard_undrogued_drifters(df).copy()
+        herald('undrogued drifters discarded successfully')
+
+        # 4) discard observations with a lat or lon variance estimate > 0.25 degrees
+        df = df.query('lon_var<0.25 and lat_var<0.25').copy()
+        herald('observations with variance lat/lon estimates more than 0.25 degrees discarded')
+
+        # 5) discard data in undersampled regions
+        df = discard_undersampled_regions(df).copy()
 
         # 6) downsample to daily temporal resolution
         df = downsample_to_daily(df).copy()
