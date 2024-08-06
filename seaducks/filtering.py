@@ -22,10 +22,9 @@ def butterworth_filter(time_series: np.ndarray, latitude: np.ndarray, order: int
     - A 2D numpy array of the same shape as the input array, with filtered data.
     """
     time_series_len,num_time_series = time_series.shape
-    dtype = time_series.dtype
 
     # initialise output with same shape and dtype as input
-    out = np.zeros(time_series.shape,dtype=dtype) 
+    out = np.zeros(time_series.shape,dtype=time_series.dtype) 
 
     # temporarily set missing values to zero
     nan_mask = np.isnan(time_series)
@@ -78,14 +77,14 @@ def apply_butterworth_filter(df: pd.DataFrame) -> pd.DataFrame:
     time_dependent_vars = ['u','v','Wx','Wy','Tx','Ty']
 
     # prevent changes to the data outside of this function
-    for var in time_dependent_vars:
-        if var + '_filtered' not in df.columns:
-            df[var + '_filtered'] = df[var].copy()
-    vars_to_filter = [var + '_filtered' for var in time_dependent_vars]
+    #for var in time_dependent_vars:
+     #   if var + '_filtered' not in df.columns:
+      #      df[var + '_filtered'] = df[var].copy()
+    #vars_to_filter = [var + '_filtered' for var in time_dependent_vars]
     
-    time_series = df[vars_to_filter].values
+    time_series = df[time_dependent_vars].values
     filtered_vars = butterworth_filter(time_series,lat)
 
-    df[vars_to_filter] = filtered_vars
+    df[time_dependent_vars] = filtered_vars
     return df
 
