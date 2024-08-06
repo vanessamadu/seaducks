@@ -32,7 +32,8 @@ def data_filtering(region: Polygon,file_path: str, output_path: str, sample_prop
         df.loc[:, 'v']/=100
         herald("drifter velocity converted to m/s successfully")
 
-        ## set missing values to NaN # Note: Missing wind values are set to -32767 in the source data
+        ## set missing values to NaN 
+        ### Note: Missing wind stress and wind speed are set to -2147483647 and -32767 in the source data. respectively.
         for var in ['Tx','Ty','Wy','Wx']:
             extreme_val_mask = df[var] < -900
             df.loc[extreme_val_mask,var] = np.nan
