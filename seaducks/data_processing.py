@@ -35,9 +35,9 @@ def data_filtering(region: Polygon,file_path: str, output_path: str, sample_prop
         ## set missing values to NaN 
         ### Note: Missing wind stress and wind speed are set to -2147483647 and -32767 in the source data. respectively.
         for var in ['Tx','Ty','Wy','Wx']:
-            extreme_val_mask = df[var] < -900
-            df.loc[extreme_val_mask,var] = np.nan
-        herald(f'extreme values set to nan')
+            missing_val_mask = df[var] < -900
+            df.loc[missing_val_mask,var] = np.nan
+        herald(f'missing values set to nan')
 
         # 1) discard data that is not in the North Atlantic and in the region [83W, 40W]
         # remove data outside of the interval [-83,-40]
