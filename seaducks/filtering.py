@@ -55,7 +55,7 @@ def butterworth_filter(time_series: np.ndarray, latitude: np.ndarray, order: int
             for jj in range(num_time_series):
                 filtered_time_series = signal.filtfilt(b,a,time_series[:,jj])
                 out[ii:(ii+4),jj] = filtered_time_series[ii:(ii+4)]
-            out[nan_mask] = np.nan
+        out[nan_mask] = np.nan
     return out
 
 def apply_butterworth_filter(df: pd.DataFrame) -> pd.DataFrame:
