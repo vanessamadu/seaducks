@@ -32,9 +32,9 @@ def data_filtering(region: Polygon,file_path: str, output_path: str, sample_prop
         df.loc[:, 'v']/=100
         herald("drifter velocity converted to m/s successfully")
 
-        ## set extreme values to NaN #(CHECK: I THINK THESE DATASETS DEALT WITH NANS BY SETING THEM TO -99999999)
+        ## set missing values to NaN # Note: Missing wind values are set to -32767 in the source data
         for var in ['Tx','Ty','Wy','Wx']:
-            extreme_val_mask = np.abs(df[var] )> 900
+            extreme_val_mask = df[var] < -900
             df.loc[extreme_val_mask,var] = np.nan
         herald(f'extreme values set to nan')
 
@@ -56,7 +56,6 @@ def data_filtering(region: Polygon,file_path: str, output_path: str, sample_prop
         df = df.groupby(['id', 'segment_id'])[variables].apply(apply_butterworth_filter).copy()
         herald('applied Butterworth filter to each segment')
 
-
         # 3) discard undrogued drifters
         df = discard_undrogued_drifters(df).copy()
         herald('undrogued drifters discarded successfully')
@@ -65,12 +64,12 @@ def data_filtering(region: Polygon,file_path: str, output_path: str, sample_prop
         df = df.query('lon_var<0.25 and lat_var<0.25').copy()
         herald('observations with variance lat/lon estimates more than 0.25 degrees discarded')
 
-        # 5) discard data in undersampled regions
-        df = discard_undersampled_regions(df).copy()
-
-        # 6) downsample to daily temporal resolution
+        # 5) downsample to daily temporal resolution
         df = downsample_to_daily(df).copy()
         herald('data downsampled to daily')
+
+        # 6) discard data in undersampled regions
+        df = discard_undersampled_regions(df).copy()
 
         # reset indices
         df = df.drop(['segment_id','id'],axis=1).reset_index().copy()

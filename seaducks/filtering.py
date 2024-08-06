@@ -36,6 +36,7 @@ def butterworth_filter(time_series: np.ndarray, latitude: np.ndarray, order: int
     sample_freq = 1/(6*60*60) #Hz
     nyquist_freq = 0.5*sample_freq 
 
+    print(time_series_len)
     if time_series_len < order * 6:
         out = out*np.nan # discard time series segment if too short
     else:
