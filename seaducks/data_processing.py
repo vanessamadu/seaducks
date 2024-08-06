@@ -40,7 +40,7 @@ def data_filtering(region: Polygon,file_path: str, output_path: str, sample_prop
         herald(f'extreme values set to nan')
 
         # 1) discard data that is not in the North Atlantic and in the region [83W, 40W]
-        # remove data outside of the interval [-83,40]
+        # remove data outside of the interval [-83,-40]
         df = df.query('@lon_lim_W < lon < @lon_lim_E').copy()
         drifter_locs = points(df[["lon","lat"]].values).tolist() # (lon,lat) in (x,y) form for geometry
         region_mask = [loc.within(region) for loc in drifter_locs]
