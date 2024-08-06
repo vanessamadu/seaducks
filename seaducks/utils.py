@@ -106,7 +106,7 @@ def discard_undersampled_regions(df : pd.DataFrame, bin_size: float = 1, min_obs
     # assign the number of drifters in the grid box to drifters in that box
     df = df.join(bin_counts, on = ["lon_bin","lat_bin"])
     sufficiently_sampled_mask = df['bin_counts'] > min_observations
-
+    
     return df[sufficiently_sampled_mask]
 
 # -------------- other processing --------------- #

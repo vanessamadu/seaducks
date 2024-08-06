@@ -32,8 +32,8 @@ def data_filtering(region: Polygon,file_path: str, output_path: str, sample_prop
         df.loc[:, 'v']/=100
         herald("drifter velocity converted to m/s successfully")
 
-        ## set extreme values to NaN
-        for var in ['u','v','Tx','Ty','Wy','Wx']:
+        ## set extreme values to NaN #(CHECK: I THINK THESE DATASETS DEALT WITH NANS BY SETING THEM TO -99999999)
+        for var in ['Tx','Ty','Wy','Wx']:
             extreme_val_mask = np.abs(df[var] )> 900
             df.loc[extreme_val_mask,var] = np.nan
         herald(f'extreme values set to nan')
@@ -61,9 +61,8 @@ def data_filtering(region: Polygon,file_path: str, output_path: str, sample_prop
             
         ## group the data for each drifter id into time series segments 
     
-        df.loc[:,'segment_id'] = df.groupby('id')['time'].transform(identify_time_series_segments)
+        df.loc[:,'segment_id'] = df[['id','time']].groupby('id')['time'].transform(identify_time_series_segments)
         herald('6-hourly segments identified')
-        
         variables = list(df.columns)
         df = df.groupby(['id', 'segment_id'])[variables].apply(apply_butterworth_filter).copy()
         herald('applied Butterworth filter to each segment')
@@ -71,7 +70,11 @@ def data_filtering(region: Polygon,file_path: str, output_path: str, sample_prop
         # 6) downsample to daily temporal resolution
         df = downsample_to_daily(df).copy()
         herald('data downsampled to daily')
-        df.to_hdf(path_or_buf=output_path, key="drifter", mode='w',format="fixed")
+
+        # reset indices
+        df = df.drop(['segment_id','id'],axis=1).reset_index().copy()
+
+        df[config['return_variables']].to_hdf(path_or_buf=output_path, key="drifter", mode='w',format="fixed")
         herald('saved filtered data')
         
 

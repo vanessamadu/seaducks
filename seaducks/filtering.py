@@ -85,6 +85,6 @@ def apply_butterworth_filter(df: pd.DataFrame) -> pd.DataFrame:
     time_series = df[vars_to_filter].values
     filtered_vars = butterworth_filter(time_series,lat)
 
-    df[time_dependent_vars] = filtered_vars
+    df[vars_to_filter] = filtered_vars
     return df
 
