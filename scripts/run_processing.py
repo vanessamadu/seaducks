@@ -3,7 +3,7 @@ import os
 import logging
 import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-from seaducks.data_processing import data_filtering
+from seaducks.data_processing.data_processing import data_filtering
 from seaducks.utils import iho_region_geometry, herald
 
 # Configure logging
