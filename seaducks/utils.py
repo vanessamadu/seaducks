@@ -8,6 +8,10 @@ import numpy as np
 import geopandas as gpd
 from shapely.geometry import Polygon
 
+# numerical differentiation
+from scipy.ndimage import convolve1d
+from astropy.convolution import convolve
+
 # ------------- admin ------------ #
 
 def herald(msg:str):
@@ -124,7 +128,46 @@ def discard_undrogued_drifters(df: pd.DataFrame) -> pd.DataFrame:
     drogue_mask = df["drogue"].values
     return df[drogue_mask]
 
-
-
-
+# --------------------- numerical differentiation -------------------------- #
     
+def diff1d(row:np.ndarray,h:float) -> np.ndarray:
+    ''' 
+    One dimensional numerical differentiation at each point in a row/column of a grid with spacing h
+
+    Parameters:
+    -----------
+    - row: A numpy array
+        The input row/column from the gridded data
+    - h: A float
+        The grid spacing.
+    '''
+    # define kernels
+    kernel_stencil = np.array([1/(12*h),-8/(12*h),0, 8/(12*h),-1/(12*h)])[::-1]
+    kernel_central = np.array([-1/(2*h),0,1/(2*h)])[::-1]
+    kernel_onesided = np.array([-1/h,1/h])[::-1]
+    # evaluate derivatives
+    dx_stencil = stencil_mask(row,len(kernel_stencil))*convolve(row,kernel_stencil,normalize_kernel=False,nan_treatment='fill',boundary=None,
+                        mask=np.isnan(row))
+    dx_central = stencil_mask(row,len(kernel_central))*convolve(row,kernel_central,normalize_kernel=False,nan_treatment='fill',boundary=None,
+                        mask=np.isnan(row))
+    dx_right = convolve1d(row,kernel_onesided,mode="constant",cval=np.nan)
+    dx_left = np.roll(dx_right,shift=1,axis=0)
+    
+    #decide which derivative value is used
+    dx = np.where(np.isnan(dx_stencil),dx_central,dx_stencil)
+    dx = np.where(np.isnan(dx),dx_left,dx)
+    dx = np.where(np.isnan(dx),dx_right,dx)
+
+    return(dx)
+
+def stencil_mask(row,kernel_len):
+    nans = np.isnan(row)
+    mask = np.nan*np.ones(len(row))
+    num_neighbours = int(np.floor(kernel_len/2))
+    for ii in range(num_neighbours,len(nans)-num_neighbours):
+        indices = [val for val in range(ii-num_neighbours,ii+num_neighbours+1)]
+        indices.pop(num_neighbours)
+        stencil_is_valid = np.array(not nans[indices].any())
+        if stencil_is_valid:
+            mask[ii] = stencil_is_valid # nan if the stencil doesn't produce a derivative and 1 if it does
+    return mask
