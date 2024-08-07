@@ -20,18 +20,19 @@ def main():
     file_directory = r"D:\PhD\ocean-datasets\copernicus-data"
     data_path = os.path.join(file_directory, filename)
 
-    output_directory = r"D:\PhD\ocean-datasets\derived_quantities\sst"
+    output_directory = r"D:\PhD\ocean-datasets\derived-data\sst"
     output_filename = r"sst_gradients_t0_t3.nc"
-    output_path = os.path.join(output_directory, output_filename)
     # Load the NetCDF file
     
     dataset = xr.open_dataset(data_path)
 
     sst = dataset['analysed_sst'].isel(time=list(range(3)))
 
-    sst_gradient_to_da(sst,output_path,output_filename)
+    sst_gradient_to_da(sst,output_directory,output_filename)
 
     herald(time.time()-start)
 
 if __name__ == '__main__':
     main()
+
+
