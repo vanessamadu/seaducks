@@ -140,6 +140,10 @@ def diff1d(row:np.ndarray,h:float) -> np.ndarray:
         The input row/column from the gridded data
     - h: A float
         The grid spacing.
+
+    Returns:
+    --------
+    - A numpy array of derivatives for each point in the row/column where they exist.
     '''
     # define kernels
     kernel_stencil = np.array([1/(12*h),-8/(12*h),0, 8/(12*h),-1/(12*h)])[::-1]
@@ -161,6 +165,18 @@ def diff1d(row:np.ndarray,h:float) -> np.ndarray:
     return(dx)
 
 def stencil_mask(row: np.ndarray,kernel_len:int) -> np.ndarray:
+    '''
+    Determines where the 1d spatial derivative can be calculated at each grid point in the row/column
+    
+    Parameters:
+    -----------
+    - row: A numpy array
+        The input row/column from the gridded data
+    - kernel_len: int
+        The length of the convolution kernel that defines the finite difference method 
+        being used for numerical differentiation
+
+    '''
     nans = np.isnan(row)
     mask = np.nan*np.ones(len(row))
     num_neighbours = int(np.floor(kernel_len/2))
