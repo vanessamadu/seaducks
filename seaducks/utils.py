@@ -160,7 +160,7 @@ def diff1d(row:np.ndarray,h:float) -> np.ndarray:
 
     return(dx)
 
-def stencil_mask(row,kernel_len):
+def stencil_mask(row: np.ndarray,kernel_len:int) -> np.ndarray:
     nans = np.isnan(row)
     mask = np.nan*np.ones(len(row))
     num_neighbours = int(np.floor(kernel_len/2))
