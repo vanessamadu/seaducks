@@ -176,17 +176,19 @@ def stencil_mask(row: np.ndarray,kernel_len:int) -> np.ndarray:
         The length of the convolution kernel that defines the finite difference method 
         being used for numerical differentiation
 
+    Returns:
+    --------
+    - A numpy array that is 1 where the stencil can be applied and NaN where it cannot.
     '''
     # initialisation
     nans = np.isnan(row)            # indicator of nans in the row
-    mask = np.nan*np.ones(len(row)) 
+    mask = np.ones(len(row)) * np.nan 
     num_neighbours = int(np.floor(kernel_len/2))
 
     for ii in range(num_neighbours,len(nans)-num_neighbours):
         indices = [val for val in range(ii-num_neighbours,ii+num_neighbours+1)]
         indices.pop(num_neighbours) # remove the middle value 
-         # stencil will not be able to calculate a numerical derivative if there are any nans in the remaining array
-        stencil_is_valid = np.array(not nans[indices].any())
-        if stencil_is_valid:
-            mask[ii] = stencil_is_valid # nan if the stencil doesn't produce a derivative and 1 if it does
+        # Stencil will not be able to calculate a numerical derivative if there are any NaNs in the remaining array
+        if np.all(~nans[indices]): 
+            mask[ii] = 1 # 1 if the stencil produces a derivative, NaN if it doesn't
     return mask
