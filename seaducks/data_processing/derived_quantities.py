@@ -18,26 +18,22 @@ def sst_gradient(SST_array: xr.DataArray) -> tuple:
     SST_grad_array_x = xr.zeros_like(SST_array)
     SST_grad_array_y = xr.zeros_like(SST_array)
 
-    for tt in t_array:
-        herald_count_ii = 0
-        for ii in lat:
-            sst_at_lat = SST_array.sel(latitude = ii,time=tt)
-            SST_grad_array_x.loc[dict(time=tt, latitude=ii)] = diff1d(sst_at_lat.values, h)
+    for tt, t_val in enumerate(t_array):
+        for ii, lat_val in enumerate(lat):
+            sst_at_lat = SST_array.sel(latitude=lat_val, time=t_val)
+            SST_grad_array_x.loc[dict(time=t_val, latitude=lat_val)] = diff1d(sst_at_lat.values, h)
             # print and log progress
-            if herald_count_ii%50 == 0:
-                herald(f"lat: {herald_count_ii*50/len(lat)}% complete")
-                herald_count_ii +=1
+            if ii % 50 == 0:
+                herald(f"Latitude progress: {ii * 100 / len(lat):.2f}% complete")
 
-        herald_count_jj = 0
-        for jj in lon:
-            sst_at_lon = SST_array.sel(longitude = jj,time=tt)
-            SST_grad_array_y.loc[dict(time=tt, longitude=jj)] = diff1d(sst_at_lon.values, h)
+        for jj, lon_val in enumerate(lon):
+            sst_at_lon = SST_array.sel(longitude=lon_val, time=t_val)
+            SST_grad_array_y.loc[dict(time=t_val, longitude=lon_val)] = diff1d(sst_at_lon.values, h)
             # print and log progress
-            if herald_count_jj%50 == 0:
-                herald(f"lat: {herald_count_jj*50/len(lon)}% complete")
-                herald_count_jj +=1
+            if jj % 50 == 0:
+                print(f"Longitude progress: {jj * 100 / len(lon):.2f}% complete")
 
-        herald(f"time: {tt} complete")
+        herald(f"Time progress: {tt * 100 / len(t_array):.2f}% complete")
     return SST_grad_array_x,SST_grad_array_y
 
 def sst_gradient_to_da(sst,output_directory,output_filename):
