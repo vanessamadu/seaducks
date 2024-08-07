@@ -1,4 +1,4 @@
-# seaducks/filtering.py
+# seaducks/data_processing/filtering.py
 
 import numpy as np
 import pandas as pd
