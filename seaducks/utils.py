@@ -18,6 +18,17 @@ def herald(msg:str):
     logging.info(msg)
     print(msg)
 
+def assign_each_position_a_bin(df : pd.DataFrame, bin_size: float = 1):
+         
+    df = df.copy()
+    # set up grid
+    lat_grid = np.arange(-90,90 + bin_size,bin_size)
+    lon_grid = np.arange(-180,180 + bin_size,bin_size)
+
+    df.loc[:,"lon_bin"] = pd.cut(df["lon"], lon_grid)
+    df.loc[:,"lat_bin"] = pd.cut(df["lat"], lat_grid)
+
+    return df
 # ------------- temporal processing --------------- #
 
 def identify_time_series_segments(timevec:pd.Series,cut_off: int = 6) -> np.ndarray:
@@ -96,18 +107,12 @@ def discard_undersampled_regions(df : pd.DataFrame, bin_size: float = 1, min_obs
         A DataFrame with undersampled regions discarded, containing only rows from bins 
         with at least the specified minimum number of observations.
     """
-       
-    df = df.copy()
-    # set up grid
-    lat_grid = np.arange(-90,90 + bin_size,bin_size)
-    lon_grid = np.arange(-180,180 + bin_size,bin_size)
-
-    df.loc[:,"lon_bin"] = pd.cut(df["lon"], lon_grid)
-    df.loc[:,"lat_bin"] = pd.cut(df["lat"], lat_grid)
+    df = assign_each_position_a_bin(df,bin_size=1)
 
     bin_counts = df.groupby(["lon_bin", "lat_bin"], sort=False, observed=False).size()
     bin_counts.name = 'bin_counts'
     # assign the number of drifters in the grid box to drifters in that box
+
     df = df.join(bin_counts, on = ["lon_bin","lat_bin"])
     sufficiently_sampled_mask = df['bin_counts'] > min_observations
     
