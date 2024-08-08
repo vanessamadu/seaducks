@@ -2,14 +2,19 @@
 from seaducks.utils import diff1d,herald
 import xarray as xr
 import os
+import glob
 from datetime import datetime
+import numpy as np
 
 # ----------------- SST gradient ------------------ #
 
 def sst_gradient(SST_array: xr.DataArray) -> tuple:
     
     # metadata
-    h = 0.05
+    h = 0.05                       # degrees
+    earth_radius = 6371
+    h = np.deg2rad(h)*earth_radius # convert to metres
+
     lat = SST_array['latitude']
     lon = SST_array['longitude']
     t_array = SST_array['time']
@@ -36,30 +41,44 @@ def sst_gradient(SST_array: xr.DataArray) -> tuple:
         herald(f"Time progress: {tt * 100 / len(t_array):.2f}% complete")
     return SST_grad_array_x,SST_grad_array_y
 
-def sst_gradient_to_da(sst,output_directory,output_filename):
+def sst_gradient_to_da(input_directory,file_pattern,output_directory,output_filename):
 
-    sst_gradient_x, sst_gradient_y = sst_gradient(sst)
-    herald("sst gradients computed successfully")
+    sst_files = glob.glob(os.path.join(input_directory, file_pattern))
 
-    # rename data arrays
-    sst_gradient_x.name='sst_gradient_x'
-    sst_gradient_y.name='sst_gradient_y'
+    all_gradients_x = []
+    all_gradients_y = []
 
+    for sst_file in sst_files:
+        herald(f"Processing {sst_file}")
+        sst = xr.open_dataset(sst_file)['analysed_sst']
+        
+        sst_gradient_x, sst_gradient_y = sst_gradient(sst)
+
+        all_gradients_x.append(sst_gradient_x)
+        all_gradients_y.append(sst_gradient_y)
+
+    # Concatenate all gradients along the time dimension
+    combined_gradients_x = xr.concat(all_gradients_x, dim='time')
+    combined_gradients_y = xr.concat(all_gradients_y, dim='time')
+
+    # Create data arrays
+    combined_gradients_x.name = 'sst_gradient_x'
+    combined_gradients_y.name = 'sst_gradient_y'
     # create dataset
     sst_gradient_ds = xr.Dataset(
         {
-            'sst_gradient_x':sst_gradient_x,
-            'sst_gradient_y':sst_gradient_y
+            'sst_gradient_x':combined_gradients_x,
+            'sst_gradient_y':combined_gradients_y
         }
     )
     herald("dataset created successfully")
     # set attributes for the gradient variables
     sst_gradient_ds['sst_gradient_x'].attrs = {
-        'units': 'K/m',
+        'units': 'K/km',
         'long_name': 'SST Gradient in X direction'
     }
     sst_gradient_ds['sst_gradient_y'].attrs = {
-        'units': 'K/m',
+        'units': 'K/km',
         'long_name': 'SST Gradient in Y direction'
     }
 
