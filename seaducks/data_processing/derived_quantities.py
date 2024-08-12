@@ -24,6 +24,17 @@ def sst_gradient_pointwise(sst_array: xr.DataArray, coord: tuple, time_val: floa
 
     return (diff1d(sst_x_neighbours,h)[2],diff1d(sst_y_neighbours,h)[2]) # return centre values
 
+def calculate_sst_at_grid_square_corners(sst_array:xr.DataArray,corners:np.ndarray, time_val:float):
+
+    sst_grad_y_corners = []
+    sst_grad_x_corners = []
+
+    for lon_val, lat_val in corners:
+        sst_x_derivative, sst_y_derivative = sst_gradient_pointwise(sst_array, (lat_val,lon_val), time_val)
+        sst_grad_x_corners.append(sst_x_derivative)
+        sst_grad_y_corners.append(sst_y_derivative)
+
+    return sst_grad_x_corners,sst_grad_y_corners
 
 
 def sst_gradient(SST_array: xr.DataArray) -> tuple:
