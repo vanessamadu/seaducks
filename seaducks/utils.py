@@ -3,6 +3,7 @@
 import logging
 import pandas as pd
 import numpy as np
+import xarray as xr
 
 ## spatial filtering
 import geopandas as gpd
@@ -37,21 +38,21 @@ def get_corners(tuple_tuple):
     lat1, lat2 = lat.left, lat.right
     return np.array([(lon1, lat1), (lon2, lat1), (lon2, lat2), (lon1, lat2)])
 
-def add_corners_to_df(df: pd.DataFrame,bin_size=0.05):
-    lat, lon = df.indexes.values()
+def add_corners_to_df(drifter_df: pd.DataFrame, gridded_da: xr.DataArray, bin_size=0.05):
+    lat, lon = gridded_da.indexes.values()
     # initialisation
     lat_grid = np.array(lat)
     lon_grid = np.array(lon)
 
-    df = assign_each_position_a_bin(df,lat_grid,lon_grid,bin_size = bin_size)
+    drifter_df = assign_each_position_a_bin(drifter_df,lat_grid,lon_grid,bin_size = bin_size)
     # preserve variables
-    variables = list(df.columns)
+    variables = list(drifter_df.columns)
     # work with both lat and lon bins together via index
-    corners = df.groupby([f"lon_bin_size_{bin_size}", f"lat_bin_size_{bin_size}"], sort=False, observed=False)[variables]
+    corners = drifter_df.groupby([f"lon_bin_size_{bin_size}", f"lat_bin_size_{bin_size}"], sort=False, observed=False)[variables]
     corners = corners.apply(lambda x:x) # convert from groupby to dataframe
-    df.loc[:,'grid_box_corners'] = corners.index.map(lambda idx: get_corners(idx))
+    drifter_df.loc[:,'grid_box_corners'] = corners.index.map(lambda idx: get_corners(idx))
 
-    return df
+    return drifter_df
 # ------------- temporal processing --------------- #
 
 def identify_time_series_segments(timevec:pd.Series,cut_off: int = 6) -> np.ndarray:
