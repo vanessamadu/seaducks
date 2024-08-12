@@ -7,7 +7,7 @@ from datetime import datetime
 import numpy as np
 
 # ----------------- SST gradient ------------------ #
-def sst_gradient_pointwise(sst_array: xr.DataArray, coord: tuple, time: float) -> tuple:
+def sst_gradient_pointwise(sst_array: xr.DataArray, coord: tuple, time_val: float) -> tuple:
     
     # metadata
     h = 0.05                       # degrees
@@ -19,10 +19,10 @@ def sst_gradient_pointwise(sst_array: xr.DataArray, coord: tuple, time: float) -
     lat_neighbours = [lat_val+ii*h for ii in np.arange(-2,3,1)]
     lon_neighbours = [lon_val+jj*h for jj in np.arange(-2,3,1)]
 
-    sst_x_neighbours = sst_array.sel(latitude = lat_neighbours, time=time, longitude = lon_val)
-    sst_y_neighbours = sst_array.sel(latitude=lat_val, time=time,longitude = lon_neighbours)
+    sst_x_neighbours = sst_array.sel(latitude = lat_neighbours, time=time_val, longitude = lon_val, method='nearest').values
+    sst_y_neighbours = sst_array.sel(latitude=lat_val, time=time_val,longitude = lon_neighbours, method = 'nearest').values
 
-    return (diff1d(sst_x_neighbours),diff1d(sst_y_neighbours))
+    return (diff1d(sst_x_neighbours,h),diff1d(sst_y_neighbours,h))
 
 
 

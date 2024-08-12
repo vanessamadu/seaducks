@@ -38,7 +38,7 @@ def get_corners(tuple_tuple):
     lat1, lat2 = lat.left, lat.right
     return np.array([(lon1, lat1), (lon2, lat1), (lon2, lat2), (lon1, lat2)])
 
-def add_corners_to_df(drifter_df: pd.DataFrame, gridded_da: xr.DataArray, bin_size=0.05):
+def add_grid_box_corners_to_df(drifter_df: pd.DataFrame, gridded_da: xr.DataArray, bin_size=0.05):
     lat, lon = gridded_da.indexes.values()
     # initialisation
     lat_grid = np.array(lat)
