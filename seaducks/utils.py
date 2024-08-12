@@ -18,17 +18,36 @@ def herald(msg:str):
     logging.info(msg)
     print(msg)
 
-def assign_each_position_a_bin(df : pd.DataFrame, bin_size: float = 1):
+def assign_each_position_a_bin(df : pd.DataFrame, lat_grid, lon_grid, bin_size: float):
          
     df = df.copy()
-    # set up grid
-    lat_grid = np.arange(-90,90 + bin_size,bin_size)
-    lon_grid = np.arange(-180,180 + bin_size,bin_size)
 
-    df.loc[:,"lon_bin"] = pd.cut(df["lon"], lon_grid)
-    df.loc[:,"lat_bin"] = pd.cut(df["lat"], lat_grid)
+    df.loc[:,f"lon_bin_size_{bin_size}"] = pd.cut(df["lon"], lon_grid)
+    df.loc[:,f"lat_bin_size_{bin_size}"] = pd.cut(df["lat"], lat_grid)
 
     return df
+
+def get_corners(tuple_tuple):
+    """
+    Parameters:
+        tuple_tuple: a tuple of pd cuts, designed for .groupby([lon_cut, lat_cut]) operations
+    """
+    lon, lat, count = tuple_tuple
+    lon1, lon2 = lon.left, lon.right
+    lat1, lat2 = lat.left, lat.right
+    return np.array([(lon1, lat1), (lon2, lat1), (lon2, lat2), (lon1, lat2)])
+
+def add_corners_to_df(df: pd.DataFrame,bin_size=0.05):
+    lat, lon = df.indexes.values()
+    # initialisation
+    lat_grid = np.array(lat)
+    lon_grid = np.array(lon)
+
+    df = assign_each_position_a_bin(df,lat_grid,lon_grid,bin_size = bin_size)
+    # preserve variables
+    variables = list(df.columns)
+    corners = df.groupby([f"lon_bin_size_{bin_size}", f"lat_bin_size_{bin_size}"], sort=False, observed=False)[variables]
+    corners.name = 'grid_box_corners'
 # ------------- temporal processing --------------- #
 
 def identify_time_series_segments(timevec:pd.Series,cut_off: int = 6) -> np.ndarray:
@@ -107,7 +126,12 @@ def discard_undersampled_regions(df : pd.DataFrame, bin_size: float = 1, min_obs
         A DataFrame with undersampled regions discarded, containing only rows from bins 
         with at least the specified minimum number of observations.
     """
-    df = assign_each_position_a_bin(df,bin_size=1)
+    # set up grid
+
+    lat_grid = np.arange(-90,90 + bin_size,bin_size)
+    lon_grid = np.arange(-180,180 + bin_size,bin_size)
+
+    df = assign_each_position_a_bin(df,lat_grid, lon_grid, bin_size=bin_size)
 
     bin_counts = df.groupby(["lon_bin", "lat_bin"], sort=False, observed=False).size()
     bin_counts.name = 'bin_counts'
