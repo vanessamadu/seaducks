@@ -48,6 +48,9 @@ def add_corners_to_df(df: pd.DataFrame,bin_size=0.05):
     variables = list(df.columns)
     corners = df.groupby([f"lon_bin_size_{bin_size}", f"lat_bin_size_{bin_size}"], sort=False, observed=False)[variables]
     corners.name = 'grid_box_corners'
+    df.loc[:,'grid_box_corners'] = corners.apply(lambda x:x).index.map(lambda idx: get_corners(idx))
+
+    return df
 # ------------- temporal processing --------------- #
 
 def identify_time_series_segments(timevec:pd.Series,cut_off: int = 6) -> np.ndarray:
