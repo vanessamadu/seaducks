@@ -46,9 +46,10 @@ def add_corners_to_df(df: pd.DataFrame,bin_size=0.05):
     df = assign_each_position_a_bin(df,lat_grid,lon_grid,bin_size = bin_size)
     # preserve variables
     variables = list(df.columns)
+    # work with both lat and lon bins together via index
     corners = df.groupby([f"lon_bin_size_{bin_size}", f"lat_bin_size_{bin_size}"], sort=False, observed=False)[variables]
-    corners.name = 'grid_box_corners'
-    df.loc[:,'grid_box_corners'] = corners.apply(lambda x:x).index.map(lambda idx: get_corners(idx))
+    corners = corners.apply(lambda x:x) # convert from groupby to dataframe
+    df.loc[:,'grid_box_corners'] = corners.index.map(lambda idx: get_corners(idx))
 
     return df
 # ------------- temporal processing --------------- #
