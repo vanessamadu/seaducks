@@ -7,6 +7,24 @@ from datetime import datetime
 import numpy as np
 
 # ----------------- SST gradient ------------------ #
+def sst_gradient_pointwise(sst_array: xr.DataArray, coord: tuple, time: float) -> tuple:
+    
+    # metadata
+    h = 0.05                       # degrees
+    earth_radius = 6371
+    h = np.deg2rad(h)*earth_radius # convert to metres
+
+    lat_val,lon_val = coord
+    # find sst values near coord
+    lat_neighbours = [lat_val+ii*h for ii in np.arange(-2,3,1)]
+    lon_neighbours = [lon_val+jj*h for jj in np.arange(-2,3,1)]
+
+    sst_x_neighbours = sst_array.sel(latitude = lat_neighbours, time=time, longitude = lon_val)
+    sst_y_neighbours = sst_array.sel(latitude=lat_val, time=time,longitude = lon_neighbours)
+
+    return (diff1d(sst_x_neighbours),diff1d(sst_y_neighbours))
+
+
 
 def sst_gradient(SST_array: xr.DataArray) -> tuple:
     
@@ -99,5 +117,7 @@ def sst_gradient_to_da(input_directory,file_pattern,output_directory,output_file
     sst_gradient_ds.to_netcdf(file_path)
 
     herald(f"data successfully written to {file_path}")
+
+# ---------------- interpolation ------------------- #
 
 
