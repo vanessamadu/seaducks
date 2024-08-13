@@ -53,6 +53,22 @@ def add_grid_box_corners_to_df(drifter_df: pd.DataFrame, gridded_da: xr.DataArra
     drifter_df.loc[:,'grid_box_corners'] = corners.index.map(lambda idx: get_corners(idx))
 
     return drifter_df
+
+def haversine(theta):
+    # theta must be in radians
+    return np.sin(theta/2)**2
+
+def haversine_distance(lat1,lon1,lat2,lon2):
+    earth_radius = 6371 # km
+
+    lat1 = np.deg2rad(lat1)
+    lat2 = np.deg2rad(lat2)
+    lon1 = np.deg2rad(lon1)
+    lon2 = np.deg2rad(lon2)
+
+    haversine_of_central_angle = haversine(lat2-lat1) + np.cos(lat1)*np.cos(lat2)*haversine(lon2-lon1)
+
+    return 2*earth_radius*np.arcsin(np.sqrt(haversine_of_central_angle))
 # ------------- temporal processing --------------- #
 
 def identify_time_series_segments(timevec:pd.Series,cut_off: int = 6) -> np.ndarray:
