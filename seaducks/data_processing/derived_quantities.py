@@ -13,16 +13,17 @@ def sst_gradient_pointwise(sst_array: xr.DataArray, coord: tuple, time_val: floa
     # metadata
     h = 0.05                       # degrees
     earth_radius = 6371
-    h = np.deg2rad(h)*earth_radius # convert to metres
+    
 
     lat_val,lon_val = coord
     # find sst values near coord
     lat_neighbours = [lat_val+ii*h for ii in np.arange(-2,3,1)]
     lon_neighbours = [lon_val+jj*h for jj in np.arange(-2,3,1)]
 
-    sst_x_neighbours = sst_array.sel(latitude = lat_neighbours, time=time_val, longitude = lon_val, method='nearest').values
-    sst_y_neighbours = sst_array.sel(latitude=lat_val, time=time_val,longitude = lon_neighbours, method = 'nearest').values
-
+    sst_x_neighbours = sst_array.loc[time_val,lat_neighbours, lon_val].values
+    sst_y_neighbours = sst_array.loc[time_val,lat_neighbours, lon_val].values
+    h = np.deg2rad(h)*earth_radius # convert to metres
+    
     return (diff1d(sst_x_neighbours,h)[2],diff1d(sst_y_neighbours,h)[2]) # return centre values
 
 def interpolate_sst_gradient(drifter_lat: float, drifter_lon, time_val:float, sst_array:xr.DataArray,corners:np.ndarray):
