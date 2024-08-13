@@ -49,19 +49,13 @@ def haversine_distance(lat1,lon1,lat2,lon2):
 def format_coordinates(val):
 
     if np.abs(val) >= 10:
-        string_val = format(val,'.2f')
+        string_val = format(val,'.3f')
     elif np.abs(val) >= 1:
         string_val = format(val,'.3f')
     else: 
         string_val = format(val,'.4f')
 
-
-    if val >= 0:
-        new_string_val = [*string_val][:5]
-    else:
-        new_string_val = [*string_val][:6]
-
-    return float(''.join(new_string_val))
+    return ''.join(string_val)
 # ------------- temporal processing --------------- #
 
 def identify_time_series_segments(timevec:pd.Series,cut_off: int = 6) -> np.ndarray:
@@ -241,15 +235,16 @@ def stencil_mask(row: np.ndarray,kernel_len:int) -> np.ndarray:
 def get_corners(tuple_tuple):
     """
     Parameters:
-        Useing lat, lon convention
+        Useing lat, lon convention but converts for lon, lat
     """
-    lat, lon, count = tuple_tuple
+    lon, lat, count = tuple_tuple
     lon1, lon2 = lon.left, lon.right
     lat1, lat2 = lat.left, lat.right
     return np.array([(lat1, lon1), (lat1, lon2), (lat2, lon2), (lat2, lon1)])
 
 def add_grid_box_corners_to_df(drifter_df: pd.DataFrame, gridded_da: xr.DataArray, bin_size=0.05):
-    lat, lon = gridded_da.indexes.values()
+    lat = gridded_da['latitude']
+    lon = gridded_da['longitude']
     # initialisation
     lat_grid = np.array(lat)
     lon_grid = np.array(lon)

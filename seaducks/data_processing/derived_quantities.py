@@ -1,5 +1,5 @@
 # seaducks/data_processing/derived_quantities.py
-from seaducks.utils import diff1d,herald,haversine_distance,inverse_distance_interpolation
+from seaducks.utils import diff1d,herald,haversine_distance,inverse_distance_interpolation,format_coordinates
 import xarray as xr
 import os
 import glob
@@ -8,25 +8,25 @@ import numpy as np
 import pandas as pd
 
 # ----------------- SST gradient ------------------ #
-def sst_gradient_pointwise(sst_array: xr.DataArray, coord: tuple, time_val: float) -> tuple:
+def sst_gradient_pointwise(sst_array: xr.DataArray, coord_str: tuple, time_val: float) -> tuple:
     
     # metadata
     h = 0.05                       # degrees
     earth_radius = 6371
     
 
-    lat_val,lon_val = coord
+    lat_val_str,lon_val_str = coord_str
     # find sst values near coord
-    lat_neighbours = [lat_val+ii*h for ii in np.arange(-2,3,1)]
-    lon_neighbours = [lon_val+jj*h for jj in np.arange(-2,3,1)]
-
-    sst_x_neighbours = sst_array.loc[time_val,lat_neighbours, lon_val].values
-    sst_y_neighbours = sst_array.loc[time_val,lat_neighbours, lon_val].values
+    lat_neighbours = [format_coordinates(float(lat_val_str)+ii*h) for ii in np.arange(-2,3,1)]
+    lon_neighbours = [format_coordinates(float(lon_val_str)+jj*h) for jj in np.arange(-2,3,1)]
+    
+    sst_x_neighbours = [float(sst_array.loc[time_val,lat_val, lon_val_str].values) for lat_val in lat_neighbours]
+    sst_y_neighbours = [float(sst_array.loc[time_val,lat_val_str, lon_val].values) for lon_val in lon_neighbours]
     h = np.deg2rad(h)*earth_radius # convert to metres
     
     return (diff1d(sst_x_neighbours,h)[2],diff1d(sst_y_neighbours,h)[2]) # return centre values
 
-def interpolate_sst_gradient(drifter_lat: float, drifter_lon, time_val:float, sst_array:xr.DataArray,corners:np.ndarray):
+def interpolate_sst_gradient(drifter_lat_str: float, drifter_lon_str, time_val:float, sst_array:xr.DataArray,corners:np.ndarray):
 
     # function to be used as an apply to a dataframe
     # calculate haversines
@@ -40,10 +40,10 @@ def interpolate_sst_gradient(drifter_lat: float, drifter_lon, time_val:float, ss
 
     for lat_val,lon_val in corners:
 
-        hav_distance = haversine_distance(drifter_lat,drifter_lon,lat_val,lon_val)
+        hav_distance = haversine_distance(float(drifter_lat_str),float(drifter_lon_str),lat_val,lon_val)
         haversine_distances.append(hav_distance)
 
-        sst_x_derivative, sst_y_derivative = sst_gradient_pointwise(sst_array, (lat_val,lon_val), time_val)
+        sst_x_derivative, sst_y_derivative = sst_gradient_pointwise(sst_array, (format_coordinates(lat_val),format_coordinates(lon_val)), time_val)
         sst_x_gradients.append(sst_x_derivative)
         sst_y_gradients.append(sst_y_derivative)
 
