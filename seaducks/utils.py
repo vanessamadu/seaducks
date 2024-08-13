@@ -45,14 +45,23 @@ def haversine_distance(lat1,lon1,lat2,lon2):
 
     return 2*earth_radius*np.arcsin(np.sqrt(haversine_of_central_angle))
 
+
 def format_coordinates(val):
 
-    if val >= 0:
-        string_val = [*str(val)][:-5]
-    else:
-        string_val = [*str(val)][:-6]
+    if np.abs(val) >= 10:
+        string_val = format(val,'.2f')
+    elif np.abs(val) >= 1:
+        string_val = format(val,'.3f')
+    else: 
+        string_val = format(val,'.4f')
 
-    return float(''.join(string_val))
+
+    if val >= 0:
+        new_string_val = [*string_val][:5]
+    else:
+        new_string_val = [*string_val][:6]
+
+    return float(''.join(new_string_val))
 # ------------- temporal processing --------------- #
 
 def identify_time_series_segments(timevec:pd.Series,cut_off: int = 6) -> np.ndarray:
