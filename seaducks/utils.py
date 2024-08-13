@@ -59,6 +59,7 @@ def haversine(theta):
     return np.sin(theta/2)**2
 
 def haversine_distance(lat1,lon1,lat2,lon2):
+
     earth_radius = 6371 # km
 
     lat1 = np.deg2rad(lat1)
