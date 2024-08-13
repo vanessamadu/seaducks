@@ -44,6 +44,15 @@ def haversine_distance(lat1,lon1,lat2,lon2):
     haversine_of_central_angle = haversine(lat2-lat1) + np.cos(lat1)*np.cos(lat2)*haversine(lon2-lon1)
 
     return 2*earth_radius*np.arcsin(np.sqrt(haversine_of_central_angle))
+
+def format_coordinates(val):
+
+    if val >= 0:
+        string_val = [*str(val)][:-5]
+    else:
+        string_val = [*str(val)][:-6]
+
+    return float(''.join(string_val))
 # ------------- temporal processing --------------- #
 
 def identify_time_series_segments(timevec:pd.Series,cut_off: int = 6) -> np.ndarray:
@@ -246,12 +255,12 @@ def add_grid_box_corners_to_df(drifter_df: pd.DataFrame, gridded_da: xr.DataArra
 
     return drifter_df
 
-def inverse_distance_interpolation(haversine_distances: np.ndarray, gridded_product_values: np.ndarray) -> float:
+def inverse_distance_interpolation(distances: np.ndarray, gridded_product_values: np.ndarray) -> float:
 
     # assuming no gridded product values that are nan
 
-    inverse_haversine_distances = np.array([1/val for val in haversine_distances])
-    weighted_gridded_product_values = np.array([w*g for w,g in zip(inverse_haversine_distances,gridded_product_values)])
+    inverse_distances = np.array([1/val for val in distances])
+    weighted_gridded_product_values = np.array([w*g for w,g in zip(inverse_distances,gridded_product_values)])
 
-    return np.sum(weighted_gridded_product_values)/np.sum(inverse_haversine_distances)
+    return np.sum(weighted_gridded_product_values)/np.sum(inverse_distances)
 
