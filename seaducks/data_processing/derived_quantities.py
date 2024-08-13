@@ -1,10 +1,11 @@
 # seaducks/data_processing/derived_quantities.py
-from seaducks.utils import diff1d,herald
+from seaducks.utils import diff1d,herald,haversine_distance,inverse_distance_interpolation
 import xarray as xr
 import os
 import glob
 from datetime import datetime
 import numpy as np
+import pandas as pd
 
 # ----------------- SST gradient ------------------ #
 def sst_gradient_pointwise(sst_array: xr.DataArray, coord: tuple, time_val: float) -> tuple:
@@ -24,25 +25,39 @@ def sst_gradient_pointwise(sst_array: xr.DataArray, coord: tuple, time_val: floa
 
     return (diff1d(sst_x_neighbours,h)[2],diff1d(sst_y_neighbours,h)[2]) # return centre values
 
-def calculate_sst_at_grid_square_corners(sst_array:xr.DataArray,corners:np.ndarray, time_val:float):
+def interpolate_sst_gradient(drifter_lat: float, drifter_lon, time_val:float, sst_array:xr.DataArray,corners:np.ndarray):
 
-    sst_grad_y_corners = []
-    sst_grad_x_corners = []
+    # function to be used as an apply to a dataframe
+    # calculate haversines
+    # calculatre x grad
+    # calculate y grad
+    # interpolate and return one value
 
-    for lon_val, lat_val in corners:
+    sst_x_gradients = []
+    sst_y_gradients = []
+    haversine_distances = []
+
+    for lat_val,lon_val in corners:
+
+        hav_distance = haversine_distance(drifter_lat,drifter_lon,lat_val,lon_val)
+        haversine_distances.append(hav_distance)
+
         sst_x_derivative, sst_y_derivative = sst_gradient_pointwise(sst_array, (lat_val,lon_val), time_val)
-        sst_grad_x_corners.append(sst_x_derivative)
-        sst_grad_y_corners.append(sst_y_derivative)
+        sst_x_gradients.append(sst_x_derivative)
+        sst_y_gradients.append(sst_y_derivative)
 
-    return sst_grad_x_corners,sst_grad_y_corners
+    return inverse_distance_interpolation(haversine_distances,sst_x_gradients), inverse_distance_interpolation(haversine_distances,sst_y_gradients)
+
+
+    #return corner_sst_gradient_df
 
 
 def sst_gradient(SST_array: xr.DataArray) -> tuple:
     
     # metadata
     h = 0.05                       # degrees
-    earth_radius = 6371
-    h = np.deg2rad(h)*earth_radius # convert to metres
+    earth_radius = 6371            # km
+    h = np.deg2rad(h)*earth_radius # convert to km
 
     lat = SST_array['latitude']
     lon = SST_array['longitude']
