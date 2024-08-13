@@ -28,32 +28,6 @@ def assign_each_position_a_bin(df : pd.DataFrame, lat_grid, lon_grid, bin_size: 
 
     return df
 
-def get_corners(tuple_tuple):
-    """
-    Parameters:
-        tuple_tuple: a tuple of pd cuts, designed for .groupby([lon_cut, lat_cut]) operations
-    """
-    lon, lat, count = tuple_tuple
-    lon1, lon2 = lon.left, lon.right
-    lat1, lat2 = lat.left, lat.right
-    return np.array([(lon1, lat1), (lon2, lat1), (lon2, lat2), (lon1, lat2)])
-
-def add_grid_box_corners_to_df(drifter_df: pd.DataFrame, gridded_da: xr.DataArray, bin_size=0.05):
-    lat, lon = gridded_da.indexes.values()
-    # initialisation
-    lat_grid = np.array(lat)
-    lon_grid = np.array(lon)
-
-    drifter_df = assign_each_position_a_bin(drifter_df,lat_grid,lon_grid,bin_size = bin_size)
-    # preserve variables
-    variables = list(drifter_df.columns)
-    # work with both lat and lon bins together via index
-    corners = drifter_df.groupby([f"lon_bin_size_{bin_size}", f"lat_bin_size_{bin_size}"], sort=False, observed=False)[variables]
-    corners = corners.apply(lambda x:x) # convert from groupby to dataframe
-    drifter_df.loc[:,'grid_box_corners'] = corners.index.map(lambda idx: get_corners(idx))
-
-    return drifter_df
-
 def haversine(theta):
     # theta must be in radians
     return np.sin(theta/2)**2
@@ -243,3 +217,41 @@ def stencil_mask(row: np.ndarray,kernel_len:int) -> np.ndarray:
         if np.all(~nans[indices]): 
             mask[ii] = 1 # 1 if the stencil produces a derivative, NaN if it doesn't
     return mask
+
+# ---------------------- interpolation --------------------- #
+
+def get_corners(tuple_tuple):
+    """
+    Parameters:
+        Useing lat, lon convention
+    """
+    lat, lon, count = tuple_tuple
+    lon1, lon2 = lon.left, lon.right
+    lat1, lat2 = lat.left, lat.right
+    return np.array([(lat1, lon1), (lat1, lon2), (lat2, lon2), (lat2, lon1)])
+
+def add_grid_box_corners_to_df(drifter_df: pd.DataFrame, gridded_da: xr.DataArray, bin_size=0.05):
+    lat, lon = gridded_da.indexes.values()
+    # initialisation
+    lat_grid = np.array(lat)
+    lon_grid = np.array(lon)
+
+    drifter_df = assign_each_position_a_bin(drifter_df,lat_grid,lon_grid,bin_size = bin_size)
+    # preserve variables
+    variables = list(drifter_df.columns)
+    # work with both lat and lon bins together via index
+    corners = drifter_df.groupby([ f"lat_bin_size_{bin_size}",f"lon_bin_size_{bin_size}"], sort=False, observed=False)[variables]
+    corners = corners.apply(lambda x:x) # convert from groupby to dataframe
+    drifter_df.loc[:,'grid_box_corners'] = corners.index.map(lambda idx: get_corners(idx))
+
+    return drifter_df
+
+def inverse_distance_interpolation(haversine_distances: np.ndarray, gridded_product_values: np.ndarray) -> float:
+
+    # assuming no gridded product values that are nan
+
+    inverse_haversine_distances = np.array([1/val for val in haversine_distances])
+    weighted_gridded_product_values = np.array([w*g for w,g in zip(inverse_haversine_distances,gridded_product_values)])
+
+    return np.sum(weighted_gridded_product_values)/np.sum(inverse_haversine_distances)
+
