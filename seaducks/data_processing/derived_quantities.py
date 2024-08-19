@@ -19,7 +19,7 @@ def sst_gradient_pointwise(sst_array: xr.DataArray, coord_str: tuple, time_val: 
     # find sst values near coord
     lat_neighbours = [format_coordinates(float(lat_val_str)+ii*h) for ii in np.arange(-2,3,1)]
     lon_neighbours = [format_coordinates(float(lon_val_str)+jj*h) for jj in np.arange(-2,3,1)]
-    
+
     sst_x_neighbours = [float(sst_array.loc[time_val,lat_val, lon_val_str].values) for lat_val in lat_neighbours]
     sst_y_neighbours = [float(sst_array.loc[time_val,lat_val_str, lon_val].values) for lon_val in lon_neighbours]
     h = np.deg2rad(h)*earth_radius # convert to metres
@@ -33,7 +33,7 @@ def interpolate_sst_gradient(drifter_lat_str: float, drifter_lon_str, time_val:f
     # calculatre x grad
     # calculate y grad
     # interpolate and return one value
-
+    sst_array = sst_array[0] # right now, its in a one item list
     sst_x_gradients = []
     sst_y_gradients = []
     haversine_distances = []
