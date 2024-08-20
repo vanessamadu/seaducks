@@ -27,7 +27,7 @@ def herald(msg:str):
     logging.info(msg)
     print(msg)
 
-def assign_each_position_a_bin(df : pd.DataFrame, lat_grid: np.ndarray, lon_grid: np.ndarray, bin_size: float):
+def assign_each_position_a_bin(df:pd.DataFrame, lat_grid:np.ndarray, lon_grid:np.ndarray, bin_size:float) -> pd.DataFrame:
     '''
     Assigns each drifter (lat,lon) position to a spatial bin based on latitudinal and longitudinal grids
     and a bin size.
@@ -55,7 +55,7 @@ def assign_each_position_a_bin(df : pd.DataFrame, lat_grid: np.ndarray, lon_grid
 
     return df
 
-def haversine(theta:float):
+def haversine(theta:float) -> float:
     '''
     Calculates the haversine of theta where theta is in radians.
 
@@ -66,11 +66,12 @@ def haversine(theta:float):
 
     Returns
     -------
-    Haversine(theta)
+    float
+        Haversine(theta)
     '''
     return np.sin(theta/2)**2
 
-def haversine_distance(lat1,lon1,lat2,lon2):
+def haversine_distance(lat1:float, lon1:float, lat2:float, lon2:float) -> float:
     '''
     Calulcates the haversine distance (distance on a great circle) between two points on the Earth.
 
@@ -83,8 +84,8 @@ def haversine_distance(lat1,lon1,lat2,lon2):
 
     Returns
     -------
-
-    Haversine distance over the surface of the Earth between the two points in kilometres.
+    float
+        Haversine distance over the surface of the Earth between the two points in kilometres.
     '''
 
     earth_radius = 6371 # km
@@ -99,14 +100,27 @@ def haversine_distance(lat1,lon1,lat2,lon2):
 
     return 2*earth_radius*np.arcsin(np.sqrt(haversine_of_central_angle))
 
-def format_coordinates(val):
+def format_coordinates(coord:float):
+    '''
+    Convert a numerical coordinate value to a string value for use as keys.
 
-    if np.abs(val) >= 10:
-        string_val = format(val,'.3f')
-    elif np.abs(val) >= 1:
-        string_val = format(val,'.3f')
+    Parameters
+    ----------
+    coord: float
+        Latitude or Longitude numerical value
+    
+    Returns
+    -------
+    str
+        Coordinate value as a string.
+    '''
+
+    if np.abs(coord) >= 10:
+        string_val = format(coord,'.3f')
+    elif np.abs(coord) >= 1:
+        string_val = format(coord,'.3f')
     else: 
-        string_val = format(val,'.4f')
+        string_val = format(coord,'.4f')
 
     return ''.join(string_val)
 
