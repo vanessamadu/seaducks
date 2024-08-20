@@ -45,7 +45,6 @@ def haversine_distance(lat1,lon1,lat2,lon2):
 
     return 2*earth_radius*np.arcsin(np.sqrt(haversine_of_central_angle))
 
-
 def format_coordinates(val):
 
     if np.abs(val) >= 10:
@@ -56,6 +55,9 @@ def format_coordinates(val):
         string_val = format(val,'.4f')
 
     return ''.join(string_val)
+
+def get_right_array_by_year(data_by_year,year):
+    return data_by_year[year]
 # ------------- temporal processing --------------- #
 
 def identify_time_series_segments(timevec:pd.Series,cut_off: int = 6) -> np.ndarray:
