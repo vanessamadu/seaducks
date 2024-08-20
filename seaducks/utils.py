@@ -16,6 +16,14 @@ from astropy.convolution import convolve
 # ------------- admin ------------ #
 
 def herald(msg:str):
+    '''
+    Prints a message to the console and adds the message to the log.
+
+    Parameters
+    ----------
+    msg: str
+        Message to be printed and logged
+    '''
     logging.info(msg)
     print(msg)
 
@@ -57,7 +65,7 @@ def format_coordinates(val):
     return ''.join(string_val)
 
 def get_right_array_by_year(data_by_year,year):
-    return data_by_year[year]
+    return data_by_year
 # ------------- temporal processing --------------- #
 
 def identify_time_series_segments(timevec:pd.Series,cut_off: int = 6) -> np.ndarray:
@@ -244,12 +252,7 @@ def get_corners(tuple_tuple):
     lat1, lat2 = lat.left, lat.right
     return np.array([(lat1, lon1), (lat1, lon2), (lat2, lon2), (lat2, lon1)])
 
-def add_grid_box_corners_to_df(drifter_df: pd.DataFrame, gridded_da: xr.DataArray, bin_size=0.05):
-    lat = gridded_da['latitude']
-    lon = gridded_da['longitude']
-    # initialisation
-    lat_grid = np.array(lat)
-    lon_grid = np.array(lon)
+def add_grid_box_corners_to_df(drifter_df: pd.DataFrame, lat_grid: np.ndarray, lon_grid: np.ndarray, bin_size=0.05):
 
     drifter_df = assign_each_position_a_bin(drifter_df,lat_grid,lon_grid,bin_size = bin_size)
     # preserve variables
