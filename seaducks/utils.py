@@ -47,7 +47,7 @@ def assign_each_position_a_bin(df : pd.DataFrame, lat_grid: np.ndarray, lon_grid
     -------
     pd.DataFrame
         The dataframe df with columns identifying the latitudinal and longitudinal cuts
-        that the drifter location is found in
+        that the drifter location is found in.
     '''
 
     df.loc[:,f"lon_bin_size_{bin_size}"] = pd.cut(df["lon"], lon_grid)
@@ -55,8 +55,19 @@ def assign_each_position_a_bin(df : pd.DataFrame, lat_grid: np.ndarray, lon_grid
 
     return df
 
-def haversine(theta):
-    # theta must be in radians
+def haversine(theta:float):
+    '''
+    Calculates the haversine of theta where theta is in radians.
+
+    Parameters
+    ----------
+    theta: float
+        Angle in radians
+
+    Returns
+    -------
+    Haversine(theta)
+    '''
     return np.sin(theta/2)**2
 
 def haversine_distance(lat1,lon1,lat2,lon2):
