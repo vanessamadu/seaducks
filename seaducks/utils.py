@@ -71,9 +71,25 @@ def haversine(theta:float):
     return np.sin(theta/2)**2
 
 def haversine_distance(lat1,lon1,lat2,lon2):
+    '''
+    Calulcates the haversine distance (distance on a great circle) between two points on the Earth.
+
+    Parameters
+    ----------
+    lat1, lat2: floats
+        Latitudes of the two points in degrees.
+    lon1, lon2: floats
+        Longitudes of the two points in degrees.
+
+    Returns
+    -------
+
+    Haversine distance over the surface of the Earth between the two points in kilometres.
+    '''
 
     earth_radius = 6371 # km
-
+    
+    # convert latitudes and longitudes to radians
     lat1 = np.deg2rad(lat1)
     lat2 = np.deg2rad(lat2)
     lon1 = np.deg2rad(lon1)
