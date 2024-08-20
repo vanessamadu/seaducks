@@ -27,9 +27,28 @@ def herald(msg:str):
     logging.info(msg)
     print(msg)
 
-def assign_each_position_a_bin(df : pd.DataFrame, lat_grid, lon_grid, bin_size: float):
-         
-    df = df.copy()
+def assign_each_position_a_bin(df : pd.DataFrame, lat_grid: np.ndarray, lon_grid: np.ndarray, bin_size: float):
+    '''
+    Assigns each drifter (lat,lon) position to a spatial bin based on latitudinal and longitudinal grids
+    and a bin size.
+
+    Parameters
+    ----------
+    df: pd.DataFrame
+        The input containing 'lat' and 'lon' columns.
+    lat_grid: np.ndarray
+        The latitudes of grid points.
+    lon_grid: np.ndarray
+        The longitude of grid points.
+    bin_size: float
+        Size of the bins. Here this is only used for naming.
+    
+    Returns
+    -------
+    pd.DataFrame
+        The dataframe df with columns identifying the latitudinal and longitudinal cuts
+        that the drifter location is found in
+    '''
 
     df.loc[:,f"lon_bin_size_{bin_size}"] = pd.cut(df["lon"], lon_grid)
     df.loc[:,f"lat_bin_size_{bin_size}"] = pd.cut(df["lat"], lat_grid)
