@@ -50,8 +50,8 @@ def assign_each_position_a_bin(df:pd.DataFrame, lat_grid:np.ndarray, lon_grid:np
         that the drifter location is found in.
     '''
 
-    df.loc[:,f"lon_bin_size_{bin_size}"] = pd.cut(df["lon"], lon_grid,labels=False)
-    df.loc[:,f"lat_bin_size_{bin_size}"] = pd.cut(df["lat"], lat_grid,labels=False)
+    df.loc[:,f"lon_bin_size_{bin_size}"] = pd.cut(df["lon"], lon_grid)
+    df.loc[:,f"lat_bin_size_{bin_size}"] = pd.cut(df["lat"], lat_grid)
 
     return df
 
@@ -300,20 +300,22 @@ def stencil_mask(row: np.ndarray,kernel_len:int) -> np.ndarray:
 
 # ---------------------- interpolation --------------------- #
 
-def get_corners(tuple_tuple):
+def get_corners(cut_multi_index: tuple) -> np.ndarray:
     '''
     Given a longitudinal and a latitudinal interval, returns the corners of the square
     spanned by the two intervals.
 
     Parameters
     ----------
+    cut_multi_index: tuple
+        Output of a pd.cut, tuple containing (latitude interval, longitude interval, index)
 
+    Returns
+    -------
+    np.ndarray
+        Returns an array of coordinates of the corners of the square.
     '''
-    """
-    Parameters:
-        Useing lat, lon convention but converts for lon, lat
-    """
-    lon, lat, idx = tuple_tuple
+    lat,lon, idx = cut_multi_index
     lon1, lon2 = lon.left, lon.right
     lat1, lat2 = lat.left, lat.right
     return np.array([(lat1, lon1), (lat1, lon2), (lat2, lon2), (lat2, lon1)])
