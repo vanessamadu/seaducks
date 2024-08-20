@@ -50,8 +50,8 @@ def assign_each_position_a_bin(df:pd.DataFrame, lat_grid:np.ndarray, lon_grid:np
         that the drifter location is found in.
     '''
 
-    df.loc[:,f"lon_bin_size_{bin_size}"] = pd.cut(df["lon"], lon_grid)
-    df.loc[:,f"lat_bin_size_{bin_size}"] = pd.cut(df["lat"], lat_grid)
+    df.loc[:,f"lon_bin_size_{bin_size}"] = pd.cut(df["lon"], lon_grid,labels=False)
+    df.loc[:,f"lat_bin_size_{bin_size}"] = pd.cut(df["lat"], lat_grid,labels=False)
 
     return df
 
@@ -100,7 +100,7 @@ def haversine_distance(lat1:float, lon1:float, lat2:float, lon2:float) -> float:
 
     return 2*earth_radius*np.arcsin(np.sqrt(haversine_of_central_angle))
 
-def format_coordinates(coord:float):
+def format_coordinates(coord:float) -> str:
     '''
     Convert a numerical coordinate value to a string value for use as keys.
 
@@ -124,8 +124,6 @@ def format_coordinates(coord:float):
 
     return ''.join(string_val)
 
-def get_right_array_by_year(data_by_year,year):
-    return data_by_year
 # ------------- temporal processing --------------- #
 
 def identify_time_series_segments(timevec:pd.Series,cut_off: int = 6) -> np.ndarray:
@@ -184,7 +182,7 @@ def iho_region_geometry(iho_file_path: str,iho_region: str) -> Polygon:
         print(f'{iho_region} is not a valid IHO region')
         return None
     
-def discard_undersampled_regions(df : pd.DataFrame, bin_size: float = 1, min_observations: int = 25):
+def discard_undersampled_regions(df: pd.DataFrame, bin_size: float = 1, min_observations: int = 25):
     """
     Discards undersampled regions from a DataFrame based on spatial binning.
 
@@ -303,11 +301,19 @@ def stencil_mask(row: np.ndarray,kernel_len:int) -> np.ndarray:
 # ---------------------- interpolation --------------------- #
 
 def get_corners(tuple_tuple):
+    '''
+    Given a longitudinal and a latitudinal interval, returns the corners of the square
+    spanned by the two intervals.
+
+    Parameters
+    ----------
+
+    '''
     """
     Parameters:
         Useing lat, lon convention but converts for lon, lat
     """
-    lon, lat, count = tuple_tuple
+    lon, lat, idx = tuple_tuple
     lon1, lon2 = lon.left, lon.right
     lat1, lat2 = lat.left, lat.right
     return np.array([(lat1, lon1), (lat1, lon2), (lat2, lon2), (lat2, lon1)])
