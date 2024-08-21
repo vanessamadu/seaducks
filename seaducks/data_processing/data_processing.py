@@ -39,24 +39,66 @@ def data_filtering(region: Polygon,file_path: str, output_path: str, sample_prop
             df.loc[missing_val_mask,var] = np.nan
         herald(f'missing values set to nan')
 
+        # ----------------------------------- #
+        #       Number of Observations
+        old_total = df.shape[0]
+        herald(f'total observations: {old_total}')
+        # ----------------------------------- #
+
         # 1) discard data that is not in the North Atlantic and in the region [83W, 40W]
         # remove data outside of the interval [-83,-40]
         df = df.query('@lon_lim_W < lon < @lon_lim_E').copy()
+
+        # ----------------------------------- #
+        #       Discarded Observations
+        new_total = df.shape[0]
+        herald(f'Number of drifters outside [-83,-40]: {old_total-new_total}')
+        old_total = new_total
+        # ----------------------------------- #
+
         drifter_locs = points(df[["lon","lat"]].values).tolist() # (lon,lat) in (x,y) form for geometry
         region_mask = [loc.within(region) for loc in drifter_locs]
         df = df[region_mask].copy() 
+
+        # ----------------------------------- #
+        #       Discarded Observations
+        new_total = df.shape[0]
+        herald(f'Number of drifters outside NAO: {old_total-new_total}')
+        old_total = new_total
+        # ----------------------------------- #
         
         # 2) discard undrogued drifters
         df = discard_undrogued_drifters(df).copy()
         herald('undrogued drifters discarded successfully')
 
+        # ----------------------------------- #
+        #       Discarded Observations
+        new_total = df.shape[0]
+        herald(f'Number of undrogued drifters: {old_total-new_total}')
+        old_total = new_total
+        # ----------------------------------- #
+
         # 3) discard observations with a lat or lon variance estimate > 0.25 degrees
         df = df.query('lon_var<0.25 and lat_var<0.25').copy()
         herald('observations with variance lat/lon estimates more than 0.25 degrees discarded')
 
+        # ----------------------------------- #
+        #       Discarded Observations
+        new_total = df.shape[0]
+        herald(f'Number of drifters with positional variance > 0.25 degrees: {old_total-new_total}')
+        old_total = new_total
+        # ----------------------------------- #
+
         # 4) discard data in undersampled regions
         df = discard_undersampled_regions(df).copy()
         herald('Drifters from undersampled regions discarded successfully')
+
+        # ----------------------------------- #
+        #       Discarded Observations
+        new_total = df.shape[0]
+        herald(f'Number of drifters in undersampled regions: {old_total-new_total}')
+        old_total = new_total
+        # ----------------------------------- #
 
         # 5) split time series into six hourly segments for each drifter. discard segments that are 
         #    very short. Apply a fifth order Butterworth filter.
@@ -69,9 +111,23 @@ def data_filtering(region: Polygon,file_path: str, output_path: str, sample_prop
         df = df.groupby(['id', 'segment_id'])[variables].apply(apply_butterworth_filter).copy()
         herald('applied Butterworth filter to each segment')
 
+        # ----------------------------------- #
+        #       Discarded Observations
+        new_total = df.shape[0]
+        herald(f'Number of drifters in short time segments: {old_total-new_total}')
+        old_total = new_total
+        # ----------------------------------- #
+
         # 5) downsample to daily temporal resolution
         df = downsample_to_daily(df).copy()
         herald('data downsampled to daily')
+
+        # ----------------------------------- #
+        #       Discarded Observations
+        new_total = df.shape[0]
+        herald(f'Number of observations not taken at midnight: {old_total-new_total}')
+        old_total = new_total
+        # ----------------------------------- #
 
         # reset indices
         df = df.drop(['segment_id','id'],axis=1).reset_index().copy()
