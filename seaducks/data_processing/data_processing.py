@@ -45,8 +45,20 @@ def data_filtering(region: Polygon,file_path: str, output_path: str, sample_prop
         drifter_locs = points(df[["lon","lat"]].values).tolist() # (lon,lat) in (x,y) form for geometry
         region_mask = [loc.within(region) for loc in drifter_locs]
         df = df[region_mask].copy() 
+        
+        # 2) discard undrogued drifters
+        df = discard_undrogued_drifters(df).copy()
+        herald('undrogued drifters discarded successfully')
 
-        # 2) split time series into six hourly segments for each drifter. discard segments that are 
+        # 3) discard observations with a lat or lon variance estimate > 0.25 degrees
+        df = df.query('lon_var<0.25 and lat_var<0.25').copy()
+        herald('observations with variance lat/lon estimates more than 0.25 degrees discarded')
+
+        # 4) discard data in undersampled regions
+        df = discard_undersampled_regions(df).copy()
+        herald('Drifters from undersampled regions discarded successfully')
+
+        # 5) split time series into six hourly segments for each drifter. discard segments that are 
         #    very short. Apply a fifth order Butterworth filter.
             
         ## group the data for each drifter id into time series segments 
@@ -57,20 +69,9 @@ def data_filtering(region: Polygon,file_path: str, output_path: str, sample_prop
         df = df.groupby(['id', 'segment_id'])[variables].apply(apply_butterworth_filter).copy()
         herald('applied Butterworth filter to each segment')
 
-        # 3) discard undrogued drifters
-        df = discard_undrogued_drifters(df).copy()
-        herald('undrogued drifters discarded successfully')
-
-        # 4) discard observations with a lat or lon variance estimate > 0.25 degrees
-        df = df.query('lon_var<0.25 and lat_var<0.25').copy()
-        herald('observations with variance lat/lon estimates more than 0.25 degrees discarded')
-
         # 5) downsample to daily temporal resolution
         df = downsample_to_daily(df).copy()
         herald('data downsampled to daily')
-
-        # 6) discard data in undersampled regions
-        df = discard_undersampled_regions(df).copy()
 
         # reset indices
         df = df.drop(['segment_id','id'],axis=1).reset_index().copy()
@@ -78,7 +79,6 @@ def data_filtering(region: Polygon,file_path: str, output_path: str, sample_prop
         df[config['return_variables']].to_hdf(path_or_buf=output_path, key="drifter", mode='w',format="fixed")
         herald('saved filtered data')
         
-
         elapsed_time = time.time() - overall_start_time
         herald(f"Filtering {sample_proportion*100}% of the data took : {elapsed_time:.2f} seconds")
 
