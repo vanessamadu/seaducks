@@ -209,11 +209,11 @@ def discard_undersampled_regions(df: pd.DataFrame, bin_size: float = 1, min_obse
 
     df = assign_each_position_a_bin(df,lat_grid, lon_grid, bin_size=bin_size)
 
-    bin_counts = df.groupby(["lon_bin", "lat_bin"], sort=False, observed=False).size()
+    bin_counts = df.groupby([f"lon_bin_size_{bin_size}", f"lat_bin_size_{bin_size}"], sort=False, observed=False).size()
     bin_counts.name = 'bin_counts'
     # assign the number of drifters in the grid box to drifters in that box
 
-    df = df.join(bin_counts, on = ["lon_bin","lat_bin"])
+    df = df.join(bin_counts, on = [f"lon_bin_size_{bin_size}",f"lat_bin_size_{bin_size}"])
     sufficiently_sampled_mask = df['bin_counts'] > min_observations
     
     return df[sufficiently_sampled_mask]
@@ -300,35 +300,37 @@ def stencil_mask(row: np.ndarray,kernel_len:int) -> np.ndarray:
 
 # ---------------------- interpolation --------------------- #
 
-def get_corners(cut_multi_index: tuple) -> np.ndarray:
+def get_corners(lat_cut: tuple, lon_cut: tuple) -> np.ndarray:
     '''
     Given a longitudinal and a latitudinal interval, returns the corners of the square
     spanned by the two intervals.
 
     Parameters
     ----------
-    cut_multi_index: tuple
-        Output of a pd.cut, tuple containing (latitude interval, longitude interval, index)
+    lat_cut: tuple
+        Output of a pd.cut (latitude interval)
+    lon_cut: tuple
+        Output of a pd.cut (longitude interval)
 
     Returns
     -------
     np.ndarray
         Returns an array of coordinates of the corners of the square.
     '''
-    lat,lon, idx = cut_multi_index
-    lon1, lon2 = lon.left, lon.right
-    lat1, lat2 = lat.left, lat.right
-    return np.array([(lat1, lon1), (lat1, lon2), (lat2, lon2), (lat2, lon1)])
+    
+    if np.array([type(lat_cut) is not float,type(lon_cut) is not float]).all():
+        lon1, lon2 = lon_cut.left, lon_cut.right
+        lat1, lat2 = lat_cut.left, lat_cut.right
+        return np.array([(lat1, lon1), (lat1, lon2), (lat2, lon2), (lat2, lon1)])
+    else:
+        nan_tuple = (np.nan,np.nan)
+        return np.array([nan_tuple for ii in range(4)])
 
 def add_grid_box_corners_to_df(drifter_df: pd.DataFrame, lat_grid: np.ndarray, lon_grid: np.ndarray, bin_size=0.05):
 
     drifter_df = assign_each_position_a_bin(drifter_df,lat_grid,lon_grid,bin_size = bin_size)
-    # preserve variables
-    variables = list(drifter_df.columns)
-    # work with both lat and lon bins together via index
-    corners = drifter_df.groupby([ f"lat_bin_size_{bin_size}",f"lon_bin_size_{bin_size}"], sort=False, observed=False)[variables]
-    corners = corners.apply(lambda x:x) # convert from groupby to dataframe
-    drifter_df.loc[:,'grid_box_corners'] = corners.index.map(lambda idx: get_corners(idx))
+    corners = drifter_df.apply(lambda x:get_corners(x[f"lat_bin_size_{bin_size}"],x[f"lon_bin_size_{bin_size}"]),axis=1)
+    drifter_df.loc[:,'corners'] = corners
 
     return drifter_df
 

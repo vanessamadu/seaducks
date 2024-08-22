@@ -36,26 +36,23 @@ def butterworth_filter(time_series: np.ndarray, latitude: np.ndarray, order: int
     sample_freq = 1/(6*60*60) #Hz
     nyquist_freq = 0.5*sample_freq 
 
-    if time_series_len < order * 6:
-        out = out*np.nan # discard time series segment if too short
-    else:
-        # perform daily filtering (moving BW filter over four six hourly observations)
-        for ii in range(0,time_series_len,4):
-            average_24_hour_lat = np.mean(latitude[ii:(ii+4)])
+    # perform daily filtering (moving BW filter over four six hourly observations)
+    for ii in range(0,time_series_len,4):
+        average_24_hour_lat = np.mean(latitude[ii:(ii+4)])
 
-            # threshold frequency = minimum of intertial frequency/1.5 and once every five days
-            earth_rotation_rate = 7.2921e-5
-            inertial_freq = 2*earth_rotation_rate*np.sin(np.deg2rad(np.abs(average_24_hour_lat)))
-            inertial_freq_hz = inertial_freq/(2*np.pi)
-            five_day_freq_hz = 1 / (5 * 24 * 60 ** 2)
-            threshold_freq = np.max([inertial_freq_hz/1.5, five_day_freq_hz]) 
+        # threshold frequency = minimum of intertial frequency/1.5 and once every five days
+        earth_rotation_rate = 7.2921e-5
+        inertial_freq = 2*earth_rotation_rate*np.sin(np.deg2rad(np.abs(average_24_hour_lat)))
+        inertial_freq_hz = inertial_freq/(2*np.pi)
+        five_day_freq_hz = 1 / (5 * 24 * 60 ** 2)
+        threshold_freq = np.max([inertial_freq_hz/1.5, five_day_freq_hz]) 
 
-            b,a = signal.butter(order,threshold_freq/nyquist_freq,btype='lowpass',analog=False)
+        b,a = signal.butter(order,threshold_freq/nyquist_freq,btype='lowpass',analog=False)
 
-            for jj in range(num_time_series):
-                filtered_time_series = signal.filtfilt(b,a,time_series[:,jj])
-                out[ii:(ii+4),jj] = filtered_time_series[ii:(ii+4)]
-        out[nan_mask] = np.nan
+        for jj in range(num_time_series):
+            filtered_time_series = signal.filtfilt(b,a,time_series[:,jj])
+            out[ii:(ii+4),jj] = filtered_time_series[ii:(ii+4)]
+    out[nan_mask] = np.nan
     return out
 
 def apply_butterworth_filter(df: pd.DataFrame) -> pd.DataFrame:
