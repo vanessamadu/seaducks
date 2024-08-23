@@ -23,6 +23,10 @@ def herald(msg:str):
     ----------
     msg: str
         Message to be printed and logged
+
+    Originality
+    -----------
+    completely original 
     '''
     logging.info(msg)
     print(msg)
@@ -48,6 +52,11 @@ def assign_each_position_a_bin(df:pd.DataFrame, lat_grid:np.ndarray, lon_grid:np
     pd.DataFrame
         The dataframe df with columns identifying the latitudinal and longitudinal cuts
         that the drifter location is found in.
+
+    Originality
+    -----------
+    adapatation with significant changes from:
+        probdrift.spatialfns.lon_lat_cutter
     '''
 
     df.loc[:,f"lon_bin_size_{bin_size}"] = pd.cut(df["lon"], lon_grid)
@@ -68,6 +77,10 @@ def haversine(theta:float) -> float:
     -------
     float
         Haversine(theta)
+
+    Originality
+    -----------
+    completely original
     '''
     return np.sin(theta/2)**2
 
@@ -86,6 +99,10 @@ def haversine_distance(lat1:float, lon1:float, lat2:float, lon2:float) -> float:
     -------
     float
         Haversine distance over the surface of the Earth between the two points in kilometres.
+
+    Originality
+    -----------
+    completely original
     '''
 
     earth_radius = 6371 # km
@@ -113,6 +130,10 @@ def format_coordinates(coord:float) -> str:
     -------
     str
         Coordinate value as a string.
+
+    Originality
+    -----------
+    completely original
     '''
 
     if np.abs(coord) >= 10:
@@ -137,6 +158,11 @@ def identify_time_series_segments(timevec:pd.Series,cut_off: int = 6) -> np.ndar
 
     Returns:
     - A numpy array with segment IDs for each time point in the input series.
+    
+    Originality
+    -----------
+    as provided (up to renaming & documentation) from:
+        drop_and_filter.id_aug
     """
     time_gaps = np.diff(timevec)
     mask = time_gaps > np.timedelta64(cut_off,'h') # identify where time gap is > than 'cut_off' hours
@@ -154,6 +180,11 @@ def downsample_to_daily(df: pd.DataFrame) -> pd.DataFrame:
 
     Returns:
     - A pandas DataFrame with the downsampled data.
+    
+    Originality
+    -----------
+    as provided (up to renaming & documentation) from:  
+        make_datasets.filter_dpoints 
     """
     midnight_mask = df["time"].dt.hour == 0
     return df[midnight_mask]
@@ -171,6 +202,11 @@ def iho_region_geometry(iho_file_path: str,iho_region: str) -> Polygon:
     Returns:
     - The convex hull of the specified IHO region's geometry if found.
     - None if the region is not found or an error occurs.
+
+    Originality
+    -----------
+    adaptation with significant changes from:
+        make_datasets.filter_dpoints & make_datasets script
     """
 
     world_seas = gpd.read_file(iho_file_path)
@@ -202,6 +238,9 @@ def discard_undersampled_regions(df: pd.DataFrame, bin_size: float = 1, min_obse
     pd.DataFrame
         A DataFrame with undersampled regions discarded, containing only rows from bins 
         with at least the specified minimum number of observations.
+
+
+    
     """
     # set up grid
 
@@ -230,6 +269,10 @@ def discard_undrogued_drifters(df: pd.DataFrame) -> pd.DataFrame:
 
     Returns:
     - A pandas DataFrame including only drogued drifters.
+
+    Originality
+    -----------
+    completely original
     """
     drogue_mask = df["drogue"].values
     return df[drogue_mask]
@@ -250,6 +293,10 @@ def diff1d(row:np.ndarray,h:float) -> np.ndarray:
     Returns:
     --------
     - A numpy array of derivatives for each point in the row/column where they exist.
+
+    Originality
+    -----------
+    completely original
     '''
     # define kernels
     kernel_stencil = np.array([1/(12*h),-8/(12*h),0, 8/(12*h),-1/(12*h)])[::-1]
@@ -274,7 +321,7 @@ def stencil_mask(row: np.ndarray,kernel_len:int) -> np.ndarray:
     '''
     Determines where the 1d spatial derivative can be calculated at each grid point in the row/column
     
-    Parameters:
+    Parameters
     -----------
     - row: A numpy array
         The input row/column from the gridded data
@@ -282,9 +329,13 @@ def stencil_mask(row: np.ndarray,kernel_len:int) -> np.ndarray:
         The length of the convolution kernel that defines the finite difference method 
         being used for numerical differentiation
 
-    Returns:
+    Returns
     --------
     - A numpy array that is 1 where the stencil can be applied and NaN where it cannot.
+
+    Originality
+    -----------
+    completely original
     '''
     # initialisation
     nans = np.isnan(row)            # indicator of nans in the row
@@ -317,6 +368,11 @@ def get_corners(lat_cut: tuple, lon_cut: tuple) -> np.ndarray:
     -------
     np.ndarray
         Returns an array of coordinates of the corners of the square.
+
+    Originality
+    -----------
+    adaptation with significant changes from:
+        probdrift.spatialfns.gpd_functions.cuts2poly
     '''
     
     if np.array([type(lat_cut) is not float,type(lon_cut) is not float]).all():
@@ -328,6 +384,11 @@ def get_corners(lat_cut: tuple, lon_cut: tuple) -> np.ndarray:
         return np.array([nan_tuple for ii in range(4)])
 
 def add_grid_box_corners_to_df(drifter_df: pd.DataFrame, lat_grid: np.ndarray, lon_grid: np.ndarray, bin_size=0.05):
+    '''
+    Originality
+    ----------
+    completely original
+    '''
 
     drifter_df = assign_each_position_a_bin(drifter_df,lat_grid,lon_grid,bin_size = bin_size)
     corners = drifter_df.apply(lambda x:get_corners(x[f"lat_bin_size_{bin_size}"],x[f"lon_bin_size_{bin_size}"]),axis=1)
@@ -336,9 +397,18 @@ def add_grid_box_corners_to_df(drifter_df: pd.DataFrame, lat_grid: np.ndarray, l
     return drifter_df
 
 def inverse_distance_interpolation(distances: np.ndarray, gridded_product_values: np.ndarray) -> float:
+    '''
+    Originality
+    -----------
+    completely original with generative AI assisted debugging (OpenAI ChatGPT).
+    '''
 
     if np.isclose(distances,0).any():
-        return gridded_product_values[np.where(np.isclose(distances,0))[0]][0]
+        zero_indices = np.where(np.isclose(distances, 0))[0]
+        if len(zero_indices) > 0:
+            return gridded_product_values[zero_indices[0]]
+        else:
+            raise ValueError("No distance close to zero found.")
     else:
         inverse_distances = np.array([1/val for val in distances])
 
