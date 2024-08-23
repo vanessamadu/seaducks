@@ -338,7 +338,7 @@ def add_grid_box_corners_to_df(drifter_df: pd.DataFrame, lat_grid: np.ndarray, l
 def inverse_distance_interpolation(distances: np.ndarray, gridded_product_values: np.ndarray) -> float:
 
     if np.isclose(distances,0).any():
-        return gridded_product_values[np.where(np.isclose(distances,0))][0]
+        return gridded_product_values[np.where(np.isclose(distances,0))[0]][0]
     else:
         inverse_distances = np.array([1/val for val in distances])
 
