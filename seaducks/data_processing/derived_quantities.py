@@ -20,9 +20,8 @@ def sst_gradient_pointwise(sst_array: xr.DataArray, coord_str: tuple, time_val: 
     # find sst values near coord
     lat_neighbours = [format_coordinates(float(lat_val_str)+ii*h) for ii in np.arange(-2,3,1)]
     lon_neighbours = [format_coordinates(float(lon_val_str)+jj*h) for jj in np.arange(-2,3,1)]
-
-    sst_x_neighbours = [float(sst_array.loc[time_val,lat_val, lon_val_str].values) for lat_val in lat_neighbours]
-    sst_y_neighbours = [float(sst_array.loc[time_val,lat_val_str, lon_val].values) if -83< float(lon_val)<-40 else np.nan for lon_val in lon_neighbours]
+    sst_x_neighbours = [float(sst_array.sel(time=time_val,latitude=lat_val, longitude=lon_val_str).values) if 0 < float(lat_val) < 60 else np.nan for lat_val in lat_neighbours]
+    sst_y_neighbours = [float(sst_array.sel(time=time_val,latitude=lat_val_str, longitude=lon_val).values) if -83< float(lon_val)<-40 else np.nan for lon_val in lon_neighbours]
     h = np.deg2rad(h)*earth_radius # convert to metres
     
     return (diff1d(sst_x_neighbours,h)[2],diff1d(sst_y_neighbours,h)[2]) # return centre values

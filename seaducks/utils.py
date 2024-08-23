@@ -124,6 +124,7 @@ def format_coordinates(coord:float) -> str:
 
     return ''.join(string_val)
 
+
 # ------------- temporal processing --------------- #
 
 def identify_time_series_segments(timevec:pd.Series,cut_off: int = 6) -> np.ndarray:
@@ -336,10 +337,12 @@ def add_grid_box_corners_to_df(drifter_df: pd.DataFrame, lat_grid: np.ndarray, l
 
 def inverse_distance_interpolation(distances: np.ndarray, gridded_product_values: np.ndarray) -> float:
 
-    # assuming no gridded product values that are nan
+    if np.isclose(distances,0).any():
+        return gridded_product_values[np.where(np.isclose(distances,0))][0]
+    else:
+        inverse_distances = np.array([1/val for val in distances])
 
-    inverse_distances = np.array([1/val for val in distances])
-    weighted_gridded_product_values = np.array([w*g for w,g in zip(inverse_distances,gridded_product_values)])
-
-    return np.sum(weighted_gridded_product_values)/np.sum(inverse_distances)
+        inverse_distances = np.array([w for w,g in zip(inverse_distances,gridded_product_values) if not np.isnan(w*g)])
+        weighted_gridded_product_values = np.array([w*g for w,g in zip(inverse_distances,gridded_product_values) if not np.isnan(w*g)])
+        return np.sum(weighted_gridded_product_values)/np.sum(inverse_distances)
 
