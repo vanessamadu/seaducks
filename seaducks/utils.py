@@ -3,7 +3,6 @@
 import logging
 import pandas as pd
 import numpy as np
-import xarray as xr
 
 ## spatial filtering
 import geopandas as gpd
