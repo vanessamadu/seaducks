@@ -4,22 +4,30 @@ import numpy as np
 import pandas as pd
 from scipy import signal
 
-from shapely import points,Polygon
-from seaducks.utils import iho_region_geometry
-
 # ------------- Temporal Filtering ------------ #
 def butterworth_filter(time_series: np.ndarray, latitude: np.ndarray, order: int=5) -> np.ndarray: 
     """
     Applies a 1D Butterworth filter to each column of the input time series data.
 
-    Parameters:
-    - time_series: A 2D numpy array of shape (N, P) where N is the number of time points and P is 
-        the number of variables.
-    - latitude: A 1D numpy array of latitude values corresponding to each time point.
-    - order: An integer specifying the order of the Butterworth filter. Default value is 5.
+    Parameters
+    ----------
+    time_series: np.ndarray
+        A 2D numpy array of shape (N, P) where N is the number of time points and P is the number of 
+        variables.
+    latitude: np.ndarray
+        A 1D numpy array of latitude values corresponding to each time point.
+    order: int
+        An integer specifying the order of the Butterworth filter. Default value is 5.
 
-    Returns:
-    - A 2D numpy array of the same shape as the input array, with filtered data.
+    Returns
+    -------
+    np.ndarray
+        A 2D numpy array of the same shape as the input array, with filtered data.
+
+    Originality
+    -----------
+    adaptation with minor refactoring from:
+        drop_and_filter.local_filter_nd
     """
     time_series_len,num_time_series = time_series.shape
 
@@ -63,17 +71,25 @@ def apply_butterworth_filter(df: pd.DataFrame) -> pd.DataFrame:
     creating copies if they do not already exist, and replacing the filtered values back
     into the DataFrame.
 
-    Parameters:
-    - df: A pandas DataFrame containing the data to be filtered. The DataFrame must contain
-          a 'lat' column and the columns specified in cols_to_filter.
+    Parameters
+    ----------
+    df: pd.DataFrame 
+        Input data to be filtered. The DataFrame must contain a 'lat' column.
 
-    Returns:
-    - A pandas DataFrame with the filtered data.
+    Returns
+    -------
+    pd.DataFrame
+        The filtered data.
+
+    Originality
+    -----------
+    as provided (up to renaming and documentation) from:
+        drop_and_filter.filter_df
     """
     lat = df['lat'].values
     time_dependent_vars = ['u','v','Wx','Wy','Tx','Ty']
 
-    # prevent changes to the data outside of this function
+    # preserve original data
     for var in time_dependent_vars:
         if var + '_filtered' not in df.columns:
             df[var + '_filtered'] = df[var].copy()
