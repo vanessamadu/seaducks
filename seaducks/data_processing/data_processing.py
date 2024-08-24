@@ -8,8 +8,46 @@ from seaducks.utils import discard_undersampled_regions
 from seaducks.config import config
 import time
     
-def data_filtering(region: Polygon,file_path: str, output_path: str, sample_proportion: float = 1,seed=config['random_state'],
+def data_filtering(region: Polygon,file_path: str, output_path: str, sample_proportion: float = 1,seed: int = config['random_state'],
                    lon_lim_W: float =-83, lon_lim_E: float = -40):
+    
+    '''
+    Cleans and filters the drifter dataset.
+
+    Parameters
+    ----------
+    region: shapely.Polygon
+        A convex hull geometry of the IHO ocean region of interest
+    file_path: str
+        Path to drifter data
+    output_path: str
+        Path to save filtered drifter data
+    sample_proportion: float
+        Proportion of drifter data to filter. Default value is 1.
+    seed: int
+        Seed for random sample. Default is config['random_state'] = 42.
+    lon_lim_W: float
+        Western most limit for drifter coordinates to be included.
+    lon_lim_E: float
+        Eastern most limit for drifter coordinates to be included.
+
+    Cleaning & Filtering
+    --------------------
+    1. Convert drifter velocity from cm/s to m/s
+    2. Replace missing values with NaN
+    3. Discard data that is not in `region` and that is not in the interval [lon_lim_W,lon_lim_E]
+    4. Discard undrogued drifters
+    5. Discard observations with lat/lon variance estimates >0.25 degrees
+    6. Discard data from undersampled regions
+    7. Split drifter observations into consectuive time segments for each drifter. Apply a fifth order
+        Butterworth filter to the segments
+    8. Downsample to daily resolution
+
+    Originality
+    -----------
+    adaptation with significant changes from:
+        drop_and_filter and make_datasets.filter_dpoints
+    '''
     
     overall_start_time = time.time()
 
@@ -40,7 +78,7 @@ def data_filtering(region: Polygon,file_path: str, output_path: str, sample_prop
 
         ## set missing values to NaN 
         ### Note: Missing wind stress, and wind speed/sst are set to -2147483647 and -32767 in the source data. respectively.
-        for var in ['Tx','Ty','Wy','Wx']:
+        for var in ['Tx','Ty','Wy','Wx','sst_gradient_x','sst_gradient_y']:
             missing_val_mask = df[var] < -900
             df.loc[missing_val_mask,var] = np.nan
         herald(f'missing values set to nan')
