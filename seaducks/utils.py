@@ -54,7 +54,7 @@ def assign_each_position_a_bin(df:pd.DataFrame, lat_grid:np.ndarray, lon_grid:np
 
     Originality
     -----------
-    adapatation with significant changes from:
+    adapatation with minor refactoring from:
         probdrift.spatialfns.lon_lat_cutter
     '''
 
@@ -435,7 +435,7 @@ def inverse_distance_interpolation(distances: np.ndarray, gridded_product_values
 
     Originality
     -----------
-    completely original with generative AI assisted debugging (OpenAI ChatGPT).
+    completely original
     '''
 
     if np.isclose(distances,0).any():
