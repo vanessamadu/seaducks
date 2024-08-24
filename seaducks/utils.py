@@ -238,8 +238,10 @@ def discard_undersampled_regions(df: pd.DataFrame, bin_size: float = 1, min_obse
         A DataFrame with undersampled regions discarded, containing only rows from bins 
         with at least the specified minimum number of observations.
 
-
-    
+    Originality
+    -----------
+    as provided (up to renaming & documentation) from:
+        probdrift.spatialfns.filter_count
     """
     # set up grid
 
@@ -382,8 +384,27 @@ def get_corners(lat_cut: tuple, lon_cut: tuple) -> np.ndarray:
         nan_tuple = (np.nan,np.nan)
         return np.array([nan_tuple for ii in range(4)])
 
-def add_grid_box_corners_to_df(drifter_df: pd.DataFrame, lat_grid: np.ndarray, lon_grid: np.ndarray, bin_size=0.05):
+def add_grid_box_corners_to_df(drifter_df: pd.DataFrame, lat_grid: np.ndarray, lon_grid: np.ndarray, bin_size: float = 0.05):
     '''
+    Adds the a column containing an array of corners identifying grid square that the drifter location is found in.
+
+    Parameters
+    ----------
+    df: pd.DataFrame
+        The input containing 'lat' and 'lon' columns.
+    lat_grid: np.ndarray
+        The latitudes of grid points.
+    lon_grid: np.ndarray
+        The longitude of grid points.
+    bin_size: float
+        The size of the grid boxes for longitude and latitude in degrees. The default is 0.05.
+
+    Returns
+    -------
+    pd.DataFrame
+        The dataframe df with a column containing an array of corners identifying grid square
+        that the drifter location is found in.
+
     Originality
     ----------
     completely original
