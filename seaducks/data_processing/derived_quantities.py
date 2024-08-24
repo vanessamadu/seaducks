@@ -5,14 +5,35 @@ import os
 import glob
 from datetime import datetime
 import numpy as np
-import pandas as pd
 
-# ----------------- SST gradient ------------------ #
-def sst_gradient_pointwise(sst_array: xr.DataArray, coord_str: tuple, time_val: float) -> tuple:
+# ----------------- SST gradient (ad hoc) ------------------ #
+def sst_gradient_pointwise(sst_array: xr.DataArray, coord_str: str, time_val: np.datetime64) -> tuple:
+    '''
+    Calculates the Sea Surface Temperature (SST) spatial gradient in the x and y directions at a
+    point coord_str.
+
+    Parameters
+    ----------
+    sst_array: xr.DataArray
+        SST data
+    coord_str: str
+        Coordinate (array-like) at which to calculate the SST gradient as a string e.g., "(50,-80)"
+    time_val: np.datetime64
+        Datetime at which the sst_gradient is being calculated
+
+    Returns
+    -------
+    tuple
+        SST gradient in the x and y directions
+
+    Originality
+    -----------
+    completely original
+    '''
     
     # metadata
-    h = 0.05                       # degrees
-    earth_radius = 6371
+    h = 0.05 # degrees
+    earth_radius = 6371 # km
     
 
     lat_val_str,lon_val_str = coord_str
@@ -22,7 +43,7 @@ def sst_gradient_pointwise(sst_array: xr.DataArray, coord_str: tuple, time_val: 
     lon_neighbours = [format_coordinates(float(lon_val_str)+jj*h) for jj in np.arange(-2,3,1)]
     sst_x_neighbours = [float(sst_array.sel(time=time_val,latitude=lat_val, longitude=lon_val_str).values) if 0 < float(lat_val) < 60 else np.nan for lat_val in lat_neighbours]
     sst_y_neighbours = [float(sst_array.sel(time=time_val,latitude=lat_val_str, longitude=lon_val).values) if -83< float(lon_val)<-40 else np.nan for lon_val in lon_neighbours]
-    h = np.deg2rad(h)*earth_radius # convert to metres
+    h = np.deg2rad(h)*earth_radius # convert to km
     
     return (diff1d(sst_x_neighbours,h)[2],diff1d(sst_y_neighbours,h)[2]) # return centre values
 
@@ -50,6 +71,7 @@ def interpolate_sst_gradient(drifter_lat_str: float, drifter_lon_str, time_val:f
 
     return inverse_distance_interpolation(haversine_distances,sst_x_gradients), inverse_distance_interpolation(haversine_distances,sst_y_gradients)
 
+# ----------------- SST gradient product ------------------- #
 
 def sst_gradient(SST_array: xr.DataArray) -> tuple:
     
@@ -143,6 +165,5 @@ def sst_gradient_to_da(input_directory,file_pattern,output_directory,output_file
 
     herald(f"data successfully written to {file_path}")
 
-# ---------------- interpolation ------------------- #
 
 
