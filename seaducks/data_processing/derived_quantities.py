@@ -47,22 +47,41 @@ def sst_gradient_pointwise(sst_array: xr.DataArray, coord_str: str, time_val: np
     
     return (diff1d(sst_x_neighbours,h)[2],diff1d(sst_y_neighbours,h)[2]) # return centre values
 
-def interpolate_sst_gradient(drifter_lat_str: float, drifter_lon_str, time_val:float, sst_array:xr.DataArray,corners:np.ndarray):
+def interpolate_sst_gradient(drifter_lat: float, drifter_lon: float, time_val:np.datetime64, sst_array:xr.DataArray,corners:np.ndarray) -> tuple:
+    '''
+    Calculates the inverse distance weighted interpolated value of SST gradient at the drifter position.
 
-    # function to be used as an apply to a dataframe
-    # calculate haversines
-    # calculatre x grad
-    # calculate y grad
-    # interpolate and return one value
+    Parameters
+    ----------
+    drifter_lat: float 
+        Latitude of drifter location being interpolated to.
+    drifter_lon: float
+        Longitude of drifter location being interpolated to.
+    time_val: np.datetime64
+        Datetime at which the sst_gradient is being calculated
+    sst_array: xr.DataArray
+        SST data
+    corners: np.ndarray
+        An array of corners (tuples) identifying grid square that the drifter location is found in.
+    
+    Returns
+    -------
+    tuple
+        inverse distance weighted interpolated value of SST gradient in the x and y directions at the 
+        drifter position.
+
+    Originality
+    -------
+    completely original
+    '''
+
     sst_x_gradients = []
     sst_y_gradients = []
     haversine_distances = []
 
-    sst_array = sst_array[0] # at the moment is a list containing the dataarray
-
     for lat_val,lon_val in corners:
 
-        hav_distance = haversine_distance(float(drifter_lat_str),float(drifter_lon_str),lat_val,lon_val)
+        hav_distance = haversine_distance(drifter_lat,drifter_lon,lat_val,lon_val)
         haversine_distances.append(hav_distance)
 
         sst_x_derivative, sst_y_derivative = sst_gradient_pointwise(sst_array, (format_coordinates(lat_val),format_coordinates(lon_val)), time_val)
