@@ -397,6 +397,21 @@ def add_grid_box_corners_to_df(drifter_df: pd.DataFrame, lat_grid: np.ndarray, l
 
 def inverse_distance_interpolation(distances: np.ndarray, gridded_product_values: np.ndarray) -> float:
     '''
+    Returns the inverse distance weighted average of `gridded_product_values`.
+
+    Parameters
+    ----------
+    distances: np.ndarray
+        The distances between the coordinates where the gridded product is reported and the point being 
+        interpolated to.
+    gridded_product_values: np.ndarray
+        Gridded product values to be interpolated.
+
+    Returns
+    -------
+    float
+        inverse distance weighted average of the gridded product values.
+
     Originality
     -----------
     completely original with generative AI assisted debugging (OpenAI ChatGPT).
