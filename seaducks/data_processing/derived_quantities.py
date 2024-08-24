@@ -1,5 +1,5 @@
 # seaducks/data_processing/derived_quantities.py
-from seaducks.utils import diff1d,herald,haversine_distance,inverse_distance_interpolation,format_coordinates
+from seaducks import diff1d,herald,haversine_distance,inverse_distance_interpolation,format_coordinates
 import xarray as xr
 import os
 import glob

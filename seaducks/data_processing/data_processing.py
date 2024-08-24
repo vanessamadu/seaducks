@@ -3,8 +3,8 @@ import pandas as pd
 import numpy as np
 from shapely import Polygon,points
 from seaducks.data_processing.filtering import apply_butterworth_filter
-from seaducks.utils import downsample_to_daily,herald,discard_undrogued_drifters,identify_time_series_segments
-from seaducks.utils import discard_undersampled_regions
+from seaducks import downsample_to_daily,herald,discard_undrogued_drifters,identify_time_series_segments
+from seaducks import discard_undersampled_regions
 from seaducks.config import config
 import time
     

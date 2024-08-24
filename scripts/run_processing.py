@@ -4,7 +4,7 @@ import logging
 import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from seaducks.data_processing.data_processing import data_filtering
-from seaducks.utils import iho_region_geometry, herald
+from seaducks import iho_region_geometry, herald
 
 # Configure logging
 logging.basicConfig(filename=os.path.join('logs', 'data_processing.log'), 
@@ -16,7 +16,7 @@ def main():
     iho_region = 'North Atlantic Ocean'
     region = iho_region_geometry(iho_file_path,iho_region)
     herald(f'region: {iho_region} created successfully')
-    file_path = os.path.join('data', 'corrected_velocity_drifter_full.h5')
+    file_path = os.path.join('data', 'corrected_velocity_drifter_with_sst_gradient.h5')
     output_path = os.path.join('data', 'filtered_nao_drifter_full.h5')
     
     data_filtering(region, file_path, output_path)
