@@ -4,7 +4,7 @@ import xarray as xr
 import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from seaducks.data_processing.derived_quantities import sst_gradient_to_da
-from seaducks.utils import herald
+from seaducks import herald
 import logging
 
 # Configure logging

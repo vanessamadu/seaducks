@@ -7,7 +7,7 @@ import numpy as np
 import logging
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from seaducks.data_processing.derived_quantities import interpolate_sst_gradient
-from seaducks.utils import add_grid_box_corners_to_df,format_coordinates
+from seaducks import add_grid_box_corners_to_df,format_coordinates
 
 # Configure logging
 logging.basicConfig(filename=os.path.join('logs', 'sst_interpolation.log'), 
