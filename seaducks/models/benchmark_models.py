@@ -1,4 +1,4 @@
-from drifter_velocity_models.model_class import Model
+from models import Model
 # import packages
 import numpy as np
 
