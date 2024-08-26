@@ -1,5 +1,5 @@
 # seaducks/data_processing/derived_quantities.py
-from seaducks import diff1d,herald,haversine_distance,inverse_distance_interpolation,format_coordinates
+from seaducks import diff1d,herald,haversine_distance,inverse_distance_interpolation,format_coordinates,haversine
 import xarray as xr
 import os
 import glob
@@ -98,8 +98,6 @@ def sst_gradient(SST_array: xr.DataArray) -> tuple:
     
     # metadata
     h = 0.05                       # degrees
-    earth_radius = 6371            # km
-    h = np.deg2rad(h)*earth_radius # convert to km
 
     lat = SST_array['latitude']
     lon = SST_array['longitude']
@@ -112,14 +110,14 @@ def sst_gradient(SST_array: xr.DataArray) -> tuple:
     for tt, t_val in enumerate(t_array):
         for ii, lat_val in enumerate(lat):
             sst_at_lat = SST_array.sel(latitude=lat_val, time=t_val)
-            SST_grad_array_x.loc[dict(time=t_val, latitude=lat_val)] = diff1d(sst_at_lat.values, h)
+            SST_grad_array_x.loc[dict(time=t_val, latitude=lat_val)] = diff1d(sst_at_lat.values, haversine(h))
             # print and log progress
             if ii % 50 == 0:
                 herald(f"Latitude progress: {ii * 100 / len(lat):.2f}% complete")
 
         for jj, lon_val in enumerate(lon):
             sst_at_lon = SST_array.sel(longitude=lon_val, time=t_val)
-            SST_grad_array_y.loc[dict(time=t_val, longitude=lon_val)] = diff1d(sst_at_lon.values, h)
+            SST_grad_array_y.loc[dict(time=t_val, longitude=lon_val)] = diff1d(sst_at_lon.values, haversine(h))
             # print and log progress
             if jj % 50 == 0:
                 print(f"Longitude progress: {jj * 100 / len(lon):.2f}% complete")
