@@ -14,7 +14,7 @@ class RMSE(Error):
         return self._observations
     
     @staticmethod
-    def rmse(residuals_arr):
+    def rmse(residuals_arr: np.ndarray) -> float:
         return np.sqrt(np.mean(np.square(residuals_arr)))  
 
     ## Error-inherited properties

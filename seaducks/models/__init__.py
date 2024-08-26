@@ -4,7 +4,7 @@
 ##### import packages #####
 import numpy as np
 import pandas as pd
-from abc import ABC, abstractproperty
+from abc import ABC, abstractmethod
 
 class Model(ABC):
     '''
@@ -15,7 +15,7 @@ class Model(ABC):
         self._data = data
 
     @staticmethod
-    def check_coordinates(lon:float,lat:float):
+    def check_coordinates(lon:float, lat:float):
         limits = {"lat":90.,"lon":180.}
         values = {"lat":lat,"lon":lon}
 
@@ -36,6 +36,6 @@ class Model(ABC):
     def observations(self):
         return np.array(self.data[["u","v"]])
     
-    @abstractproperty
+    @abstractmethod
     def predictions(self):
         pass

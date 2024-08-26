@@ -1,23 +1,23 @@
 # general error class
-from abc import ABC,abstractproperty
+from abc import ABC,abstractmethod
 import numpy as np
 import pandas as pd
 
 class Error(ABC):
 
-    @abstractproperty
+    @abstractmethod
     def predictions(self):
         pass
 
-    @abstractproperty
+    @abstractmethod
     def observations(self):
         pass
     
-    @abstractproperty
+    @abstractmethod
     def error_type(self):
         pass
 
-    @abstractproperty
+    @abstractmethod
     def error(self):
         pass
     

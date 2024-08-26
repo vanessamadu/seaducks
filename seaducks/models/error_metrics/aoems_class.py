@@ -5,9 +5,9 @@ import pandas as pd
 from numpy import linalg
 
 class AOEMs:
-    def __init__(self,predictions,observations):
-        self._predictions = np.array(predictions)
-        self._observations = np.array(observations)
+    def __init__(self,predictions: np.ndarray,observations:np.ndarray):
+        self._predictions = predictions
+        self._observations = observations
 
     @property
     def predictions(self):
@@ -18,11 +18,11 @@ class AOEMs:
         return self._observations
     
     @staticmethod
-    def unit_vector(vector):
+    def unit_vector(vector:np.ndarray) -> np.ndarray:
         return np.divide(vector,linalg.norm(vector, axis =1).reshape(-1,1))
     
     @staticmethod
-    def unit_complex_conversion(vector):
+    def unit_complex_conversion(vector:np.ndarray) -> complex:
         return __class__.unit_vector(vector).view(complex).squeeze()
     
     # angle offset error metrics
@@ -94,6 +94,6 @@ class AOEMs:
                 uncert = np.rad2deg(err_metrics[ii].uncertainty)
 
             err_summary[f"{err_metric_names[ii]} Error: {err_metrics[ii].error_type}"]=f"{err} degrees"
-            err_summary[f"{err_metric_names[ii]} Uncertainty: {err_metrics[ii].uncertainty_type}"] = f"{uncert} degrees"
+            err_summary[f"{err_metric_names[ii]} Standard Error: {err_metrics[ii].uncertainty_type}"] = f"{uncert} degrees"
         err_summary["Proportion of Anticlockwise/Clockwise/No/Undefined Angle Offset"]=f"{self.clockwise_anticlockwise_no_undefined_proportions*100}%"
         return pd.Series(err_summary)

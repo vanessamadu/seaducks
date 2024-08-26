@@ -33,12 +33,12 @@ class MAAO(Error):
         return np.nonzero(self.residuals != None)[0]
 
     @staticmethod
-    def maao(defined_residuals):
+    def maao(defined_residuals: np.ndarray):
         # mean absolute angle offset over all residuals that are defined
         if defined_residuals.all() == None:
             return 'undefined'
         elif len(defined_residuals) == 0:
-            return float('NaN')
+            return np.nan
         return np.mean(defined_residuals)
 
     ## Error-inherited properties
@@ -51,7 +51,7 @@ class MAAO(Error):
         return __class__.maao(self.residuals[self.defined_residual_indices])
     
     @property
-    def uncertainty(self):
+    def standard_error(self):
         if self.residuals[self.defined_residual_indices].all()==None:
             return 'undefined'
         elif len(self.residuals[self.defined_residual_indices]) == 0:

@@ -3,9 +3,9 @@ import numpy as np
 from numpy import linalg
 
 class MAE(Error):
-    def __init__(self,predictions,observations):
-        self._predictions = linalg.norm(np.array(predictions),axis=1)
-        self._observations = linalg.norm(np.array(observations),axis=1)
+    def __init__(self,predictions:np.ndarray,observations:np.ndarray):
+        self._predictions = linalg.norm(predictions,axis=1)
+        self._observations = linalg.norm(observations,axis=1)
     
     @property
     def predictions(self):
@@ -16,9 +16,9 @@ class MAE(Error):
         return self._observations
     
     @staticmethod
-    def mae(residuals_arr):
+    def mae(residuals_arr:np.ndarray) -> float:
         if len(residuals_arr) == 0:
-            return float('NaN')
+            return np.nan
         return np.mean(np.abs(residuals_arr))
     
     ## Error-inherited properties

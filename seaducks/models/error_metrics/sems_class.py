@@ -4,9 +4,9 @@ import numpy as np
 import pandas as pd
 
 class SEMs:
-    def __init__(self,predictions,observations):
-        self._predictions = np.array(predictions)
-        self._observations = np.array(observations)
+    def __init__(self, predictions:np.ndarray, observations:np.ndarray):
+        self._predictions = predictions
+        self._observations = observations
 
     #class vairable: error tolerance
     tol = 10e-6
@@ -63,7 +63,7 @@ class SEMs:
         err_summary = {}
         for ii in range(len(err_metrics)):
             err_summary[f"{err_metric_names[ii]} Error: {err_metrics[ii].error_type}"]=err_metrics[ii].error
-            err_summary[f"{err_metric_names[ii]} Uncertainty: {err_metrics[ii].uncertainty_type}"] = err_metrics[ii].uncertainty
+            err_summary[f"{err_metric_names[ii]} Standard Error: {err_metrics[ii].uncertainty_type}"] = err_metrics[ii].uncertainty
         err_summary["Proportion of Over/Under/Correct Estimates of Speed"]=f"{self.over_under_correct_proportions*100}%"
         return pd.Series(err_summary)
 
