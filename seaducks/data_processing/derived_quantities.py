@@ -43,8 +43,12 @@ def sst_gradient_pointwise(sst_array: xr.DataArray, coord_str: str, time_val: np
     lon_neighbours = [format_coordinates(float(lon_val_str)+jj*grid_space) for jj in np.arange(-1,2,1)]
     sst_x_neighbours = [float(sst_array.sel(time=time_val,latitude=lat_val_str, longitude=lon_val).values) if -83< float(lon_val)<-40 else np.nan for lon_val in lon_neighbours]
     sst_y_neighbours = [float(sst_array.sel(time=time_val,latitude=lat_val, longitude=lon_val_str).values)if 0 < float(lat_val) < 60 else np.nan for lat_val in lat_neighbours]
-    h_lat = grid_space*earth_radius # convert to km
-    h_lon = grid_space*earth_radius*np.cos(np.deg2rad(float(lat_val_str))) # convert to km
+    
+    #convert result to K/km
+    h_lat = haversine_distance(float(lat_neighbours[0]),float(lon_val_str),
+                               float(lat_neighbours[1]),float(lon_val_str))
+    h_lon = haversine_distance(float(lat_val_str),float(lon_neighbours[0]),
+                               float(lat_val_str),float(lon_neighbours[1]))
 
     return (diff1d(sst_x_neighbours,h_lon)[2],diff1d(sst_y_neighbours,h_lat)[2]) # return centre values
 
