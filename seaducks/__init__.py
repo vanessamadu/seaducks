@@ -311,7 +311,7 @@ def diff1d(row:np.ndarray,h:float) -> np.ndarray:
     #decide which derivative value is used
     dx = np.where(np.isnan(dx_central),dx_left,dx_central)
     dx = np.where(np.isnan(dx),dx_right,dx)
-
+    
     return(dx)
 
 def stencil_mask(row: np.ndarray,kernel_len:int) -> np.ndarray:

@@ -7,7 +7,7 @@ from datetime import datetime
 import numpy as np
 
 # ----------------- SST gradient (ad hoc) ------------------ #
-def sst_gradient_pointwise(sst_array: xr.DataArray, coord_str: str, time_val: np.datetime64) -> tuple:
+def sst_gradient_pointwise(sst_array: xr.DataArray, coord_str: tuple, time_val: np.datetime64) -> tuple:
     '''
     Calculates the Sea Surface Temperature (SST) spatial gradient in the x and y directions at a
     point coord_str.
@@ -16,8 +16,8 @@ def sst_gradient_pointwise(sst_array: xr.DataArray, coord_str: str, time_val: np
     ----------
     sst_array: xr.DataArray
         SST data
-    coord_str: str
-        Coordinate (array-like) at which to calculate the SST gradient as a string e.g., "(50,-80)"
+    coord_str: tuple
+        Coordinate at which to calculate the SST gradient with each value as a string e.g., ("50","-80")
     time_val: np.datetime64
         Datetime at which the sst_gradient is being calculated
 
@@ -33,9 +33,7 @@ def sst_gradient_pointwise(sst_array: xr.DataArray, coord_str: str, time_val: np
     
     # metadata
     grid_space = 0.05 # degrees
-    earth_radius = 6371 # km
     
-
     lat_val_str,lon_val_str = coord_str
 
     # find sst values near coord
@@ -43,14 +41,13 @@ def sst_gradient_pointwise(sst_array: xr.DataArray, coord_str: str, time_val: np
     lon_neighbours = [format_coordinates(float(lon_val_str)+jj*grid_space) for jj in np.arange(-1,2,1)]
     sst_x_neighbours = [float(sst_array.sel(time=time_val,latitude=lat_val_str, longitude=lon_val).values) if -83< float(lon_val)<-40 else np.nan for lon_val in lon_neighbours]
     sst_y_neighbours = [float(sst_array.sel(time=time_val,latitude=lat_val, longitude=lon_val_str).values)if 0 < float(lat_val) < 60 else np.nan for lat_val in lat_neighbours]
-    
     #convert result to K/km
     h_lat = haversine_distance(float(lat_neighbours[0]),float(lon_val_str),
                                float(lat_neighbours[1]),float(lon_val_str))
     h_lon = haversine_distance(float(lat_val_str),float(lon_neighbours[0]),
                                float(lat_val_str),float(lon_neighbours[1]))
 
-    return (diff1d(sst_x_neighbours,h_lon)[2],diff1d(sst_y_neighbours,h_lat)[2]) # return centre values
+    return (diff1d(sst_x_neighbours,h_lon)[1],diff1d(sst_y_neighbours,h_lat)[1]) # return centre values
 
 def interpolate_sst_gradient(drifter_lat: float, drifter_lon: float, time_val:np.datetime64, sst_array:xr.DataArray,corners:np.ndarray) -> tuple:
     '''
