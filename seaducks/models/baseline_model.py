@@ -6,7 +6,7 @@ class BathtubModel(Model):
     '''benchmark model - predicts all velocities to be zero at all positions and for all times.'''
     
     @staticmethod
-    def bathtub(lon,lat):
+    def bathtub(lon:float,lat:float) -> np.ndarray:
         __class__.check_coordinates(lon,lat)
         return np.zeros(2)
     

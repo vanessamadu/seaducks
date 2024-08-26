@@ -1,17 +1,18 @@
 from models import Model
 #import packages
 import numpy as np
+import pandas as pd
 from numpy import linalg
 
 class LinearRegressionModel(Model):
     
-    def __init__(self,data,covariate_labels):
+    def __init__(self,data: pd.DataFrame,covariate_labels:list):
         super().__init__(data)
         self.covariate_labels = covariate_labels
         self.param_estimate = None
 
     @staticmethod
-    def lr(X,beta):
+    def lr(X:np.ndarray,beta:np.ndarray) -> np.ndarray:
         '''returns a prediction for the linear regression model'''
         try:
             pred = np.matmul(X,beta)

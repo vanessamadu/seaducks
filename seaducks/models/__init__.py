@@ -3,6 +3,7 @@
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%% SET UP %%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
 ##### import packages #####
 import numpy as np
+import pandas as pd
 from abc import ABC, abstractproperty
 
 class Model(ABC):
@@ -10,7 +11,7 @@ class Model(ABC):
     this class will be the parent class of all ocean models that we will be using
     and it will define attributes and methods common to all specific model classes.
     '''
-    def __init__(self,data):
+    def __init__(self,data: pd.DataFrame):
         self._data = data
 
     @staticmethod
