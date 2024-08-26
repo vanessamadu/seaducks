@@ -51,7 +51,7 @@ def main():
     
     condition = drifter_df['time'].dt.time == pd.Timestamp('00:00:00').time()
 
-    sst_gradient = drifter_df[condition].apply(lambda row: interpolate_sst_gradient(format_coordinates(row['lat']),format_coordinates(row['lon']),row['time'],sst_array,row['corners']),
+    sst_gradient = drifter_df[condition].apply(lambda row: interpolate_sst_gradient(row['lat'],row['lon'],row['time'],sst_array,row['corners']),
     axis=1,
     result_type='expand')
 
