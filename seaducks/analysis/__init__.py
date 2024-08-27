@@ -23,11 +23,11 @@ def q_q_plot_normal(data: np.ndarray):
     # normal distribution
     normal_dist = stats.norm(loc = data_mean, scale = data_std)
     x = np.linspace(normal_dist.ppf(.001),normal_dist.ppf(.999))
-    y=normal_dist.pdf(x,y)
+    normal_pdf=normal_dist.pdf(x)
 
     # quantiles 
     quantile_probabilities = np.linspace(0,1,50)
-    normal_quantiles = np.quantile(y,quantile_probabilities)
+    normal_quantiles = np.quantile(normal_pdf,quantile_probabilities)
     data_quantiles = np.quantile(data,quantile_probabilities)
 
     plt.plot(data_quantiles,normal_quantiles)
