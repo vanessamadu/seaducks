@@ -4,7 +4,7 @@ import numpy as np
 
 class BathtubModel(Model):
     '''
-    A class for a bathtub model predicting all velocities to be zero at all positions and 
+    A class implementing a bathtub model predicting all velocities to be zero at all positions and 
     for all times. 
 
     Attributes
