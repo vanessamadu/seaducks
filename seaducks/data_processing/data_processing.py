@@ -174,6 +174,16 @@ def data_filtering(region: Polygon,file_path: str, output_path: str, sample_prop
         old_total = new_total
         # ----------------------------------- #
 
+        # 6) remove NaN values from SST gradient
+        df = df.query('sst_x_derivative == sst_x_derivative and sst_y_derivative == sst_y_derivative').copy()
+
+        # ----------------------------------- #
+        #       Discarded Observations
+        new_total = df.shape[0]
+        herald(f'Number of observations with missing SST gradient: {old_total-new_total}')
+        old_total = new_total
+        # ----------------------------------- #
+
         # reset indices
         df = df.drop(['segment_id','id'],axis=1).reset_index().copy()
 
