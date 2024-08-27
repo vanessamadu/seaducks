@@ -3,10 +3,34 @@ from models import Model
 import numpy as np
 
 class BathtubModel(Model):
-    '''benchmark model - predicts all velocities to be zero at all positions and for all times.'''
+    '''
+    A class for a bathtub model predicting all velocities to be zero at all positions and 
+    for all times. 
+
+    Attributes
+    ----------
+    data: pd.DataFrame
+        (inherited) A dataset containing drifter data and satellite (derived) data interpolated to drifter
+        positions.
+    '''
     
     @staticmethod
     def bathtub(lon:float,lat:float) -> np.ndarray:
+        '''
+        Returns zero for all latitudes and longitudes.
+
+        Parameters
+        ----------
+        lon: float
+            longitude 
+        lat: float
+            latitude
+
+        Returns
+        -------
+        np.ndarray
+            A two-array of zeros.
+        '''
         __class__.check_coordinates(lon,lat)
         return np.zeros(2)
     
