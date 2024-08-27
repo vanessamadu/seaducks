@@ -16,8 +16,8 @@ def main():
     iho_region = 'North Atlantic Ocean'
     region = iho_region_geometry(iho_file_path,iho_region)
     herald(f'region: {iho_region} created successfully')
-    file_path = os.path.join('data', 'corrected_velocity_drifter_with_sst_gradient.h5')
-    output_path = os.path.join('data', 'filtered_nao_drifter_full.h5')
+    file_path = os.path.join('data', 'corrected_velocity_drifter_set_sst_gradient.h5')
+    output_path = os.path.join('data', 'filtered_nao_drifters_with_sst_gradient.h5')
     
     data_filtering(region, file_path, output_path)
 

@@ -78,7 +78,7 @@ def data_filtering(region: Polygon,file_path: str, output_path: str, sample_prop
 
         ## set missing values to NaN 
         ### Note: Missing wind stress, and wind speed/sst are set to -2147483647 and -32767 in the source data. respectively.
-        for var in ['Tx','Ty','Wy','Wx','sst_gradient_x','sst_gradient_y']:
+        for var in ['Tx','Ty','Wy','Wx','sst_x_derivative','sst_y_derivative']:
             missing_val_mask = df[var] < -900
             df.loc[missing_val_mask,var] = np.nan
         herald(f'missing values set to nan')
