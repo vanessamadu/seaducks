@@ -88,15 +88,14 @@ def apply_butterworth_filter(df: pd.DataFrame) -> pd.DataFrame:
     """
     lat = df['lat'].values
     time_dependent_vars = ['u','v','Wx','Wy','Tx','Ty']
-
     # preserve original data
     for var in time_dependent_vars:
-        if var + '_filtered' not in df.columns:
-            df[var + '_filtered'] = df[var].copy()
-    vars_to_filter = [var + '_filtered' for var in time_dependent_vars]
+        if var + '_raw' not in df.columns:
+            df[var + '_raw'] = df[var].copy()
     
-    time_series = df[vars_to_filter].values
+    time_series = df[time_dependent_vars].values
     filtered_vars = butterworth_filter(time_series,lat)
-    df[vars_to_filter] = filtered_vars
+    df[time_dependent_vars] = filtered_vars
+    
     return df
 
