@@ -1,6 +1,7 @@
 # seaducks/data_processing/data_processing.py
 import pandas as pd
 import numpy as np
+from datetime import datetime
 from shapely import Polygon,points
 from seaducks.data_processing.filtering import apply_butterworth_filter
 from seaducks import downsample_to_daily,herald,discard_undrogued_drifters,identify_time_series_segments
@@ -83,6 +84,11 @@ def data_filtering(region: Polygon,file_path: str, output_path: str, sample_prop
             df.loc[missing_val_mask,var] = np.nan
         herald(f'missing values set to nan')
 
+        ## Add time of year to the data
+
+        df['day_of_year'] = df['time'].apply(lambda t : t.timetuple().tm_yday)
+        herald('day of year added successfully')
+        
         # 1) discard data that is not in the North Atlantic and in the region [83W, 40W]
         # remove data outside of the interval [-83,-40]
         df = df.query('@lon_lim_W <= lon <= @lon_lim_E').copy()
@@ -155,7 +161,6 @@ def data_filtering(region: Polygon,file_path: str, output_path: str, sample_prop
         # regroup and apply Butterworth filter
         df = df.groupby(['id', 'segment_id'])[variables].apply(apply_butterworth_filter).copy()
         herald('applied Butterworth filter to each segment')
-
         # ----------------------------------- #
         #       Discarded Observations
         new_total = df.shape[0]
@@ -174,15 +179,18 @@ def data_filtering(region: Polygon,file_path: str, output_path: str, sample_prop
         old_total = new_total
         # ----------------------------------- #
 
-        # 6) remove NaN values from SST gradient
-        df = df.query('sst_x_derivative == sst_x_derivative and sst_y_derivative == sst_y_derivative').copy()
+        ## remove infinite values
+        df.replace([np.inf, -np.inf], np.nan, inplace=True)
+        # Drop rows with NaN
+        df.dropna(inplace=True)
 
         # ----------------------------------- #
         #       Discarded Observations
         new_total = df.shape[0]
-        herald(f'Number of observations with missing SST gradient: {old_total-new_total}')
+        herald(f'Observations that have infinite or missing values: {old_total-new_total}')
         old_total = new_total
         # ----------------------------------- #
+
 
         # reset indices
         df = df.drop(['segment_id','id'],axis=1).reset_index().copy()
