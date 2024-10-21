@@ -78,15 +78,3 @@ class Model(ABC):
         '''
         return np.array(self.data[["u","v"]])
     
-    @abstractmethod
-    def predictions(self):
-        '''
-        Gets predictions made by the model for all longitudes and latitudes in the data.
-
-        Returns
-        -------
-        np.ndarray:
-            An array of predictions under the model
-        
-        '''
-        pass

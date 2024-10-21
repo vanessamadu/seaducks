@@ -1,4 +1,4 @@
-from models import Model
+from seaducks.models import Model
 #import packages
 import numpy as np
 import pandas as pd
@@ -97,12 +97,5 @@ class LinearRegressionModel(Model):
                                        np.array(self.data.loc[:,["u","v"]]),
                                        rcond=None)
         self.param_estimate= lstsq_estimate[0]
-
-    @property
-    def predictions(self):
-        if self.param_estimate is None:
-            self.calculate_param_estimate()
-        pred = __class__.lr(self.design,self.param_estimate)
-        return pred
 
     

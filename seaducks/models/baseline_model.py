@@ -1,4 +1,4 @@
-from models import Model
+from seaducks.models import Model
 # import packages
 import numpy as np
 
