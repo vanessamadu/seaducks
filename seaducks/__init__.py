@@ -85,7 +85,7 @@ def haversine(theta:float) -> float:
 
 def haversine_distance(lat1:float, lon1:float, lat2:float, lon2:float) -> float:
     '''
-    Calulcates the haversine distance (distance on a great circle) between two points on the Earth.
+    Calculates the haversine distance (distance on a great circle) between two points on the Earth.
 
     Parameters
     ----------
