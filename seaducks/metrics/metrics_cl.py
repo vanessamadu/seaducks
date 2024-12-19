@@ -12,3 +12,7 @@ class Metric():
         self.multioutput = None
         self.string_name = None
         self.sample_weight = None
+
+    def error(self):
+        pass
+    
