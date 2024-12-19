@@ -4,7 +4,7 @@
 import sklearn.metrics as skm
 from typing import Literal
 from pyvista import ArrayLike, MatrixLike
-from metrics_cl import Metric
+from seaducks.metrics._metrics_cl import Metric
 
 class RMSE(Metric):
 
