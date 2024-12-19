@@ -17,6 +17,15 @@ class RMSE(Metric):
         self.multioutput = multioutput
         self.string_name = 'rmse'
     
-    def error(self):
+    def rmse(self):
         return skm.root_mean_squared_error(self.y_true, self.y_pred, 
                                            sample_weight=self.sample_weight, multioutput=self.multioutput)
+
+class RMSLE(Metric):
+    pass
+
+class MAE(Metric):
+    pass
+
+class MAAO(Metric):
+    pass
