@@ -1,11 +1,11 @@
 ''' Class for all regression and fit score metrics'''
 # Author: Vanessa Madu
 
-import numpy as np
+from pyvista import ArrayLike, MatrixLike
 
 class Metric():
     
-    def __init__(self, y_true: np.ndarray, y_pred: np.ndarray):
+    def __init__(self, y_true: MatrixLike | ArrayLike, y_pred: MatrixLike | ArrayLike):
         self.y_true = y_true
         self.y_pred = y_pred
 
