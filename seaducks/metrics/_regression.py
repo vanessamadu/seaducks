@@ -8,6 +8,7 @@ from seaducks.metrics._metrics_cl import Metric
 from typing import Literal
 from pyvista import ArrayLike, MatrixLike
 from numpy import ndarray
+import numpy as np
 
 class MAE(Metric):
     
@@ -42,6 +43,19 @@ class MAAO(Metric):
 
     def maao(self) -> (float | ndarray):
         pass
+
+    @staticmethod
+    def unit_vector(vec: ArrayLike | MatrixLike) -> ndarray:
+
+        if len(np.shape(vec)) == 1:
+            vec = vec.reshape([1,-1])
+
+        norms = np.linalg.norm(vec, axis=1).reshape([-1,1])
+        return np.divide(vec,norms)
+    
+    def angle_between(self) -> (float | ndarray):
+        unit_y_true = self.unit_vector(self.y_true)
+
 
 class RMSE(Metric):
 
