@@ -1,1 +1,2 @@
-# seaducks/metrics/fit_scores.py
+'''Goodness-of-fit metrics'''
+# Author: Vanessa Madu
