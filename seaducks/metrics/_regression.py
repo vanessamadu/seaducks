@@ -58,8 +58,8 @@ class MAAO(Metric):
         unit_y_true = self.unit_vector(self.y_true)
         unit_y_pred = self.unit_vector(self.y_pred)
 
-        return np.arccos(np.clip(np.sum(np.multiply(unit_y_pred,unit_y_true),axis=1)
-                                 ,a_max=1,a_min=-1))
+        return np.arccos(np.clip(np.sum(np.multiply(unit_y_pred,unit_y_true),axis=1),
+                                 a_max=1,a_min=-1))
 
 
 class RMSE(Metric):
