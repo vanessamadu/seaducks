@@ -12,3 +12,5 @@ class Metric():
         self.multioutput = None
         self.string_name = None
         self.sample_weight = None
+        self.valid_loss = None
+        self.valid_risk = None
