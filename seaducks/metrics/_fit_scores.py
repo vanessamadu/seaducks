@@ -2,6 +2,7 @@
 # Author: Vanessa Madu
 
 import sklearn.metrics as skm
+import scipy.stats as stats
 from seaducks.metrics._metrics_cl import Metric
 
 # typing
@@ -25,5 +26,5 @@ class R2_score(Metric):
         return skm.r2_score(self.y_true, self.y_pred, 
                             sample_weight=self.sample_weight, multioutput=self.multioutput, force_finite=self.force_finite)
     
-class Chi_2(Metric):
+class Chi2_statistic(Metric):
     pass
