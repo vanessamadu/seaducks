@@ -42,7 +42,7 @@ class MAAO(Metric):
         self.valid_risk = None
 
     def maao(self) -> (float | ndarray):
-        pass
+        return np.mean(self.angle_offset())
 
     @staticmethod
     def unit_vector(vec: ArrayLike | MatrixLike) -> ndarray:
@@ -53,8 +53,13 @@ class MAAO(Metric):
         norms = np.linalg.norm(vec, axis=1).reshape([-1,1])
         return np.divide(vec,norms)
     
-    def angle_between(self) -> (float | ndarray):
+    def angle_offset(self) -> (float | ndarray):
+
         unit_y_true = self.unit_vector(self.y_true)
+        unit_y_pred = self.unit_vector(self.y_pred)
+
+        return np.arccos(np.clip(np.sum(np.multiply(unit_y_pred,unit_y_true),axis=1)
+                                 ,a_max=1,a_min=-1))
 
 
 class RMSE(Metric):
