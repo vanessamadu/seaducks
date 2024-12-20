@@ -1,1 +1,2 @@
-# seaducks/metrics/scoring_rules.py
+'''Scoring rules'''
+# Author: Vanessa Madu
