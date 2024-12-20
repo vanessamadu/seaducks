@@ -27,7 +27,21 @@ class MAE(Metric):
                                            sample_weight=self.sample_weight, multioutput=self.multioutput)
 
 class MAAO(Metric):
-    pass
+    
+    def __init__(self, y_true: MatrixLike | ArrayLike, y_pred: MatrixLike | ArrayLike, *, 
+                 sample_weight: ArrayLike | None, normalised: bool = False):
+        
+        super().__init__(y_true,y_pred)
+
+        self.sample_weight = sample_weight
+        self.string_name = 'maao'
+        self.normalised = normalised
+        # NEEDS VERIFYING
+        self.valid_loss = None
+        self.valid_risk = None
+
+    def maao(self) -> (float | ndarray):
+        pass
 
 class RMSE(Metric):
 
