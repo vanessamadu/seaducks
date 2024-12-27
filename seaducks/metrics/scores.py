@@ -1,24 +1,20 @@
 '''Scoring rules'''
 # Author: Vanessa Madu
 from ngboost.distns.multivariate_normal import MVNLogScore
-from ngboost.distns.multivariate_normal import get_chol_factor as get_L_matrix
+from _metrics_cl import MVNScore
+from scipy import stats
 
 from typing import Literal
 from pyvista import ArrayLike, MatrixLike
 from numpy import ndarray
 import numpy as np
 
-class MVN_NLL(MVNLogScore):
+class MVN_NLL(MVNLogScore, MVNScore):
     
     def __init__(self, y_true: MatrixLike | ArrayLike, pred_params: ArrayLike | MatrixLike, *,
                  sample_weight: ArrayLike | None, multioutput: ArrayLike | Literal['raw_values', 'uniform_average'] = "uniform_average"):
 
-        self.y_true = y_true
-        self.mvn_dim = y_true.shape[0]
-
-        self.loc = pred_params[:self.mvn_dim,:]
-        self.chol_factors = pred_params[self.mvn_dim:,:]
-        self.L = get_L_matrix(self.chol_factors)
+        super.__init__(self,y_true,pred_params)
 
         self.sample_weight = sample_weight
         self.multioutput = multioutput
@@ -38,13 +34,21 @@ class MVN_NLL(MVNLogScore):
         elif self.multioutput == 'uniform_average':
             return np.average(-self.mvn_log_likelihood, weights=self.sample_weight)
  
-class Prediction_Region():
-    def __init__():
-        pass
-    
+class Prediction_Region(MVNScore):
+    def __init__(self, y_true: ArrayLike | MatrixLike, pred_params: ArrayLike | MatrixLike,*,
+                 alpha: ArrayLike | float = 0.90):
+        super.__init__(self,y_true,pred_params)
+
+        self.df = np.shape(y_true)[0]-1
+        self.alpha = alpha
+        self.critical_value = stats.chi2.ppf(self.alpha,self.df)
+
     @property
-    def coverage(self):
-        pass
+    def prediction_region_mask(self):
+        residuals = np.expand_dims(self.loc - self.y_true, 2)
+        eta = np.squeeze(np.matmul(self.L.transpose(0, 2, 1), residuals), axis=2)
+
+        return np.matmul(eta,np.transpose(eta)) <= self.critical_value
     
     @property
     def area(self):
