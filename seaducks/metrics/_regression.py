@@ -30,7 +30,8 @@ class MAE(Metric):
 class MAAO(Metric):
     
     def __init__(self, y_true: MatrixLike | ArrayLike, y_pred: MatrixLike | ArrayLike, *, 
-                 sample_weight: ArrayLike | None, normalised: bool = False):
+                 sample_weight: ArrayLike | None, multioutput: ArrayLike | Literal['raw_values', 'uniform_average'] = "uniform_average", 
+                 normalised: bool = False):
         
         super().__init__(y_true,y_pred)
 
@@ -42,7 +43,12 @@ class MAAO(Metric):
         self.valid_risk = None
 
     def maao(self) -> (float | ndarray):
-        return np.mean(self.angle_offset())
+        if self.multioutput == 'raw_values':
+            return np.average(self.angle_offset(),
+            weights=self.sample_weight,axis=0)
+        elif self.multioutput == 'uniform_average':
+            return np.average(self.angle_offset(),
+            weights=self.sample_weight)
 
     @staticmethod
     def unit_vector(vec: ArrayLike | MatrixLike) -> ndarray:
@@ -58,7 +64,12 @@ class MAAO(Metric):
         unit_y_true = self.unit_vector(self.y_true)
         unit_y_pred = self.unit_vector(self.y_pred)
 
-        return np.arccos(np.clip(np.sum(np.multiply(unit_y_pred,unit_y_true),axis=1),
+        if self.normalised:
+            return np.arccos(np.clip(np.sum(np.multiply(unit_y_pred,unit_y_true),axis=1),
+                                 a_max=1,a_min=-1))/np.pi
+        else:
+            if self.normalised:
+                return np.arccos(np.clip(np.sum(np.multiply(unit_y_pred,unit_y_true),axis=1),
                                  a_max=1,a_min=-1))
 
 
