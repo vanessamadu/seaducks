@@ -23,16 +23,6 @@ class MVN_NLL(MVNLogScore):
         self.sample_weight = sample_weight
         self.multioutput = multioutput
 
-        # calculated attributes
-
-        '''
-        inherited: 
-        ----------
-        self.score
-        self.d_score
-        self.metric
-        '''
-
     def mvn_log_likelihood(self):
         residuals = np.expand_dims(self.loc - self.y_true, 2)
         eta = np.squeeze(np.matmul(self.L.transpose(0, 2, 1), residuals), axis=2)
@@ -42,10 +32,24 @@ class MVN_NLL(MVNLogScore):
 
         return p1 + p2 -self.mvn_dim / 2 * np.log(2 * np.pi)
 
-    def nll(self) -> (float | ndarray):
+    def mvn_nll(self) -> (float | ndarray):
         if self.multioutput == 'raw_values':
             return -self.mvn_log_likelihood()
         elif self.multioutput == 'uniform_average':
             return np.average(-self.mvn_log_likelihood, weights=self.sample_weight)
  
+class Prediction_Region():
+    def __init__():
+        pass
+    
+    @property
+    def coverage(self):
+        pass
+    
+    @property
+    def area(self):
+        pass
+
+
+
 
