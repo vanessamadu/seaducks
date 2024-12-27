@@ -64,6 +64,7 @@ class Prediction_Region(MVNScore):
         super.__init__(self,y_true,pred_params)
 
         self.alpha = alpha
+        self.string_name = 'prediction_region'
         
         self._critical_value = None
         self._area = None
