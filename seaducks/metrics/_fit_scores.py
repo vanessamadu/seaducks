@@ -58,7 +58,6 @@ class Chi2_statistic(Metric):
             elif self.multioutput == 'uniform_average':
                 return np.average(chi2, weights = self.sample_weight)
 
-
 class Prediction_Region(MVNScore):
     def __init__(self, y_true: ArrayLike | MatrixLike, pred_params: ArrayLike | MatrixLike,*,
                  alpha: ArrayLike | float = 0.90):
