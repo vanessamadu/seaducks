@@ -21,32 +21,33 @@ class Metric():
         # keyword arguments
         self.multioutput = multioutput
         self.sample_weight = sample_weight
-        # immutable properties
-        self.string_name = None
-        self.valid_loss = None
-        self.valid_risk = None
-    
+    # read-only attributes
     @property
-    def string_name():
+    def string_name(self):
         pass
 
     @property
-    def valid_loss():
+    def valid_loss(self):
         pass
 
     @property
-    def valid_risk():
+    def valid_risk(self):
         pass
 
 class MVNScore():
 
     def __init__(self,y_true: MatrixLike | ArrayLike, pred_params: ArrayLike | MatrixLike):
+        """_summary_
+
+        Args:
+            y_true (MatrixLike | ArrayLike): _description_
+            pred_params (ArrayLike | MatrixLike): _description_
+        """
         
         self.y_true = y_true
         self.pred_params = pred_params
-
-        self.mvn_dim = y_true.shape[0]
-        
-        self.loc = pred_params[:self.mvn_dim,:]
-        self.chol_factors = pred_params[self.mvn_dim:,:]
-        self.L = get_L_matrix(self.chol_factors)
+        # read-only properties
+        self._mvn_dim = y_true.shape[0]
+        self._loc = pred_params[:self.mvn_dim,:]
+        self._chol_factors = pred_params[self.mvn_dim:,:]
+        self._L = get_L_matrix(self.chol_factors)
