@@ -44,14 +44,14 @@ class MAE(Metric):
 class MAAO(Metric):
     
     def __init__(self, y_true: MatrixLike | ArrayLike, y_pred: MatrixLike | ArrayLike, *, 
-                 sample_weight: ArrayLike | None, multioutput: ArrayLike | Literal["raw_values", "uniform_average"] = "uniform_average", 
+                 sample_weight: ArrayLike | None = None, multioutput: ArrayLike | Literal["raw_values", "uniform_average"] = "uniform_average", 
                  normalize: bool = False):
         """_summary_
 
         Args:
             y_true (MatrixLike | ArrayLike): _description_
             y_pred (MatrixLike | ArrayLike): _description_
-            sample_weight (ArrayLike | None): _description_
+            sample_weight (ArrayLike | None): _description_. Defaults to None.
             multioutput (ArrayLike | Literal[&quot;raw_values&quot;, &quot;uniform_average&quot;], optional): _description_. Defaults to "uniform_average".
             normalize (bool, optional): _description_. Defaults to False.
         """
@@ -104,19 +104,32 @@ class MAAO(Metric):
                 return np.arccos(np.clip(np.sum(np.multiply(unit_y_pred,unit_y_true),axis=1),
                                  a_max=1,a_min=-1))
 
-
 class RMSE(Metric):
 
     def __init__(self, y_true: MatrixLike | ArrayLike, y_pred: MatrixLike | ArrayLike, *,
-                 sample_weight: ArrayLike | None, multioutput: ArrayLike | Literal["raw_values", "uniform_average"] = "uniform_average"):
-        
-        super().__init__(y_true,y_pred)
+                 sample_weight: ArrayLike | None = None, multioutput: ArrayLike | Literal["raw_values", "uniform_average"] = "uniform_average"):
+        """_summary_
 
-        self.sample_weight = sample_weight
-        self.multioutput = multioutput
-        self.string_name = "rmse"
-        self.valid_loss = True
-        self.valid_risk = True
+        Args:
+            y_true (MatrixLike | ArrayLike): _description_
+            y_pred (MatrixLike | ArrayLike): _description_
+            sample_weight (ArrayLike | None, optional): _description_. Defaults to None.
+            multioutput (ArrayLike | Literal[&quot;raw_values&quot;, &quot;uniform_average&quot;], optional): _description_. Defaults to "uniform_average".
+        """
+        super().__init__(y_true,y_pred, sample_weight=sample_weight, multioutput=multioutput)
+        # read-only attributes
+    @property
+    def string_name(self):
+        self._string_name = "rmse"
+        return self._string_name
+    @property
+    def valid_loss(self):
+        self._valid_loss = True
+        return self._valid_loss
+    @property
+    def valid_risk(self):
+        self._valid_risk = True
+        return self._valid_risk
     
     def rmse(self) -> (float | ndarray):
         return skm.root_mean_squared_error(self.y_true, self.y_pred, 
@@ -125,7 +138,7 @@ class RMSE(Metric):
 class RMSLE(Metric):
     
     def __init__(self, y_true: MatrixLike | ArrayLike, y_pred: MatrixLike | ArrayLike, *,
-                 sample_weight: ArrayLike | None, multioutput: ArrayLike | Literal["raw_values", "uniform_average"] = "uniform_average"):
+                 sample_weight: ArrayLike | None = None, multioutput: ArrayLike | Literal["raw_values", "uniform_average"] = "uniform_average"):
         
         super().__init__(y_true,y_pred)
 
