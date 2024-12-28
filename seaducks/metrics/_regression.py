@@ -31,13 +31,13 @@ class MAAO(Metric):
     
     def __init__(self, y_true: MatrixLike | ArrayLike, y_pred: MatrixLike | ArrayLike, *, 
                  sample_weight: ArrayLike | None, multioutput: ArrayLike | Literal['raw_values', 'uniform_average'] = "uniform_average", 
-                 normalised: bool = False):
+                 normalize: bool = False):
         
         super().__init__(y_true,y_pred)
 
         self.sample_weight = sample_weight
         self.string_name = 'maao'
-        self.normalised = normalised
+        self.normalize = normalize
         self.multioutput = multioutput
         # NEEDS VERIFYING
         self.valid_loss = None
@@ -65,11 +65,11 @@ class MAAO(Metric):
         unit_y_true = self.unit_vector(self.y_true)
         unit_y_pred = self.unit_vector(self.y_pred)
 
-        if self.normalised:
+        if self.normalize:
             return np.arccos(np.clip(np.sum(np.multiply(unit_y_pred,unit_y_true),axis=1),
                                  a_max=1,a_min=-1))/np.pi
         else:
-            if self.normalised:
+            if self.normalize:
                 return np.arccos(np.clip(np.sum(np.multiply(unit_y_pred,unit_y_true),axis=1),
                                  a_max=1,a_min=-1))
 
