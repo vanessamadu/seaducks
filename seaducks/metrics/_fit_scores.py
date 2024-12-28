@@ -13,7 +13,7 @@ from pyvista import ArrayLike, MatrixLike
 from typing import Literal
 from numpy import ndarray
 
-class R2_score():
+class R2_Score():
 
     def __init__(self, y_true: ArrayLike | MatrixLike, y_pred: ArrayLike | MatrixLike, *,
                  sample_weight: ArrayLike | None = None, multioutput: ArrayLike | Literal['raw_values', 'uniform_average', 'variance_weighted'] = "uniform_average",
@@ -43,7 +43,7 @@ class R2_score():
         return skm.r2_score(self.y_true, self.y_pred, 
                             sample_weight=self.sample_weight, multioutput=self.multioutput, force_finite=self.force_finite)
     
-class Chi2_statistic():
+class Chi2_Statistic():
     
     def __init__(self, y_true: ArrayLike | MatrixLike, y_pred: ArrayLike | MatrixLike, *,
                  sample_weight: ArrayLike | None = None, multioutput: ArrayLike | Literal['raw_values', 'uniform_average'] = "raw_values", axis: int=0):
