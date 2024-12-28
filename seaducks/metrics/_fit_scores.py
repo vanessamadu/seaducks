@@ -92,33 +92,35 @@ class Chi2_statistic():
 class Prediction_Region(MVNScore):
     def __init__(self, y_true: ArrayLike | MatrixLike, pred_params: ArrayLike | MatrixLike,*,
                  alpha: ArrayLike | float = 0.90):
+        """_summary_
+
+        Args:
+            y_true (ArrayLike | MatrixLike): _description_
+            pred_params (ArrayLike | MatrixLike): _description_
+            alpha (ArrayLike | float, optional): _description_. Defaults to 0.90.
+        """
         super.__init__(self,y_true,pred_params)
-
-        self.alpha = alpha
-        self.string_name = 'prediction_region'
         
-        self._critical_value = None
-        self._area = None
-        self._coverage = None
-        self._df = None
+        self.alpha = alpha
 
-    # hidden attirbutes
+    # read-only properties
+    @property
+    def string_name(self):
+        self._string_name = 'prediction_region'
+        return self._string_name
     @property
     def critical_value(self):
         self._critical_value = stats.chi2.ppf(self.alpha,self.df)
         return self._critical_value
-    
     @property
     def df(self):
         self._df = np.shape(self.y_true)[0]-1
         return self._df
-    
     @property
     def coverage(self):
         pr = self.prediction_region_mask()
         self._coverage = np.sum(pr,axis=(0,1))/np.prod(np.shape(pr)[0:2])
         return self._coverage
-
     @property
     def area(self):
         num_data_points = np.shape(self.y_true)[0]
@@ -131,7 +133,6 @@ class Prediction_Region(MVNScore):
             self._area = multiplier*self.critical_value*(1/np.sum(eigenvalues))
         return self._area
         
-
     def prediction_region_mask(self):
         residuals = np.expand_dims(self.loc - self.y_true, 2)
         eta = np.squeeze(np.matmul(self.L.transpose(0, 2, 1), residuals), axis=2)
