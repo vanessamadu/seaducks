@@ -4,7 +4,7 @@
 import sklearn.metrics as skm
 import scipy.stats as stats
 import numpy as np
-from seaducks.metrics._metrics_cl import Metric, MVNScore
+from seaducks.metrics._metrics_cl import MVNScore
 from scipy import stats
 from scipy.special import gamma
 
@@ -13,18 +13,32 @@ from pyvista import ArrayLike, MatrixLike
 from typing import Literal
 from numpy import ndarray
 
-class R2_score(Metric):
+class R2_score():
 
     def __init__(self, y_true: ArrayLike | MatrixLike, y_pred: ArrayLike | MatrixLike, *,
-                 sample_weight: ArrayLike | None, multioutput: ArrayLike | Literal['raw_values', 'uniform_average', 'variance_weighted'] = "uniform_average",
+                 sample_weight: ArrayLike | None = None, multioutput: ArrayLike | Literal['raw_values', 'uniform_average', 'variance_weighted'] = "uniform_average",
                  force_finite: bool =True):
-        super().__init__(y_true, y_pred)
+        """_summary_
 
+        Args:
+            y_true (ArrayLike | MatrixLike): _description_
+            y_pred (ArrayLike | MatrixLike): _description_
+            sample_weight (ArrayLike | None, optional): _description_. Defaults to None.
+            multioutput (ArrayLike | Literal[&#39;raw_values&#39;, &#39;uniform_average&#39;, &#39;variance_weighted&#39;], optional): _description_. Defaults to "uniform_average".
+            force_finite (bool, optional): _description_. Defaults to True.
+        """
+        self.y_true = y_true
+        self.y_pred = y_pred
+        # keyword arguments
         self.multioutput = multioutput
-        self.string_name = 'r2_score'
         self.sample_weight = sample_weight
         self.force_finite = force_finite
-
+    # read-only properties
+    @property
+    def string_name(self):
+        self._string_name = 'r2_score'
+        return self._string_name
+        
     def r2_score(self) -> (float | ndarray):
         return skm.r2_score(self.y_true, self.y_pred, 
                             sample_weight=self.sample_weight, multioutput=self.multioutput, force_finite=self.force_finite)
@@ -32,7 +46,7 @@ class R2_score(Metric):
 class Chi2_statistic(Metric):
     
     def __init__(self, y_true: ArrayLike | MatrixLike, y_pred: ArrayLike | MatrixLike, *,
-                 sample_weight: ArrayLike | None, multioutput: ArrayLike | Literal['raw_values', 'uniform_average'] = "raw_values", axis: int=0):
+                 sample_weight: ArrayLike | None = None, multioutput: ArrayLike | Literal['raw_values', 'uniform_average'] = "raw_values", axis: int=0):
         super().__init__(y_true, y_pred)
 
         self.multioutput = multioutput
