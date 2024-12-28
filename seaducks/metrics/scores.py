@@ -11,14 +11,26 @@ import numpy as np
 class MVN_NLL(MVNLogScore, MVNScore):
     
     def __init__(self, y_true: MatrixLike | ArrayLike, pred_params: ArrayLike | MatrixLike, *,
-                 sample_weight: ArrayLike | None, multioutput: ArrayLike | Literal['raw_values', 'uniform_average'] = "uniform_average"):
+                 sample_weight: ArrayLike | None = None, multioutput: ArrayLike | Literal['raw_values', 'uniform_average'] = "uniform_average"):
+        """_summary_
 
+        Args:
+            y_true (MatrixLike | ArrayLike): _description_
+            pred_params (ArrayLike | MatrixLike): _description_
+            sample_weight (ArrayLike | None, optional): _description_. Defaults to None.
+            multioutput (ArrayLike | Literal[&#39;raw_values&#39;, &#39;uniform_average&#39;], optional): _description_. Defaults to "uniform_average".
+        """
         super.__init__(self,y_true,pred_params)
 
         self.sample_weight = sample_weight
         self.multioutput = multioutput
+    # read-only properties
+    @property
+    def string_name(self):
+        self._string_name = "mvn_nll"
+        return self._string_name
 
-    def mvn_log_likelihood(self):
+    def mvn_log_likelihood(self) -> (float | ndarray):
         residuals = np.expand_dims(self.loc - self.y_true, 2)
         eta = np.squeeze(np.matmul(self.L.transpose(0, 2, 1), residuals), axis=2)
 
