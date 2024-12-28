@@ -22,7 +22,8 @@ class MAE(Metric):
             sample_weight (ArrayLike | None, optional): _description_. Defaults to None.
             multioutput (ArrayLike | Literal["raw_values", "uniform_average"], optional): _description_. Defaults to "uniform_average".
         """
-        super().__init__(y_true,y_pred,sample_weight,multioutput)
+        super().__init__(y_true,y_pred,sample_weight=sample_weight,multioutput=multioutput)
+    # read-only attributes
     @property
     def string_name(self):
         self._string_name = "mae"
@@ -45,16 +46,33 @@ class MAAO(Metric):
     def __init__(self, y_true: MatrixLike | ArrayLike, y_pred: MatrixLike | ArrayLike, *, 
                  sample_weight: ArrayLike | None, multioutput: ArrayLike | Literal["raw_values", "uniform_average"] = "uniform_average", 
                  normalize: bool = False):
-        
-        super().__init__(y_true,y_pred)
+        """_summary_
 
-        self.sample_weight = sample_weight
-        self.string_name = "maao"
+        Args:
+            y_true (MatrixLike | ArrayLike): _description_
+            y_pred (MatrixLike | ArrayLike): _description_
+            sample_weight (ArrayLike | None): _description_
+            multioutput (ArrayLike | Literal[&quot;raw_values&quot;, &quot;uniform_average&quot;], optional): _description_. Defaults to "uniform_average".
+            normalize (bool, optional): _description_. Defaults to False.
+        """
+        super().__init__(y_true,y_pred,sample_weight=sample_weight,multioutput=multioutput)
+        
         self.normalize = normalize
-        self.multioutput = multioutput
+    #read-only attributes
+    @property
+    def string_name(self):
+        self._string_name = "maao"
+        return self._string_name
+    @property
+    def valid_loss(self):
         # NEEDS VERIFYING
-        self.valid_loss = None
-        self.valid_risk = None
+        self._valid_loss = None
+        return self._valid_loss
+    @property
+    def valid_risk(self):
+        # NEEDS VERIFYING
+        self._valid_risk = None
+        return self._valid_risk
 
     def maao(self) -> (float | ndarray):
         if self.multioutput == "raw_values":
