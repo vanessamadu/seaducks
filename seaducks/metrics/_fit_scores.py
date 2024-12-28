@@ -50,8 +50,8 @@ class Chi2_statistic(Metric):
             if self.multioutput == 'raw_values':
                 return chi2, p_value
             elif self.multioutput == 'uniform_average':
-                return np.average(chi2, weights = self.sample_weight), 
-                np.average(p_value, weights = self.sample_weight)
+                return np.average(chi2, weights = self.sample_weight),
+            np.average(p_value, weights = self.sample_weight)
         else: 
             if self.multioutput == 'raw_values':
                 return chi2

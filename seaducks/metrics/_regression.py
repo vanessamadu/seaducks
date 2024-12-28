@@ -38,6 +38,7 @@ class MAAO(Metric):
         self.sample_weight = sample_weight
         self.string_name = 'maao'
         self.normalised = normalised
+        self.multioutput = multioutput
         # NEEDS VERIFYING
         self.valid_loss = None
         self.valid_risk = None
