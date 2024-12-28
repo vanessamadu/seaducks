@@ -43,18 +43,35 @@ class R2_score():
         return skm.r2_score(self.y_true, self.y_pred, 
                             sample_weight=self.sample_weight, multioutput=self.multioutput, force_finite=self.force_finite)
     
-class Chi2_statistic(Metric):
+class Chi2_statistic():
     
     def __init__(self, y_true: ArrayLike | MatrixLike, y_pred: ArrayLike | MatrixLike, *,
                  sample_weight: ArrayLike | None = None, multioutput: ArrayLike | Literal['raw_values', 'uniform_average'] = "raw_values", axis: int=0):
-        super().__init__(y_true, y_pred)
+        """_summary_
 
-        self.multioutput = multioutput
-        self.string_name = 'chi2_stat'
+        Args:
+            y_true (ArrayLike | MatrixLike): _description_
+            y_pred (ArrayLike | MatrixLike): _description_
+            sample_weight (ArrayLike | None, optional): _description_. Defaults to None.
+            multioutput (ArrayLike | Literal[&#39;raw_values&#39;, &#39;uniform_average&#39;], optional): _description_. Defaults to "raw_values".
+            axis (int, optional): _description_. Defaults to 0.
+        """
+        self.y_true = y_true
+        self.y_pred = y_pred
+        # keyword arguments
         self.sample_weight = sample_weight
-        self.ddof = len(y_true)-1
+        self.multioutput = multioutput
         self.axis = axis
-
+    # read-only attributes
+    @property
+    def string_name(self):
+        self._string_name = 'chi2_stat'
+        return self._string_name
+    @property
+    def ddof(self):
+        self._ddof = np.shape(self.y_true)[0]-1
+        return self._ddof
+        
     def chi2_stat(self, return_p_value = False) -> (float | ndarray):
         
         chi2, p_value = stats.chisquare(self.y_true, 
