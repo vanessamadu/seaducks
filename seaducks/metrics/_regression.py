@@ -139,14 +139,28 @@ class RMSLE(Metric):
     
     def __init__(self, y_true: MatrixLike | ArrayLike, y_pred: MatrixLike | ArrayLike, *,
                  sample_weight: ArrayLike | None = None, multioutput: ArrayLike | Literal["raw_values", "uniform_average"] = "uniform_average"):
-        
-        super().__init__(y_true,y_pred)
+        """_summary_
 
-        self.sample_weight = sample_weight
-        self.multioutput = multioutput
-        self.string_name = "rmsle"
-        self.valid_loss = False
-        self.valid_risk = True
+        Args:
+            y_true (MatrixLike | ArrayLike): _description_
+            y_pred (MatrixLike | ArrayLike): _description_
+            sample_weight (ArrayLike | None, optional): _description_. Defaults to None.
+            multioutput (ArrayLike | Literal[&quot;raw_values&quot;, &quot;uniform_average&quot;], optional): _description_. Defaults to "uniform_average".
+        """
+        super().__init__(y_true,y_pred, sample_weight=sample_weight, multioutput=multioutput)
+        # read-only attributes
+    @property
+    def string_name(self):
+        self._string_name = "rmsle"
+        return self._string_name
+    @property
+    def valid_loss(self):
+        self._valid_loss = False
+        return self._valid_loss
+    @property
+    def valid_risk(self):
+        self._valid_risk = True
+        return self._valid_risk
 
     def rmsle(self) -> (float | ndarray):
         return skm.root_mean_squared_log_error(self.y_true, self.y_pred, 
