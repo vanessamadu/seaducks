@@ -22,6 +22,7 @@ class Metric():
         self.multioutput = multioutput
         self.sample_weight = sample_weight
     # read-only attributes
+
     @property
     def string_name(self):
         pass
