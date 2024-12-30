@@ -2,6 +2,7 @@
 # Author: Vanessa Madu
 
 from ngboost.distns.multivariate_normal import get_chol_factor as get_L_matrix
+import numpy as np
 # typing
 from pyvista import ArrayLike, MatrixLike
 from typing import Literal
@@ -9,20 +10,24 @@ from typing import Literal
 class Metric():
     
     def __init__(self, y_true: MatrixLike | ArrayLike, y_pred: MatrixLike | ArrayLike, *,
-                 sample_weight: ArrayLike | None = None, multioutput: ArrayLike | Literal['raw_values', 'uniform_average'] = "uniform_average"):
+                 sample_weight: ArrayLike | None = None, multioutput: ArrayLike | Literal['raw_values', 'uniform_average'] = "uniform_average",
+                 component_wise : bool = True):
         """_summary_
 
         Args:
             y_true (MatrixLike | ArrayLike): _description_
             y_pred (MatrixLike | ArrayLike): _description_
+            sample_weight (ArrayLike | None, optional): _description_. Defaults to None.
+            multioutput (ArrayLike | Literal[&#39;raw_values&#39;, &#39;uniform_average&#39;], optional): _description_. Defaults to "uniform_average".
+            component_wise (bool, optional): _description_. Defaults to True.
         """
-        self.y_true = y_true
-        self.y_pred = y_pred
+
+        self.y_true, self.y_pred = is_valid_data(y_true,y_pred)
         # keyword arguments
         self.multioutput = multioutput
         self.sample_weight = sample_weight
+        self.component_wise = component_wise
     # read-only attributes
-
     @property
     def string_name(self):
         pass
@@ -32,6 +37,19 @@ class Metric():
     @property
     def valid_risk(self):
         pass
+    # read and write attributes
+    @property
+    def y_true(self):
+        return self._y_true
+    @y_true.setter
+    def y_true(self, new_y_true):
+        self._y_true, _ = is_valid_data(new_y_true,self.y_pred)
+    @property
+    def y_pred(self):
+        return self._y_pred
+    @y_true.setter
+    def y_true(self, new_y_pred):
+        _, self._y_pred= is_valid_data(self.y_true,new_y_pred)
 
 class MVNScore():
 
@@ -61,3 +79,12 @@ class MVNScore():
     def L(self):
         self._L = get_L_matrix(self.chol_factors)
         return self._L
+
+def is_valid_data(y_true, y_pred):
+    if np.shape(y_true) != np.shape(y_pred):
+        raise ValueError('y_true and y_pred must be the same shape')
+    elif len(np.shape(y_true)) == 2:
+        return np.expand_dims(y_true,axis=0), np.expand_dims(y_pred,axis=0) 
+    else:
+        return y_true, y_pred
+
