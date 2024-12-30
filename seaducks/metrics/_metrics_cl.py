@@ -37,19 +37,6 @@ class Metric():
     @property
     def valid_risk(self):
         pass
-    # read and write attributes
-    @property
-    def y_true(self):
-        return self._y_true
-    @y_true.setter
-    def y_true(self, new_y_true):
-        self._y_true, _ = is_valid_data(new_y_true,self.y_pred)
-    @property
-    def y_pred(self):
-        return self._y_pred
-    @y_true.setter
-    def y_true(self, new_y_pred):
-        _, self._y_pred= is_valid_data(self.y_true,new_y_pred)
 
 class MVNScore():
 
