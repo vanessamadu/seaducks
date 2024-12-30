@@ -24,7 +24,7 @@ class MAE(Metric):
             sample_weight (ArrayLike | None, optional): _description_. Defaults to None.
             multioutput (ArrayLike | Literal["raw_values", "uniform_average"], optional): _description_. Defaults to "uniform_average".
         """
-        super().__init__(y_true,y_pred,sample_weight=sample_weight,multioutput=multioutput, component_wise=component_wise)
+        super().__init__(y_true,y_pred,sample_weight=sample_weight,multioutput=multioutput,component_wise=component_wise)
     # read-only attributes
     @property
     def string_name(self):
@@ -40,8 +40,17 @@ class MAE(Metric):
         return self._valid_risk
 
     def mae(self) -> (float | ndarray):
-        return skm.mean_absolute_error(self.y_true, self.y_pred, 
-                                           sample_weight=self.sample_weight, multioutput=self.multioutput)
+
+        if self.component_wise:
+            axis = 1
+        else:
+            axis = (1,2)
+        raw_mae_values = np.average(np.abs(self.y_true-self.y_pred),weights = self.sample_weight,axis=axis)
+
+        if self.multioutput == 'raw_values':
+            return raw_mae_values
+        elif self.multioutput == 'uniform_average':
+            return np.mean(raw_mae_values, axis=0)
 
 class MAAO(Metric):
     
