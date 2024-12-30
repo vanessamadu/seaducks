@@ -1,4 +1,4 @@
-from ngboost.ngboost import NGBoost
+from ngboost import NGBRegressor
 from ngboost.scores import LogScore
 from ngboost.distns import MultivariateNormal
 from ngboost.learners import default_tree_learner
@@ -7,15 +7,17 @@ import ngboost.distns
 import ngboost.scores
 import ngboost.learners
 
-class MVN_ngboost(NGBoost):
-    def __init__(self, *,
-                 dist: ngboost.distns = MultivariateNormal, score: ngboost.scores = LogScore, 
+import pickle
+
+class MVN_ngboost(NGBRegressor):
+    def __init__(self,*,
+                 dist: ngboost.distns = MultivariateNormal(2), score: ngboost.scores = LogScore, 
                  base: ngboost.learners = default_tree_learner, natural_gradient: bool = True,
                  n_estimators: int = 500, learning_rate: float = 0.01, minibatch_frac: float = 1.0,
                  col_sample: float =1.0, verbose: bool =True, verbose_eval: int = 100, tol: float = 1e-4,
                  random_state: None | int = 42, validation_fraction: float = 0.09, early_stopping_rounds: int = None):
         
-        super.__init__(
+        super().__init__(
         Dist=dist,
         Score=score,
         Base=base,
@@ -30,4 +32,10 @@ class MVN_ngboost(NGBoost):
         random_state=random_state,
         validation_fraction=validation_fraction,
         early_stopping_rounds=early_stopping_rounds)
+
+    def save_model(self, file_name):
+        filehandler = open(f"{file_name}.p","wb")
+        pickle.dump(self,filehandler)
         
+test = MVN_ngboost()
+print(test.fit)
