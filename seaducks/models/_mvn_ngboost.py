@@ -36,6 +36,3 @@ class MVN_ngboost(NGBRegressor):
     def save_model(self, file_name):
         filehandler = open(f"{file_name}.p","wb")
         pickle.dump(self,filehandler)
-        
-test = MVN_ngboost()
-print(test.fit)
