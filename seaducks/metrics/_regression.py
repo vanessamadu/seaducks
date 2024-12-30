@@ -1,9 +1,10 @@
 """ Regression performance metrics """
 # Author: Vanessa Madu
-
-import sklearn.metrics as skm
+import os
+import sys
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname('seaducks/metrics'), '..')))
 from seaducks.metrics._metrics_cl import Metric
-
+import sklearn.metrics as skm
 # typing
 from typing import Literal
 from pyvista import ArrayLike, MatrixLike
