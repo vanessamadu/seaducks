@@ -42,10 +42,10 @@ def test_mae_attributes_are_correctly_assigned(size):
 @pytest.mark.regression
 @pytest.mark.mean_absolute_error
 def test_mae_expand_dims():
-    size = 100
-    y_true, y_pred = synthetic_data((size,2))
+    n = 100
+    y_true, y_pred = synthetic_data((n,2))
     trial_mae = MAE(y_true,y_pred)
-    assert (np.shape(trial_mae.y_pred) == np.shape(trial_mae.y_true)) and np.shape(trial_mae.y_pred) == (1,size,2)
+    assert (np.shape(trial_mae.y_pred) == np.shape(trial_mae.y_true)) and np.shape(trial_mae.y_pred) == (1,n,2)
 
 @pytest.mark.regression
 @pytest.mark.mean_absolute_error
