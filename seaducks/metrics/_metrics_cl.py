@@ -11,7 +11,7 @@ class Metric():
     
     def __init__(self, y_true: MatrixLike | ArrayLike, y_pred: MatrixLike | ArrayLike, *,
                  sample_weight: ArrayLike | None = None, multioutput: ArrayLike | Literal['raw_values', 'uniform_average'] = "uniform_average",
-                 component_wise : bool = True):
+                 component_wise : None | bool = True):
         """_summary_
 
         Args:

@@ -14,7 +14,8 @@ import numpy as np
 class MAE(Metric):
     
     def __init__(self, y_true: MatrixLike | ArrayLike, y_pred: MatrixLike | ArrayLike, *,
-                 sample_weight: ArrayLike | None = None, multioutput: ArrayLike | Literal["raw_values", "uniform_average"] = "uniform_average"):
+                 sample_weight: ArrayLike | None = None, multioutput: ArrayLike | Literal["raw_values", "uniform_average"] = "uniform_average",
+                 component_wise : bool = True):
         """_summary_
 
         Args:
@@ -23,7 +24,7 @@ class MAE(Metric):
             sample_weight (ArrayLike | None, optional): _description_. Defaults to None.
             multioutput (ArrayLike | Literal["raw_values", "uniform_average"], optional): _description_. Defaults to "uniform_average".
         """
-        super().__init__(y_true,y_pred,sample_weight=sample_weight,multioutput=multioutput)
+        super().__init__(y_true,y_pred,sample_weight=sample_weight,multioutput=multioutput, component_wise=component_wise)
     # read-only attributes
     @property
     def string_name(self):
@@ -56,7 +57,7 @@ class MAAO(Metric):
             multioutput (ArrayLike | Literal[&quot;raw_values&quot;, &quot;uniform_average&quot;], optional): _description_. Defaults to "uniform_average".
             normalize (bool, optional): _description_. Defaults to False.
         """
-        super().__init__(y_true,y_pred,sample_weight=sample_weight,multioutput=multioutput)
+        super().__init__(y_true,y_pred,sample_weight=sample_weight,multioutput=multioutput, component_wise=None)
         
         self.normalize = normalize
     #read-only attributes
@@ -108,7 +109,8 @@ class MAAO(Metric):
 class RMSE(Metric):
 
     def __init__(self, y_true: MatrixLike | ArrayLike, y_pred: MatrixLike | ArrayLike, *,
-                 sample_weight: ArrayLike | None = None, multioutput: ArrayLike | Literal["raw_values", "uniform_average"] = "uniform_average"):
+                 sample_weight: ArrayLike | None = None, multioutput: ArrayLike | Literal["raw_values", "uniform_average"] = "uniform_average",
+                 component_wise : bool = True):
         """_summary_
 
         Args:
@@ -117,7 +119,7 @@ class RMSE(Metric):
             sample_weight (ArrayLike | None, optional): _description_. Defaults to None.
             multioutput (ArrayLike | Literal[&quot;raw_values&quot;, &quot;uniform_average&quot;], optional): _description_. Defaults to "uniform_average".
         """
-        super().__init__(y_true,y_pred, sample_weight=sample_weight, multioutput=multioutput)
+        super().__init__(y_true,y_pred, sample_weight=sample_weight, multioutput=multioutput, component_wise=component_wise)
         # read-only attributes
     @property
     def string_name(self):
@@ -139,7 +141,8 @@ class RMSE(Metric):
 class RMSLE(Metric):
     
     def __init__(self, y_true: MatrixLike | ArrayLike, y_pred: MatrixLike | ArrayLike, *,
-                 sample_weight: ArrayLike | None = None, multioutput: ArrayLike | Literal["raw_values", "uniform_average"] = "uniform_average"):
+                 sample_weight: ArrayLike | None = None, multioutput: ArrayLike | Literal["raw_values", "uniform_average"] = "uniform_average",
+                 component_wise : bool = True):
         """_summary_
 
         Args:
@@ -148,7 +151,7 @@ class RMSLE(Metric):
             sample_weight (ArrayLike | None, optional): _description_. Defaults to None.
             multioutput (ArrayLike | Literal[&quot;raw_values&quot;, &quot;uniform_average&quot;], optional): _description_. Defaults to "uniform_average".
         """
-        super().__init__(y_true,y_pred, sample_weight=sample_weight, multioutput=multioutput)
+        super().__init__(y_true,y_pred, sample_weight=sample_weight, multioutput=multioutput, component_wise=component_wise)
         # read-only attributes
     @property
     def string_name(self):
