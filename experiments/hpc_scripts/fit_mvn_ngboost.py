@@ -5,6 +5,7 @@ import pandas as pd
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname('seaducks/models'), '..')))
 import pandas as pd
 from seaducks.models._mvn_ngboost import MVN_ngboost
+from sklearn.tree import DecisionTreeRegressor
 
 if __name__=='__main__':
 
@@ -32,7 +33,23 @@ if __name__=='__main__':
     explanatory_var_labels = ['u_av','v_av','lat','lon','day_of_year','Wx','Wy','Tx','Ty','sst_x_derivative','sst_y_derivative']
     response_var_labels = ['u','v']
 
+    # -------- create base learners -------- # 
+    base = DecisionTreeRegressor(
+        criterion='friedman_mse',
+        splitter='best',
+        max_depth=max_depth,
+        min_samples_split=2,
+        min_samples_leaf=min_leaf_data,
+        min_weight_fraction_leaf=0.0,
+        max_features=None,
+        random_state=None,
+        max_leaf_nodes=max_leaves,
+        min_impurity_decrease=None,
+        ccp_alpha=0.0)
     # ---------- run and save model ---------- #
-    multivariate_ngboost = MVN_ngboost(n_estimators=max_boosting_iter,early_stopping_rounds=early_stopping_rounds)
+    multivariate_ngboost = MVN_ngboost(n_estimators=max_boosting_iter,
+                                       early_stopping_rounds=early_stopping_rounds,
+                                       base=base,
+                                       learning_rate=eta)
     multivariate_ngboost.run_model_and_save(data,explanatory_var_labels,response_var_labels,filename)
     multivariate_ngboost.save_model(filename)
