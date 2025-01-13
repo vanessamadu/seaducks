@@ -1,23 +1,15 @@
-# scripts/correct_velocity.py
-'''
-description:    script to correct the drifter velocity after inherited incorrect initial processing
-                only run on `drifter_full.h5`
-
-    ->  divide drifter velocities by 100 to correct initial processing that multiplied 
-        cm/s by 100 to get m/s
-'''
 import pandas as pd
 import os
 
 def main():
 
-    file_path = os.path.join('data', 'drifter_full.h5')
-    output_path = os.path.join('data', 'corrected_velocity_drifter_full.h5')
+    file_path = os.path.join('data', 'filtered_nao_drifters_with_sst_gradient.h5')
+    output_path = os.path.join('data', 'filtered_nao_drifters_with_sst_gradient_with_time.h5')
 
     dataset = pd.read_hdf(file_path)
     # data correction
-    dataset.loc[:,'u']/=100
-    dataset.loc[:,'v']/=100
+    dataset['day_of_year'] = dataset['time'].apply(lambda t : t.timetuple().tm_yday)
+
     dataset.to_hdf(output_path, key="drifter", mode='w')
 
 if __name__ == '__main__':
