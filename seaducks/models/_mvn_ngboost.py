@@ -1,9 +1,9 @@
 import os
 import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname('seaducks/model_selection'), '..')))
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname('config'), '..')))
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname('seaducks/config'), '..')))
 
-from ngboost import NGBRegressor, NGBoost
+from ngboost import NGBRegressor
 from ngboost.scores import LogScore
 from ngboost.distns import MultivariateNormal
 from ngboost.learners import default_tree_learner
@@ -13,8 +13,8 @@ import ngboost.scores
 import ngboost.learners
 
 import pickle
-from config import config
-from model_selection import train_test_validation_split_ids
+from seaducks.config import config
+from seaducks.model_selection import train_test_validation_split_ids
 
 class MVN_ngboost(NGBRegressor):
     def __init__(self,*,
@@ -62,7 +62,6 @@ class MVN_ngboost(NGBRegressor):
         validation_explanatory_vars = validation_data[explanatory_var_labels]
 
         training_response_vars = training_data[response_var_labels]
-        testing_response_vars = testing_data[response_var_labels]
         validation_response_vars = validation_data[response_var_labels]
 
         output_file = file_name +'test_data'
@@ -72,7 +71,7 @@ class MVN_ngboost(NGBRegressor):
                      validation_explanatory_vars, validation_response_vars, 
                      early_stopping_rounds=self.early_stopping_rounds)
             
-        preds = [testing_response_vars, self.scipy_distribution(testing_explanatory_vars,cmat_output = True)]
+        preds = [testing_data, self.scipy_distribution(testing_explanatory_vars,cmat_output = True)]
 
         filehandler = open(f"{output_file}.p","wb")
         pickle.dump(preds,filehandler)
