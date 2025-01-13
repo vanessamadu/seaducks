@@ -24,10 +24,8 @@ if __name__=='__main__':
     max_depth = 15
 
     # ---------- load data --------- # 
-    path_to_data = r'C:\Users\vm2218\OneDrive - Imperial College London\PhD Project\seaducks\data\filtered_nao_drifters_with_sst_gradient.h5'
+    path_to_data = r'data\complete_filtered_nao_drifter_dataset.h5'
     data = pd.read_hdf(path_to_data)
-    # add day of the year as an index (to be added to the data later)
-    data['day_of_year'] = data['time'].apply(lambda t : t.timetuple().tm_yday)
 
     ## separate into explanatory and response variables
     explanatory_var_labels = ['u_av','v_av','lat','lon','day_of_year','Wx','Wy','Tx','Ty','sst_x_derivative','sst_y_derivative']
