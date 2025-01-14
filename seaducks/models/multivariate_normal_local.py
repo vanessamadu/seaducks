@@ -41,6 +41,7 @@ class MVNLogScore(LogScore):
         grad_mu = grad_mu.squeeze(axis=1)
         gradient[:, : self.p] = grad_mu
 
+
         tril_indices, diags, off_diags = get_tril_idxs(self.p)
         # Gradient of the diagonal
         diagonal_elements = np.diagonal(self.L, axis1=1, axis2=2)
@@ -56,7 +57,7 @@ class MVNLogScore(LogScore):
             j = tril_indices[1][par_idx]
             grad_reference[:, par_idx] = eta[:, j] * diff[:, i, 0]
 
-        return gradient
+        return gradient.transpose()
 
     def metric(self):
 
