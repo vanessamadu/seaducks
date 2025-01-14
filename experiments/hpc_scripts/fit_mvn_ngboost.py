@@ -7,7 +7,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname('seaducks/models'),
 import pandas as pd
 from seaducks.models._mvn_ngboost import MVN_ngboost
 from sklearn.tree import DecisionTreeRegressor
-from seaducks.models.multivariate_normal import MVN
+from seaducks.models.multivariate_normal_local import MVN
 
 if __name__=='__main__':
 
