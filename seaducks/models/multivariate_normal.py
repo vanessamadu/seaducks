@@ -19,11 +19,13 @@ class MVN(RegressionDistn):
         to return a list of distributions.
         """
 
+        scores = [MVNLogScore]
+        multi_output = True
+        
         def __init__(self, params):
             super().__init__(params)
             self.N = params.shape[1]
-            scores = [MVNLogScore]
-            multi_output = True
+            
 
             # Number of MVN dimensions, =k originally
             self.p = (-3 + (9 + 8 * self.n_params) ** 0.5) / 2
