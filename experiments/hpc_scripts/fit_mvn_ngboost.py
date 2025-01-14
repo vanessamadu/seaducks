@@ -7,7 +7,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname('seaducks/models'),
 import pandas as pd
 from seaducks.models._mvn_ngboost import MVN_ngboost
 from sklearn.tree import DecisionTreeRegressor
-from seaducks.models.multivariate_normal_local import MVN
+
 
 if __name__=='__main__':
 
@@ -49,11 +49,8 @@ if __name__=='__main__':
         min_impurity_decrease=0.0,
         ccp_alpha=0.0)
     # ---------- run and save model ---------- #
-    k = 2
-    n_params = int(k * (k + 3) / 2)
-    init_array = np.ones([n_params,k])
 
-    multivariate_ngboost = MVN_ngboost(dist = MVN, n_estimators=max_boosting_iter,
+    multivariate_ngboost = MVN_ngboost(n_estimators=max_boosting_iter,
                                        early_stopping_rounds=early_stopping_rounds,
                                        base=base,
                                        learning_rate=eta)
