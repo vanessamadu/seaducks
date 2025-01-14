@@ -51,7 +51,8 @@ if __name__=='__main__':
     k = 2
     n_params = int(k * (k + 3) / 2)
     init_array = np.ones([n_params,k])
-    multivariate_ngboost = MVN_ngboost(dist = MultivariateNormal(init_array), n_estimators=max_boosting_iter,
+    dist = MultivariateNormal(init_array)
+    multivariate_ngboost = MVN_ngboost(dist = dist, n_estimators=max_boosting_iter,
                                        early_stopping_rounds=early_stopping_rounds,
                                        base=base,
                                        learning_rate=eta)
