@@ -2,7 +2,6 @@ import sys
 import os
 from datetime import datetime
 import pandas as pd
-import numpy as np
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname('seaducks/models'), '..')))
 import pandas as pd
 from seaducks.models._mvn_ngboost import MVN_ngboost
@@ -27,8 +26,8 @@ if __name__=='__main__':
     max_depth = 15
 
     # ---------- load data --------- # 
-    path_to_data = r'data/complete_filtered_nao_drifter_dataset.h5'
-    #path_to_data = r'/rds/general/user/vm2218/home/phd-project1/SeaDucks/seaducks/data/complete_filtered_nao_drifter_dataset.h5'
+    #path_to_data = r'data/complete_filtered_nao_drifter_dataset.h5'
+    path_to_data = r'/rds/general/user/vm2218/home/phd-project1/SeaDucks/seaducks/data/complete_filtered_nao_drifter_dataset.h5'
     data = pd.read_hdf(path_to_data).head(500)
 
     ## separate into explanatory and response variables
@@ -49,7 +48,7 @@ if __name__=='__main__':
         min_impurity_decrease=0.0,
         ccp_alpha=0.0)
     # ---------- run and save model ---------- #
-
+    
     multivariate_ngboost = MVN_ngboost(n_estimators=max_boosting_iter,
                                        early_stopping_rounds=early_stopping_rounds,
                                        base=base,
