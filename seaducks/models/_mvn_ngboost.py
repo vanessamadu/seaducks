@@ -23,7 +23,8 @@ class MVN_ngboost(NGBRegressor):
                  base: ngboost.learners = default_tree_learner, natural_gradient: bool = True,
                  n_estimators: int = 500, learning_rate: float = 0.01, minibatch_frac: float = 1.0,
                  col_sample: float =1.0, verbose: bool =True, verbose_eval: int = 100, tol: float = 1e-4,
-                 random_state: None | int = config['81-10-9_random_states'][0], validation_fraction: float = 0.09, early_stopping_rounds: None | int = None):
+                 random_state: None | int = config['81-10-9_random_states'][0], validation_fraction: float = 0.09, 
+                 early_stopping_rounds: None | int = None, multi_output : bool = True):
         
         super().__init__(
         Dist=dist,
@@ -41,6 +42,7 @@ class MVN_ngboost(NGBRegressor):
 
         self.validation_fraction = validation_fraction
         self.early_stopping_rounds = early_stopping_rounds
+        self.multi_output = multi_output
 
     def save_model(self, file_name):
         filehandler = open(f"{file_name}.p","wb")
