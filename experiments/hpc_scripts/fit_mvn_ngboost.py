@@ -11,6 +11,7 @@ if __name__=='__main__':
 
     # --------- set up --------- #
     _, eta, min_leaf_data, max_leaves = sys.argv
+    eta = float(eta)
     min_leaf_data = int(min_leaf_data)
     max_leaves = int(max_leaves)
     date = datetime.today().strftime('%d-%m-%Y')
@@ -25,7 +26,7 @@ if __name__=='__main__':
 
     # ---------- load data --------- # 
     path_to_data = r'data\complete_filtered_nao_drifter_dataset.h5'
-    data = pd.read_hdf(path_to_data)
+    data = pd.read_hdf(path_to_data).head(500)
 
     ## separate into explanatory and response variables
     explanatory_var_labels = ['u_av','v_av','lat','lon','day_of_year','Wx','Wy','Tx','Ty','sst_x_derivative','sst_y_derivative']
@@ -42,7 +43,7 @@ if __name__=='__main__':
         max_features=None,
         random_state=None,
         max_leaf_nodes=max_leaves,
-        min_impurity_decrease=None,
+        min_impurity_decrease=0.0,
         ccp_alpha=0.0)
     # ---------- run and save model ---------- #
     multivariate_ngboost = MVN_ngboost(n_estimators=max_boosting_iter,
