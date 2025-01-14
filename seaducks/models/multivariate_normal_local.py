@@ -4,7 +4,152 @@
 import numpy as np
 import scipy 
 from ngboost.distns.distn import RegressionDistn
-from ngboost.distns.multivariate_normal import get_chol_factor, MVNLogScore
+from ngboost.scores import LogScore
+
+
+def get_tril_idxs(p):
+    tril_indices = np.tril_indices(p)
+    mask_diag = tril_indices[0] == tril_indices[1]
+
+    off_diags = np.where(np.invert(mask_diag))[0]
+    diags = np.where(mask_diag)[0]
+
+    return tril_indices, diags, off_diags
+
+
+class MVNLogScore(LogScore):
+    def score(self, Y):
+        return -self.logpdf(Y)
+    def d_score(self, Y):
+        """
+        Formulas for this part taken from the paper mentioned at the start
+
+        Args:
+            Y: The response data
+
+        Returns:
+            self.N, self.n_params shaped array containing the gradient.
+
+        """
+        diff, eta = self.summaries(Y)
+
+        gradient = np.zeros((self.N, self.n_params))
+
+        # Gradient of the mean
+        # N x 1 x p matrix by N x p x p
+        grad_mu = np.expand_dims(eta, 1) @ self.L.transpose(0, 2, 1)
+        grad_mu = grad_mu.squeeze(axis=1)
+        gradient[:, : self.p] = grad_mu
+
+        tril_indices, diags, off_diags = get_tril_idxs(self.p)
+        # Gradient of the diagonal
+        diagonal_elements = np.diagonal(self.L, axis1=1, axis2=2)
+        grad_diag = (
+            diff * np.expand_dims(eta, 2) * np.expand_dims(diagonal_elements, 2) - 1
+        )
+        grad_diag = grad_diag.squeeze(axis=2)
+        grad_reference = gradient[:, self.p :]
+        grad_reference[:, diags] = grad_diag
+        # Off diagonal elements of L gradient:
+        for par_idx in off_diags:
+            i = tril_indices[0][par_idx]
+            j = tril_indices[1][par_idx]
+            grad_reference[:, par_idx] = eta[:, j] * diff[:, i, 0]
+
+        return gradient
+
+    def metric(self):
+
+        """
+        Formulas for this part are not in the the paper mentioned.
+        Obtained by taking the expectation of the Hessian.
+
+
+        Returns:
+            self.N, self.n_params, self.n_params shaped array containing the fisher information for
+             the ith observation in the last two indices.
+
+        """
+        FisherInfo = np.stack([np.identity(self.n_params)] * self.N)
+        # FI of the location
+        FisherInfo[:, : self.p, : self.p] = self.L @ self.L.transpose(0, 2, 1)
+
+        # Get VarComp as a reference to the diagonals.
+        VarComp = FisherInfo[:, self.p :, self.p :]
+
+        # E[diff_i eta_j] is the following
+        cov_sum = self.L.transpose(0, 2, 1) @ self.cov
+
+        tril_indices, diags, off_diags = get_tril_idxs(self.p)
+
+        # Following loop is
+        # E[d^2l / dlog(a_ii) dlog(a_kk)]
+        # and
+        # E[d^2l / dlog(a_ii) dlog(a_kq)]
+        # where a_ik = exp(L_ki) if i=k and a_ik=L_ki otherwise.
+        for diag_idx in diags:
+            i = tril_indices[0][diag_idx]
+            value = (
+                self.L[:, i, i] ** 2 * self.cov[:, i, i]
+                + cov_sum[:, i, i] * self.L[:, i, i]
+            )
+            VarComp[:, diag_idx, diag_idx] = value
+            VarComp[:, diag_idx, diag_idx] = value
+            for par_idx in off_diags:
+                q = tril_indices[0][par_idx]
+                k = tril_indices[1][par_idx]
+                if i == k:
+                    value = self.cov[:, q, i] * self.L[:, i, i]
+                    VarComp[:, diag_idx, par_idx] = value
+                    VarComp[:, par_idx, diag_idx] = value
+
+        # Off diagonals  w.r.t. off diagonals
+        for par_idx in off_diags:
+            j = tril_indices[0][par_idx]
+            i = tril_indices[1][par_idx]
+            for par_idx2 in off_diags:
+                k = tril_indices[0][par_idx2]
+                q = tril_indices[1][par_idx2]
+                if i == q:
+                    value = self.cov[:, k, j]
+                    VarComp[:, par_idx, par_idx2] = value
+                    VarComp[:, par_idx2, par_idx] = value
+        return FisherInfo
+
+
+def get_chol_factor(lower_tri_vals):
+    """
+
+    Args:
+        lower_tri_vals: numpy array, shaped as the number of lower triangular
+                        elements, number of observations.
+                        The values ordered according to np.tril_indices(p)
+                        where p is the dimension of the multivariate normal distn
+
+    Returns:
+        Nxpxp numpy array, with the lower triangle filled in. The diagonal is exponentiated.
+
+    """
+    lower_size, N = lower_tri_vals.shape
+
+    # solve p(p+3)/2 = lower_size to get the
+    # number of dimensions.
+
+    p = (-1 + (1 + 8 * lower_size) ** 0.5) / 2
+    p = int(p)
+
+    if not isinstance(lower_tri_vals, np.ndarray):
+        lower_tri_vals = np.array(lower_tri_vals)
+
+    L = np.zeros((N, p, p))
+    for par_ind, (k, l) in enumerate(zip(*np.tril_indices(p))):
+        if k == l:
+            # Add a small number to avoid singular matrices.
+            L[:, k, l] = np.exp(lower_tri_vals[par_ind, :]) + 1e-6
+        else:
+            L[:, k, l] = lower_tri_vals[par_ind, :]
+    return L
+
 
 class MVN(RegressionDistn):
         """
