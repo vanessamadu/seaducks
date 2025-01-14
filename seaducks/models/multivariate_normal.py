@@ -21,6 +21,8 @@ class MVN(RegressionDistn):
 
         scores = [MVNLogScore]
         multi_output = True
+        k = 2
+        n_params = int(k * (k + 3) / 2)
         
         def __init__(self, params):
             super().__init__(params)
