@@ -50,7 +50,7 @@ class MVN_ngboost(NGBRegressor):
         # Note to self: write for clustered and non-clustered sampling
         ids = (data.groupby('id').size()).index
         train_ids, test_ids, val_ids = train_test_validation_split_ids(ids,
-                                test_frac = test_frac, validation_frac = self.validation_frac, 
+                                test_frac = test_frac, validation_frac = self.validation_fraction, 
                                 random_state = self.random_state, shuffle = shuffle, stratify = stratify)
         
         training_data = data.query('id in @train_ids')
