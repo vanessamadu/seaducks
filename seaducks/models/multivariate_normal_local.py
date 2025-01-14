@@ -169,11 +169,9 @@ class MVN(RegressionDistn):
         k = 2
         n_params = int(k * (k + 3) / 2)
         
-        def __init__(self, params,*,
-                     multi_output:bool = True):
+        def __init__(self, params):
             super().__init__(params)
             self.N = params.shape[1]
-            self.multi_output = multi_output
             # Number of MVN dimensions, =k originally
             self.p = (-3 + (9 + 8 * self.n_params) ** 0.5) / 2
             self.p = int(self.p)
