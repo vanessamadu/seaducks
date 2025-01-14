@@ -7,7 +7,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname('seaducks/models'),
 import pandas as pd
 from seaducks.models._mvn_ngboost import MVN_ngboost
 from sklearn.tree import DecisionTreeRegressor
-from ngboost.distns import MultivariateNormal
+from seaducks.models.multivariate_normal import MVN
 
 if __name__=='__main__':
 
@@ -27,7 +27,8 @@ if __name__=='__main__':
     max_depth = 15
 
     # ---------- load data --------- # 
-    path_to_data = r'/rds/general/user/vm2218/home/phd-project1/SeaDucks/seaducks/data/complete_filtered_nao_drifter_dataset.h5'
+    path_to_data = r'data/complete_filtered_nao_drifter_dataset.h5'
+    #path_to_data = r'/rds/general/user/vm2218/home/phd-project1/SeaDucks/seaducks/data/complete_filtered_nao_drifter_dataset.h5'
     data = pd.read_hdf(path_to_data).head(500)
 
     ## separate into explanatory and response variables
@@ -51,10 +52,8 @@ if __name__=='__main__':
     k = 2
     n_params = int(k * (k + 3) / 2)
     init_array = np.ones([n_params,k])
-    dist = MultivariateNormal(init_array)
-    dist = dist(init_array)
 
-    multivariate_ngboost = MVN_ngboost(dist = dist, n_estimators=max_boosting_iter,
+    multivariate_ngboost = MVN_ngboost(dist = MVN, n_estimators=max_boosting_iter,
                                        early_stopping_rounds=early_stopping_rounds,
                                        base=base,
                                        learning_rate=eta)
