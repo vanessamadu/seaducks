@@ -36,7 +36,6 @@ class MVN_ngboost(NGBRegressor):
         verbose_eval=verbose_eval,
         tol=tol,
         random_state=random_state,
-        validation_fraction=validation_fraction,
         early_stopping_rounds=early_stopping_rounds)
 
     def save_model(self, file_name):
