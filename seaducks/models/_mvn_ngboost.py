@@ -7,8 +7,8 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname('seaducks/models'),
 from ngboost import NGBRegressor
 from ngboost.scores import LogScore
 from ngboost.learners import default_tree_learner
-from seaducks.models.multivariate_normal_local import MVN
-
+#from seaducks.models.multivariate_normal_local import MVN
+from ngboost.distns import MultivariateNormal
 import ngboost.distns
 import ngboost.scores
 import ngboost.learners
@@ -19,7 +19,7 @@ from seaducks.model_selection import train_test_validation_split_ids
 
 class MVN_ngboost(NGBRegressor):
     def __init__(self,*,
-                 dist: ngboost.distns = MVN, score: ngboost.scores = LogScore, 
+                 dist: ngboost.distns = MultivariateNormal(2), score: ngboost.scores = LogScore, 
                  base: ngboost.learners = default_tree_learner, natural_gradient: bool = True,
                  n_estimators: int = 500, learning_rate: float = 0.01, minibatch_frac: float = 1.0,
                  col_sample: float =1.0, verbose: bool =True, verbose_eval: int = 100, tol: float = 1e-4,
