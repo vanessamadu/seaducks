@@ -21,7 +21,7 @@ class MVN_ngboost(NGBRegressor):
                  base: ngboost.learners = default_tree_learner, natural_gradient: bool = True,
                  n_estimators: int = 500, learning_rate: float = 0.01, minibatch_frac: float = 1.0,
                  col_sample: float =1.0, verbose: bool =True, verbose_eval: int = 100, tol: float = 1e-4,
-                 random_state: None | int = config['81-10-9_random_states'][0], validation_fraction: float = 0.09, early_stopping_rounds: int = None):
+                 random_state: None | int = config['81-10-9_random_states'][0], validation_fraction: float = 0.09, early_stopping_rounds: None | int = None):
         
         super().__init__(
         Dist=dist,
@@ -35,20 +35,22 @@ class MVN_ngboost(NGBRegressor):
         verbose=verbose,
         verbose_eval=verbose_eval,
         tol=tol,
-        random_state=random_state,
-        early_stopping_rounds=early_stopping_rounds)
+        random_state=random_state)
+
+        self.validation_fraction = validation_fraction
+        self.early_stopping_rounds = early_stopping_rounds
 
     def save_model(self, file_name):
         filehandler = open(f"{file_name}.p","wb")
         pickle.dump(self,filehandler)
 
     def run_model_and_save(self,data,explanatory_var_labels,response_var_labels,file_name,
-                                test_frac = 0.10, validation_frac = 0.09,
+                                test_frac = 0.10,
                                 shuffle = True, stratify = None):
         # Note to self: write for clustered and non-clustered sampling
         ids = (data.groupby('id').size()).index
         train_ids, test_ids, val_ids = train_test_validation_split_ids(ids,
-                                test_frac = test_frac, validation_frac = validation_frac, 
+                                test_frac = test_frac, validation_frac = self.validation_frac, 
                                 random_state = self.random_state, shuffle = shuffle, stratify = stratify)
         
         training_data = data.query('id in @train_ids')
