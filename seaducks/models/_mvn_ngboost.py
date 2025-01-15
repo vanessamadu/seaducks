@@ -7,8 +7,8 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname('seaducks/models'),
 from ngboost import NGBRegressor
 from ngboost.scores import LogScore
 from ngboost.learners import default_tree_learner
-from seaducks.models.multivariate_normal_local import MultivariateNormal
-#from ngboost.distns import MultivariateNormal
+#from seaducks.models.multivariate_normal_local import MultivariateNormal
+from ngboost.distns import MultivariateNormal
 import ngboost.distns
 import ngboost.scores
 import ngboost.learners
