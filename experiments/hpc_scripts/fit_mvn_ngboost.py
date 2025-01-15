@@ -29,7 +29,7 @@ if __name__=='__main__':
 
     # ---------- load data --------- # 
     path_to_data = r'/rds/general/user/vm2218/home/phd-project1/SeaDucks/seaducks/data/complete_filtered_nao_drifter_dataset.h5'
-    data = pd.read_hdf(path_to_data).head(5000)
+    data = pd.read_hdf(path_to_data).head(50000)
 
     ## separate into explanatory and response variables
     explanatory_var_labels = ['u_av','v_av','lat','lon','day_of_year','Wx','Wy','Tx','Ty','sst_x_derivative','sst_y_derivative']
