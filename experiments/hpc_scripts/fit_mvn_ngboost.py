@@ -34,15 +34,10 @@ if __name__=='__main__':
     # file naming 
 
     date = datetime.today().strftime('%d-%m-%Y')
-    filename = f"mvn_ngboost_eta-{eta}_min_leaf_data-{min_leaf_data}_max_leaves-{max_leaves}_rep-{rep}_date-{date}"
-
-    if not sst_flag:
-        filename = 'without_sst_'+ filename
-    if polar_flag:
-        filename = 'polar_' + filename
-    
+    filename = f"experiment_{index}"
     output_dir = "./"
 
+    print(f'Experiment Date - {date}')
     # --------- set fixed hyperparameters --------- #
     early_stopping_rounds = 50
     max_boosting_iter = 1000
