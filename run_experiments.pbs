@@ -15,7 +15,7 @@ cp $HOME/phd-project1/SeaDucks/seaducks/data/complete_filtered_nao_drifter_datas
 
 # run fit in the temporary directory
 
-python experiments/hpc_scripts/fit_mvn_ngboost.py ${PBS_ARRAY_INDEX} > experiment_${PBS_ARRAY_INDEX}_logs
+python $HOME/phd-project1/SeaDucks/seaducks/experiments/hpc_scripts/fit_mvn_ngboost.py ${PBS_ARRAY_INDEX} > experiment_${PBS_ARRAY_INDEX}_logs
 
 # copy files back
 cp $TMPDIR/experiment_${PBS_ARRAY_INDEX}_logs $HOME/phd-project1/SeaDucks/seaducks/experiment_logs
