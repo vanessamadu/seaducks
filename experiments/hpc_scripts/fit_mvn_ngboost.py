@@ -37,7 +37,6 @@ if __name__=='__main__':
     filename = f"experiment_{index}"
     output_dir = "./"
 
-    print(f'Experiment Date - {date}')
     # --------- set fixed hyperparameters --------- #
     early_stopping_rounds = 50
     max_boosting_iter = 1000
@@ -93,4 +92,25 @@ if __name__=='__main__':
     multivariate_ngboost.run_model_and_save(data,explanatory_var_labels,response_var_labels,filename)
     multivariate_ngboost.save_model(filename)
     end = time.time()
-    print(end-start)
+    runtime = end-start
+
+    # ------------ print useful information -------------- #
+    print(f'\n Experiment Date - {date}')
+
+    print('\n Runtime:')
+    print(f'In seconds: {runtime:.2f}')
+    print(f'In minutes: {runtime/60}')
+    if runtime > 60**2:
+        print(f'In hours: {runtime/60**2}')
+
+    print(f'\n Model Hyperparameters:')
+    param_names = ['learning rate', 'minimum samples per leaf', 'maximum leaves per node', 'replication number', 'Uses SST gradient', 'Uses polar (r,theta) velocity and wind data']
+    params = [eta,min_leaf_data,max_leaves,rep,sst_flag,polar_flag]
+    for ii,param_name in enumerate(param_names):
+        print(f'{param_name}: {params[ii]}')
+    print(f'Max. boosting iterations: {max_boosting_iter}')
+    print(f'Max. tree depth: {max_depth}')
+
+    print(f'\n Implementation information:')
+    print(f'Early stopping rounds: {early_stopping_rounds}')
+    print(f'Configuration ID: {config_id}')
