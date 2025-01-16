@@ -21,8 +21,8 @@ if __name__=='__main__':
         configurations_dict = pickle.load(pickle_file)
 
     index = int(sys.argv[1])
-    rep = np.floor((index-1)/10)
-    config_id = (index-1)%10
+    rep = int(np.floor((index-1)/10))
+    config_id = int((index-1)%10)
 
     eta, min_leaf_data, max_leaves, sst_flag, polar_flag = configurations_dict[config_id]
     random_state = config['81-10-9_random_states'][rep]
