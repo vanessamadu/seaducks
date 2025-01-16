@@ -3,23 +3,44 @@ import os
 from datetime import datetime
 import pandas as pd
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname('seaducks/models'), '..')))
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname('seaducks/config'), '..')))
+from seaducks.config import config
 import pandas as pd
 from seaducks.models._mvn_ngboost import MVN_ngboost
 from sklearn.tree import DecisionTreeRegressor
 import time
+import pickle
+import numpy as np
 
 
 if __name__=='__main__':
 
     start = time.time()
     # --------- set up --------- #
-    _, eta, min_leaf_data, max_leaves = sys.argv
+    with open('module_configuration_ids.p', 'rb') as pickle_file:
+        configurations_dict = pickle.load(pickle_file)
+
+    index = int(sys.argv[1])
+    rep = np.floor((index-1)/10)
+    config_id = (index-1)%10
+
+    eta, min_leaf_data, max_leaves, sst_flag, polar_flag = configurations_dict[config_id]
+    random_state = config['81-10-9_random_states'][rep]
+
     eta = float(eta)
     min_leaf_data = int(min_leaf_data)
     max_leaves = int(max_leaves)
-    date = datetime.today().strftime('%d-%m-%Y')
+    
+    # file naming 
 
-    filename = f"mvn_ngboost_eta-{eta}_min_leaf_data-{min_leaf_data}_max_leaves-{max_leaves}_date-{date}"
+    date = datetime.today().strftime('%d-%m-%Y')
+    filename = f"mvn_ngboost_eta-{eta}_min_leaf_data-{min_leaf_data}_max_leaves-{max_leaves}_rep-{rep}_date-{date}"
+
+    if not sst_flag:
+        filename = 'without_sst_'+ filename
+    if polar_flag:
+        filename = 'polar_' + filename
+    
     output_dir = "./"
 
     # --------- set fixed hyperparameters --------- #
@@ -29,10 +50,30 @@ if __name__=='__main__':
 
     # ---------- load data --------- # 
     path_to_data = r'/rds/general/user/vm2218/home/phd-project1/SeaDucks/seaducks/data/complete_filtered_nao_drifter_dataset.h5'
-    data = pd.read_hdf(path_to_data).head(50000)
+    data = pd.read_hdf(path_to_data)
 
     ## separate into explanatory and response variables
-    explanatory_var_labels = ['u_av','v_av','lat','lon','day_of_year','Wx','Wy','Tx','Ty','sst_x_derivative','sst_y_derivative']
+    ## -------- data_config_options ----------- ##
+    not_polar_with_sst_explanatory_var_labels = ['u_av','v_av','lat','lon','day_of_year','Wx','Wy','Tx','Ty','sst_x_derivative','sst_y_derivative']
+    not_polar_without_sst_explanatory_var_labels = ['u_av','v_av','lat','lon','day_of_year','Wx','Wy','Tx','Ty']
+    polar_with_sst_explanatory_var_labels = ['R_vel_av','arg_vel_av','lat','lon','day_of_year','R_wind_speed','arg_wind_speed','R_wind_stress','arg_wind_stress','sst_x_derivative','sst_y_derivative']
+    polar_with_without_sst_explanatory_var_labels = ['R_vel_av','arg_vel_av','lat','lon','day_of_year','R_wind_speed','arg_wind_speed','R_wind_stress','arg_wind_stress']
+    ##----------------------------------------- ##
+
+    input_data_configs = [not_polar_with_sst_explanatory_var_labels,
+                          polar_with_sst_explanatory_var_labels,
+                          not_polar_without_sst_explanatory_var_labels,
+                          polar_with_without_sst_explanatory_var_labels]
+
+    reduced_id_options = [0,2] # non-polar
+    if polar_flag:
+        reduced_id_options = [1,3] #polar
+    
+    if sst_flag:
+        explanatory_var_labels = input_data_configs[reduced_id_options[0]]
+    else:
+        explanatory_var_labels = input_data_configs[reduced_id_options[1]]
+
     response_var_labels = ['u','v']
 
     # -------- create base learners -------- # 
