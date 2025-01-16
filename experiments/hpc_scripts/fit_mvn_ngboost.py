@@ -17,7 +17,7 @@ if __name__=='__main__':
 
     start = time.time()
     # --------- set up --------- #
-    with open('model_configuration_ids.p', 'rb') as pickle_file:
+    with open('./model_configuration_ids.p', 'rb') as pickle_file:
         configurations_dict = pickle.load(pickle_file)
 
     index = int(sys.argv[1])
@@ -44,7 +44,7 @@ if __name__=='__main__':
     max_depth = 15
 
     # ---------- load data --------- # 
-    path_to_data = r'/rds/general/user/vm2218/home/phd-project1/SeaDucks/seaducks/data/complete_filtered_nao_drifter_dataset.h5'
+    path_to_data = r'./complete_filtered_nao_drifter_dataset.h5'
     data = pd.read_hdf(path_to_data).head(5000)
 
     ## separate into explanatory and response variables
