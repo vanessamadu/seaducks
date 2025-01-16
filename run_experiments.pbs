@@ -1,3 +1,4 @@
+#!/bin/bash
 #PBS -l walltime=2:00:00
 #PBS -l select=1:ncpus=1:mem=4gb
 #PBS -J 1-2
@@ -7,12 +8,16 @@ eval "$(mamba shell hook --shell bash)"
 export MAMBA_ROOT_PREFIX="/rds/general/user/vm2218/home/anaconda3"
 mamba activate SeaDucks
 
-cd $PBS_O_WORKDIR
+# copy read files to the temporary directory
+
+cp $HOME/phd-project1/SeaDucks/seaducks/model_configuration_ids.p $TMPDIR
+cp $HOME/phd-project1/SeaDucks/seaducks/data/complete_filtered_nao_drifter_dataset.h5 $TMPDIR
+
+# run fit in the temporary directory
 
 python experiments/hpc_scripts/fit_mvn_ngboost.py ${PBS_ARRAY_INDEX} > experiment_${PBS_ARRAY_INDEX}_logs
 
-mv $PBS_O_WORKDIR/experiment_${PBS_ARRAY_INDEX}_logs $PBS_O_WORKDIR/phd-project1/SeaDucks/seaducks/experiment_logs
-mv $PBS_O_WORKDIR/experiment_${PBS_ARRAY_INDEX}.p $PBS_O_WORKDIR/phd-project1/SeaDucks/seaducks/fit_models
-mv $PBS_O_WORKDIR/experiment_${PBS_ARRAY_INDEX}test_data.p $PBS_O_WORKDIR/phd-project1/SeaDucks/seaducks/model_test_data
-
-
+# copy files back
+cp $TMPDIR/experiment_${PBS_ARRAY_INDEX}_logs $HOME/phd-project1/SeaDucks/seaducks/experiment_logs
+cp $TMPDIR/experiment_${PBS_ARRAY_INDEX}.p $HOME/phd-project1/SeaDucks/seaducks/fit_models
+cp $TMPDIR/experiment_${PBS_ARRAY_INDEX}test_data.p $HOME/phd-project1/SeaDucks/seaducks/model_test_data
