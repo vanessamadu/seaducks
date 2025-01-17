@@ -21,7 +21,7 @@ if __name__=='__main__':
         configurations_dict = pickle.load(pickle_file)
 
     index = int(sys.argv[1])
-    rep = int(np.floor((index-1)/10))
+    rep = int(np.floor((index-1)/10))%10
     config_id = int((index-1)%10)
 
     eta, min_leaf_data, max_leaves, sst_flag, polar_flag = configurations_dict[config_id]
@@ -113,4 +113,4 @@ if __name__=='__main__':
 
     print(f'\n Implementation information:')
     print(f'Early stopping rounds: {early_stopping_rounds}')
-    print(f'Configuration ID: {config_id}')
+    print(f'Configuration ID: {index}')
