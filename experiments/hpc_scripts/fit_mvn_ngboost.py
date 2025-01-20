@@ -22,7 +22,7 @@ if __name__=='__main__':
 
     index = int(sys.argv[1])
     rep = int(np.floor((index-1)/10))%10
-    config_id = int((index-1)%10)
+    config_id = int(np.floor((index-1)/10))
 
     eta, min_leaf_data, max_leaves, sst_flag, polar_flag = configurations_dict[config_id]
     random_state = config['81-10-9_random_states'][rep]
@@ -113,4 +113,5 @@ if __name__=='__main__':
 
     print(f'\n Implementation information:')
     print(f'Early stopping rounds: {early_stopping_rounds}')
-    print(f'Configuration ID: {index}')
+    print(f'Experiment ID: {index}')
+    print(f'Configuration ID: {config_id}')
