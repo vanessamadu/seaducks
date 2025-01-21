@@ -34,12 +34,12 @@ if __name__=='__main__':
     # file naming 
 
     date = datetime.today().strftime('%d-%m-%Y')
-    filename = f"experiment_{index}"
+    filename =f"experiment_{index}_early_stopping_100"
     output_dir = "./"
 
     # --------- set fixed hyperparameters --------- #
-    early_stopping_rounds = 50
-    max_boosting_iter = 1000
+    early_stopping_rounds = 100
+    max_boosting_iter = 10000
     max_depth = 15
 
     # ---------- load data --------- # 
