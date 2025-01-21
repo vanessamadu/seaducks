@@ -13,10 +13,9 @@ def rmse(vec1,vec2):
     return np.sqrt(np.mean(np.square(vec1-vec2)))
 
 # initialisation
-num_experiments = 20
+num_experiments = 1440
 experiment_results = pd.DataFrame(columns=['Experiment ID','RMSE'])
 root_dir = r'./'
-root_dir = r'C:\Users\vm2218\OneDrive - Imperial College London\PhD Project\seaducks\experiments\hpc_runs\16-01-2025'
 date = datetime.today().strftime('%d-%m-%Y')
 experiment_results['experiment ID'] = np.arange(1,num_experiments+1,dtype=int)
 experiment_results['config ID'] = experiment_results['experiment ID'].apply(lambda x: int(np.floor(x/10)))
