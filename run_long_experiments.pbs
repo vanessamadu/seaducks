@@ -10,7 +10,7 @@ mamba activate SeaDucks
 
 cd $PBS_O_WORKDIR
 
-python experiments/hpc_scripts/fit_mvn_ngboost_by_id.py ${PBS_ARRAY_INDEX} > experiments/mvn_ngboost_fit_experiments/early_stopping_50/20-01-2025_100_replications/out/full_experiment_${PBS_ARRAY_INDEX}_early_stopping_50_logs
+python experiments/hpc_scripts/fit_mvn_ngboost_by_id.py ${PBS_ARRAY_INDEX} > full_experiment_${PBS_ARRAY_INDEX}_early_stopping_50_logs
 
 # copy files back
 full_experiment_{index}_early_stopping_50
