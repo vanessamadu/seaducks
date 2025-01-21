@@ -3,16 +3,20 @@ import pickle
 import sys
 import os
 import numpy as np
+import time
+import datetime
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname('seaducks'), '..')))
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname('seaducks/models'), '..')))
 
+start = time.time()
 def rmse(vec1,vec2):
     return np.sqrt(np.mean(np.square(vec1-vec2)))
 
 # initialisation
-num_experiments = 2
+num_experiments = 20
 experiment_results = pd.DataFrame(index= pd.RangeIndex(1, num_experiments + 1),columns=['RMSE'])
-root_dir = 'C:\Users\vm2218\OneDrive - Imperial College London\PhD Project\seaducks\experiments\hpc_runs\16-01-2025'
+root_dir = r'./'
+date = datetime.today().strftime('%d-%m-%Y')
 
 for ii in range(1,num_experiments+1):
     with open(fr'{root_dir}\model_test_data/experiment_{ii}test_data.p', 'rb') as pickle_file:
@@ -34,7 +38,23 @@ for ii in range(1,num_experiments+1):
 # group by configuration index and take the mean over each group
 grouped = experiment_results.groupby(np.floor(experiment_results.index/10)).mean() 
 grouped.index = grouped.index.astype(int)
+grouped.sort_values('RMSE', ascending=True,inplace=True)
 
-file_name = 'grid_search'
+file_name = 'full_experiment_grid_search'
 filehandler = open(f"{file_name}.p","wb")
 pickle.dump(grouped,filehandler)
+end = time.time()
+
+runtime = end-start
+# ------------ print useful information -------------- #
+print(f'\n Experiment Date - {date}')
+
+print('\n Runtime:')
+print(f'In seconds: {runtime:.2f}')
+print(f'In minutes: {runtime/60}')
+if runtime > 60**2:
+    print(f'In hours: {runtime/60**2}')
+
+print(f'\n Top 5 models:')
+print(grouped.head(5))
+
