@@ -21,21 +21,25 @@ experiment_results['experiment ID'] = np.arange(1,num_experiments+1,dtype=int)
 experiment_results['config ID'] = experiment_results['experiment ID'].apply(lambda x: int(np.floor(x/10)))
 
 for ii in range(1,num_experiments+1):
-    with open(fr'{root_dir}model_test_data/experiment_{ii}test_data.p', 'rb') as pickle_file:
-        test_data = pickle.load(pickle_file)
+    try:
+        with open(fr'{root_dir}model_test_data/experiment_{ii}test_data.p', 'rb') as pickle_file:
+            test_data = pickle.load(pickle_file)
 
-    with open(fr'{root_dir}fit_models/experiment_{ii}.p', 'rb') as pickle_file:
-        model = pickle.load(pickle_file)
+        with open(fr'{root_dir}fit_models/experiment_{ii}.p', 'rb') as pickle_file:
+            model = pickle.load(pickle_file)
 
-    predicted_distribution = test_data[1]
-    testing_data = test_data[0]
-    locs, covs = predicted_distribution
-    testing_data.loc[:,'mvn_ngb_prediction_u'] = locs[:,0]
-    testing_data.loc[:,'mvn_ngb_prediction_v'] = locs[:,1]
+        predicted_distribution = test_data[1]
+        testing_data = test_data[0]
+        locs, covs = predicted_distribution
+        testing_data.loc[:,'mvn_ngb_prediction_u'] = locs[:,0]
+        testing_data.loc[:,'mvn_ngb_prediction_v'] = locs[:,1]
 
-    # multiply by 100 to convert to cm/s
-    rmse_val = 100*rmse(np.array(testing_data[['u','v']]),np.array(testing_data[['mvn_ngb_prediction_u','mvn_ngb_prediction_v']]))
-    experiment_results.loc[ii,'RMSE'] = rmse_val
+        # multiply by 100 to convert to cm/s
+        rmse_val = 100*rmse(np.array(testing_data[['u','v']]),np.array(testing_data[['mvn_ngb_prediction_u','mvn_ngb_prediction_v']]))
+        experiment_results.loc[ii,'RMSE'] = rmse_val
+    except OSError:
+        print(f'Experiment {ii} not found')
+        continue
 
 # group by configuration index and take the mean over each group
 grouped = experiment_results.groupby('config ID').mean() 
