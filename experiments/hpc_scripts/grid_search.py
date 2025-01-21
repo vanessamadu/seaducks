@@ -15,7 +15,7 @@ def rmse(vec1,vec2):
 # initialisation
 num_experiments = 1440
 experiment_results = pd.DataFrame(columns=['Experiment ID','RMSE'])
-root_dir = r'./'
+root_dir = r'./experiments/'
 date = datetime.today().strftime('%d-%m-%Y')
 experiment_results['experiment ID'] = np.arange(1,num_experiments+1,dtype=int)
 experiment_results['config ID'] = experiment_results['experiment ID'].apply(lambda x: int(np.floor(x/10)))
