@@ -9,18 +9,16 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname('seaducks/models'),
 def rmse(vec1,vec2):
     return np.sqrt(np.mean(np.square(vec1-vec2)))
 
-def mae(vec1,vec2):
-    return np.mean(np.abs(vec1-vec2))
-
+# initialisation
 num_experiments = 2
+experiment_results = pd.DataFrame(index= pd.RangeIndex(1, num_experiments + 1),columns=['RMSE'])
+root_dir = 'C:\Users\vm2218\OneDrive - Imperial College London\PhD Project\seaducks\experiments\hpc_runs\16-01-2025'
 
-experiment_results = pd.DataFrame(index= pd.RangeIndex(1, num_experiments + 1),columns=['RMSE', 'MAE', 'MAAO', 'NLL'])
-
-for ii in range(1,4):
-    with open(fr'C:\Users\vm2218\OneDrive - Imperial College London\PhD Project\seaducks\experiments\hpc_runs\16-01-2025\model_test_data/experiment_{ii}test_data.p', 'rb') as pickle_file:
+for ii in range(1,num_experiments+1):
+    with open(fr'{root_dir}\model_test_data/experiment_{ii}test_data.p', 'rb') as pickle_file:
         test_data = pickle.load(pickle_file)
 
-    with open(fr'C:\Users\vm2218\OneDrive - Imperial College London\PhD Project\seaducks\experiments\hpc_runs\16-01-2025/fit_models/experiment_{ii}.p', 'rb') as pickle_file:
+    with open(fr'{root_dir}/fit_models/experiment_{ii}.p', 'rb') as pickle_file:
         model = pickle.load(pickle_file)
 
     predicted_distribution = test_data[1]
@@ -30,22 +28,13 @@ for ii in range(1,4):
     testing_data.loc[:,'mvn_ngb_prediction_v'] = locs[:,1]
 
     # multiply by 100 to convert to cm/s
-
     rmse_val = 100*rmse(np.array(testing_data[['u','v']]),np.array(testing_data[['mvn_ngb_prediction_u','mvn_ngb_prediction_v']]))
     experiment_results.loc[ii,'RMSE'] = rmse_val
 
-    mae_val = 100*mae(np.array(testing_data[['u','v']]),np.array(testing_data[['mvn_ngb_prediction_u','mvn_ngb_prediction_v']]))
-    experiment_results.loc[ii,'MAE'] = mae_val
-
-    maao_val = testing_data.apply(lambda row: np.rad2deg(np.arccos(np.dot(np.array(row[['mvn_ngb_prediction_u','mvn_ngb_prediction_v']]),
-                                                                   np.array(row[['u','v']]))/(np.linalg.norm(row[['mvn_ngb_prediction_u','mvn_ngb_prediction_v']])*np.linalg.norm(np.array(row[['u','v']]))))),axis=1)
-    experiment_results.loc[ii,'MAAO'] = maao_val.mean()
-
-    nll_val = testing_data.apply(lambda row: -model.logpdf())
-    print(f"success, ii: {ii}")
-
-    
-
-grouped = experiment_results.groupby(np.floor(experiment_results.index/10)).mean()
+# group by configuration index and take the mean over each group
+grouped = experiment_results.groupby(np.floor(experiment_results.index/10)).mean() 
 grouped.index = grouped.index.astype(int)
-print(grouped)
+
+file_name = 'grid_search'
+filehandler = open(f"{file_name}.p","wb")
+pickle.dump(grouped,filehandler)
