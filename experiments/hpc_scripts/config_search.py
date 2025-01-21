@@ -8,11 +8,13 @@ def model_config_verbose(experiment_ID,model_filepath):
     config = model_configs[config_id]
 
     # ------------ print useful information -------------- #
+    print(f'\nexperiment ID: {experiment_ID}')
     print(f'config ID: {config_id}')
+    print(f'replication: {(experiment_ID-1)%10}')
     print('\n Hyperparameter Values')
     print('---------------------------')
 
-    print(f'eta: {config[0]}')
+    print(f'learning rate: {config[0]}')
     print(f'min. data per leaf: {config[1]}')
     print(f'max. leaves per node: {config[2]}')
 
