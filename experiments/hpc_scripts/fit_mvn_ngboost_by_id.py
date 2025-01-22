@@ -18,14 +18,15 @@ if __name__=='__main__':
     start = time.time()
     # --------- set up --------- #
     # to run 100 times #
+    num_reps = 100
 
     with open('./model_configuration_ids.p', 'rb') as pickle_file:
         configurations_dict = pickle.load(pickle_file)
 
     config_ids = [36,41,38,11]
     index = int(sys.argv[1])
-    rep = int(np.floor((index-1)))%100
-    config_id = config_ids[int(np.floor((index-1)/100))]
+    rep = int(np.floor((index-1)))%num_reps
+    config_id = config_ids[int(np.floor((index-1)/num_reps))]
 
     eta, min_leaf_data, max_leaves, sst_flag, polar_flag = configurations_dict[config_id]
     random_state = config['81-10-9_random_states'][rep]
