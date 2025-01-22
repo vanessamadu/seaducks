@@ -24,7 +24,7 @@ if __name__=='__main__':
 
     config_ids = [36,41,38,11]
     index = int(sys.argv[1])
-    rep = int(np.floor((index-1)/100))%10
+    rep = int(np.floor((index-1)))%100
     config_id = config_ids[int(np.floor((index-1)/100))]
 
     eta, min_leaf_data, max_leaves, sst_flag, polar_flag = configurations_dict[config_id]
