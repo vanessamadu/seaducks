@@ -20,8 +20,10 @@ if __name__=='__main__':
     with open('./model_configuration_ids.p', 'rb') as pickle_file:
         configurations_dict = pickle.load(pickle_file)
 
+    num_reps = 10
+
     index = int(sys.argv[1])
-    rep = int(np.floor((index-1)))%10
+    rep = int(index-1)%num_reps
     config_id = int(np.floor((index-1)/10))
 
     eta, min_leaf_data, max_leaves, sst_flag, polar_flag = configurations_dict[config_id]
