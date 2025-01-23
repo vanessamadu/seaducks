@@ -3,7 +3,8 @@ import numpy as np
 import pickle
 
 rootdir = r'/rds/general/user/vm2218/home/phd-project1/SeaDucks/seaducks/'
-with open(r'81_10_9_seed_indices.p', 'rb') as pickle_file:
+#rootdir = r"C:\Users\vm2218\OneDrive - Imperial College London\PhD Project\seaducks/"
+with open(fr'{rootdir}81_10_9_seed_indices.p', 'rb') as pickle_file:
     seeds = pickle.load(pickle_file)
 
 config = {
