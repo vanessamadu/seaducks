@@ -17,34 +17,34 @@ if __name__=='__main__':
 
     start = time.time()
     # --------- set up --------- #
-    # to run 100 times #
-    num_reps = 100
-
+    # load configuration ID look up
     with open('./model_configuration_ids.p', 'rb') as pickle_file:
         configurations_dict = pickle.load(pickle_file)
+    
+    num_reps = 100
+    config_ids = [] # optimal hyperparameters
 
-    config_ids = [36,41,38,11]
+    # initialise indexing
     index = int(sys.argv[1])
     rep = int(index-1)%num_reps
     config_id = config_ids[int(np.floor((index-1)/num_reps))]
-
+    
+    # initialise hyperparameter values and other configuration information
     eta, min_leaf_data, max_leaves, sst_flag, polar_flag = configurations_dict[config_id]
-    random_state = config['81-10-9_random_states'][rep]
-
     eta = float(eta)
     min_leaf_data = int(min_leaf_data)
     max_leaves = int(max_leaves)
+    random_state = config['81-10-9_random_states'][rep]
     
-    # file naming 
-
-    date = datetime.today().strftime('%d-%m-%Y')
-    filename = f"full_experiment_{index}_early_stopping_50"
-    output_dir = "./"
-
     # --------- set fixed hyperparameters --------- #
-    early_stopping_rounds = 50
-    max_boosting_iter = 1000
+    early_stopping_rounds = 100
+    max_boosting_iter = 10000
     max_depth = 15
+
+    # file naming 
+    date = datetime.today().strftime('%d-%m-%Y')
+    filename = f"full_experiment_{index}_early_stopping_{early_stopping_rounds}"
+    output_dir = "./"
 
     # ---------- load data --------- # 
     path_to_data = r'./data/complete_filtered_nao_drifter_dataset.h5'
@@ -83,7 +83,7 @@ if __name__=='__main__':
         min_samples_leaf=min_leaf_data,
         min_weight_fraction_leaf=0.0,
         max_features=None,
-        random_state=None,
+        random_state=random_state,
         max_leaf_nodes=max_leaves,
         min_impurity_decrease=0.0,
         ccp_alpha=0.0)
@@ -92,7 +92,8 @@ if __name__=='__main__':
     multivariate_ngboost = MVN_ngboost(n_estimators=max_boosting_iter,
                                        early_stopping_rounds=early_stopping_rounds,
                                        base=base,
-                                       learning_rate=eta)
+                                       learning_rate=eta,
+                                       random_state = random_state)
     multivariate_ngboost.run_model_and_save(data,explanatory_var_labels,response_var_labels,filename)
     multivariate_ngboost.save_model(filename)
     end = time.time()
@@ -121,3 +122,5 @@ if __name__=='__main__':
     print(f'Early stopping rounds: {early_stopping_rounds}')
     print(f'Experiment ID: {index}')
     print(f'Configuration ID: {config_id}')
+    print(f'Replication Number: {rep}')
+    print(f'Random Seed Index: {config['81-10-9_random_seeds'][rep]}')
