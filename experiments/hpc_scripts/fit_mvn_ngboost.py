@@ -1,40 +1,43 @@
+# load Python modules
 import sys
 import os
 from datetime import datetime
 import pandas as pd
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname('seaducks/models'), '..')))
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname('seaducks/config'), '..')))
-from seaducks.config import config
 import pandas as pd
-from seaducks.models._mvn_ngboost import MVN_ngboost
 from sklearn.tree import DecisionTreeRegressor
 import time
 import pickle
 import numpy as np
 
+# load SeaDucks modules
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname('seaducks/models'), '..')))
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname('seaducks/config'), '..')))
+from seaducks.config import config
+from seaducks.models._mvn_ngboost import MVN_ngboost
 
 if __name__=='__main__':
 
     start = time.time()
     # --------- set up --------- #
+    # load configuration ID look up
     with open('./model_configuration_ids.p', 'rb') as pickle_file:
         configurations_dict = pickle.load(pickle_file)
 
     num_reps = 10
 
+    # initialise indexing
     index = int(sys.argv[1])
     rep = int(index-1)%num_reps
-    config_id = int(np.floor((index-1)/10))
+    config_id = int(np.floor((index-1)/num_reps))
 
+    # initialise hyperparameter values and other configuration information
     eta, min_leaf_data, max_leaves, sst_flag, polar_flag = configurations_dict[config_id]
-    random_state = config['81-10-9_random_states'][rep]
-
     eta = float(eta)
     min_leaf_data = int(min_leaf_data)
     max_leaves = int(max_leaves)
+    random_state = config['81-10-9_random_states'][rep]
     
     # file naming 
-
     date = datetime.today().strftime('%d-%m-%Y')
     filename =f"experiment_{index}_early_stopping_100"
     output_dir = "./"
@@ -81,7 +84,7 @@ if __name__=='__main__':
         min_samples_leaf=min_leaf_data,
         min_weight_fraction_leaf=0.0,
         max_features=None,
-        random_state=None,
+        random_state=random_state,
         max_leaf_nodes=max_leaves,
         min_impurity_decrease=0.0,
         ccp_alpha=0.0)
@@ -90,7 +93,8 @@ if __name__=='__main__':
     multivariate_ngboost = MVN_ngboost(n_estimators=max_boosting_iter,
                                        early_stopping_rounds=early_stopping_rounds,
                                        base=base,
-                                       learning_rate=eta)
+                                       learning_rate=eta,
+                                       random_state=random_state)
     multivariate_ngboost.run_model_and_save(data,explanatory_var_labels,response_var_labels,filename)
     multivariate_ngboost.save_model(filename)
     end = time.time()
@@ -117,5 +121,7 @@ if __name__=='__main__':
 
     print(f'\n Implementation information:')
     print(f'Early stopping rounds: {early_stopping_rounds}')
+    print(f'Replication Number: {rep}')
     print(f'Experiment ID: {index}')
+    print(f'Random Seed Index: {config['81-10-9_random_seeds'][rep]}')
     print(f'Configuration ID: {config_id}')
