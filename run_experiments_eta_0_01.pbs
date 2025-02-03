@@ -1,9 +1,9 @@
 #!/bin/bash
-#PBS -l walltime=8:00:00
-#PBS -l select=1:ncpus=1:mem=1gb
-#PBS -J 1-960
+#PBS -l walltime=36:00:00
+#PBS -l select=1:ncpus=2:mem=2gb
+#PBS -J 961-1440
 
-# for LR 1 and 0.1 (config IDs 0 - 95)
+# for LR 0.01 (config IDs 96 - 143)
 module load anaconda3/personal
 eval "$(mamba shell hook --shell bash)"
 export MAMBA_ROOT_PREFIX="$HOME/anaconda3"
