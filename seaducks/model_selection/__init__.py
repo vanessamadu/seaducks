@@ -3,23 +3,21 @@ import numpy as np
 
 def train_test_validation_split(X, Y,*,
                                 test_frac = 0.10, validation_frac = 0.09, 
-                                random_state = None, shuffle = True, stratify = None):
-    
+                                random_seed_idx = None, shuffle = True, stratify = None):
     X_aux, X_test, Y_aux, Y_test = train_test_split(X, Y, 
-                                                        test_size=test_frac, random_state = random_state, shuffle = shuffle, stratify = stratify)
+                                                        test_size=test_frac, random_state = np.random.seed(random_seed_idx), shuffle = shuffle, stratify = stratify)
     if validation_frac == 0:
         return X_aux, X_test, Y_aux, Y_test
     else:
         X_train, X_val, Y_train, Y_val = train_test_split(X_aux, Y_aux,
-                                                        test_size=validation_frac/(1 - test_frac), random_state = random_state, shuffle = shuffle, stratify = stratify)
+                                                        test_size=validation_frac/(1 - test_frac), random_state = np.random.seed(random_seed_idx), shuffle = shuffle, stratify = stratify)
         return X_train, X_test, X_val, Y_train, Y_test, Y_val
     
 def train_test_validation_split_ids(ids,*,
                                 test_frac = 0.10, validation_frac = 0.09, 
-                                random_state = None, shuffle = True, stratify = None, masks=False):
-    
+                                random_seed_idx = None, shuffle = True, stratify = None, masks=False):
     id_aux, id_test  = train_test_split(ids, 
-                                        test_size=test_frac, random_state = random_state, shuffle = shuffle, stratify = stratify)
+                                        test_size=test_frac, random_state= np.random.seed(random_seed_idx), shuffle = shuffle, stratify = stratify)
     if validation_frac == 0:
         if masks:
             return np.in1d(ids,id_aux), np.in1d(ids,id_test)
@@ -27,7 +25,7 @@ def train_test_validation_split_ids(ids,*,
             return id_aux, id_test
     else:
         id_train, id_val = train_test_split(id_aux,
-                                                        test_size=validation_frac/(1 - test_frac), random_state = random_state, shuffle = shuffle, stratify = stratify)
+                                                        test_size=validation_frac/(1 - test_frac), random_state= np.random.seed(random_seed_idx), shuffle = shuffle, stratify = stratify)
         if masks:
             return np.in1d(ids,id_train), np.in1d(ids,id_test), np.in1d(ids,id_val)
         else:
