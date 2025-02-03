@@ -1,5 +1,7 @@
 import os
 import sys
+import random
+import numpy as np
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname('seaducks/model_selection'), '..')))
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname('seaducks/config'), '..')))
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname('seaducks/models'), '..')))
@@ -14,16 +16,15 @@ import ngboost.scores
 import ngboost.learners
 
 import pickle
-from seaducks.config import config
 from seaducks.model_selection import train_test_validation_split_ids
 
 class MVN_ngboost(NGBRegressor):
-    def __init__(self,*,
+    def __init__(self, random_seed_idx,*,
                  dist: ngboost.distns = MultivariateNormal(2), score: ngboost.scores = LogScore, 
                  base: ngboost.learners = default_tree_learner, natural_gradient: bool = True,
                  n_estimators: int = 500, learning_rate: float = 0.01, minibatch_frac: float = 1.0,
                  col_sample: float =1.0, verbose: bool =True, verbose_eval: int = 100, tol: float = 1e-4,
-                 random_state, validation_fraction: float = 0.09, 
+                 validation_fraction: float = 0.09, 
                  early_stopping_rounds: None | int = None):
         
         super().__init__(
@@ -38,14 +39,16 @@ class MVN_ngboost(NGBRegressor):
         verbose=verbose,
         verbose_eval=verbose_eval,
         tol=tol,
-        random_state=random_state)
+        random_state=np.random.seed(random_seed_idx))
 
         self.validation_fraction = validation_fraction
         self.early_stopping_rounds = early_stopping_rounds
+        self.random_seed_idx = random_seed_idx
 
     def save_model(self, file_name):
         filehandler = open(f"{file_name}.p","wb")
         pickle.dump(self,filehandler)
+        print(self.random_seed_idx)
 
     def run_model_and_save(self,data,explanatory_var_labels,response_var_labels,file_name,
                                 test_frac = 0.10,
@@ -54,7 +57,7 @@ class MVN_ngboost(NGBRegressor):
         ids = (data.groupby('id').size()).index
         train_ids, test_ids, val_ids = train_test_validation_split_ids(ids,
                                 test_frac = test_frac, validation_frac = self.validation_fraction, 
-                                random_state = self.random_state, shuffle = shuffle, stratify = stratify)
+                                random_seed_idx = self.random_seed_idx, shuffle = shuffle, stratify = stratify)
         
         training_data = data.query('id in @train_ids')
         testing_data = data.query('id in @test_ids')
