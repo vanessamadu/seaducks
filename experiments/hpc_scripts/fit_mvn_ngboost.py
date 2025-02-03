@@ -35,12 +35,11 @@ if __name__=='__main__':
     eta = float(eta)
     min_leaf_data = int(min_leaf_data)
     max_leaves = int(max_leaves)
-    #random_state = config['81-10-9_random_states'][rep]
-    random_seed_idx = config['81-10-9_random_seeds'][rep]
+    random_seed_idx = config['81-10-9_random_seeds'][rep] # get random seed indices that produce 81-10-9 split
     
     # file naming 
     date = datetime.today().strftime('%d-%m-%Y')
-    filename =f"experiment_{index}_early_stopping_100"
+    filename =f"experiment_{index}_date_{date}_early_stopping_100"
     output_dir = "./"
 
     # --------- set fixed hyperparameters --------- #
@@ -50,7 +49,7 @@ if __name__=='__main__':
 
     # ---------- load data --------- # 
     path_to_data = r'./data/complete_filtered_nao_drifter_dataset.h5'
-    data = pd.read_hdf(path_to_data).head(500)
+    data = pd.read_hdf(path_to_data)
 
     ## separate into explanatory and response variables
     ## -------- data_config_options ----------- ##
@@ -91,10 +90,10 @@ if __name__=='__main__':
         ccp_alpha=0.0)
     # ---------- run and save model ---------- #
     
-    multivariate_ngboost = MVN_ngboost(random_seed_idx, n_estimators=max_boosting_iter,
+    multivariate_ngboost = MVN_ngboost(n_estimators=max_boosting_iter,
                                        early_stopping_rounds=early_stopping_rounds,
                                        base=base,
-                                       learning_rate=eta
+                                       learning_rate=eta, random_seed_idx=random_seed_idx
                                        )
     multivariate_ngboost.run_model_and_save(data,explanatory_var_labels,response_var_labels,filename)
     multivariate_ngboost.save_model(filename)
@@ -124,5 +123,5 @@ if __name__=='__main__':
     print(f'Early stopping rounds: {early_stopping_rounds}')
     print(f'Replication Number: {rep}')
     print(f'Experiment ID: {index}')
-    #print(f'Random Seed Index: {config['81-10-9_random_seeds'][rep]}')
+    print(f'Random Seed Index: {random_seed_idx}')
     print(f'Configuration ID: {config_id}')
