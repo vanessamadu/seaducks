@@ -16,7 +16,7 @@ def rmse(vec1,vec2):
 num_experiments = 1440
 num_reps = 10
 experiment_results = pd.DataFrame(columns=['Experiment ID','RMSE'])
-root_dir = r'/rds/general/user/vm2218/home/phd-project1/SeaDucks/seaducks/experiments/mvn_ngboost_fit_experiments/early_stopping_100'
+root_dir = r'/rds/general/user/vm2218/home/phd-project1/SeaDucks/seaducks/experiments/mvn_ngboost_fit_experiments/early_stopping_100/'
 file_prefix = "experiment_"
 file_suffix = "_early_stopping_100"
 date = datetime.today().strftime('%d-%m-%Y')
