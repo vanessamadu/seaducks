@@ -1,6 +1,5 @@
 import os
 import sys
-import random
 import numpy as np
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname('seaducks/model_selection'), '..')))
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname('seaducks/config'), '..')))
@@ -19,13 +18,12 @@ import pickle
 from seaducks.model_selection import train_test_validation_split_ids
 
 class MVN_ngboost(NGBRegressor):
-    def __init__(self, random_seed_idx,*,
+    def __init__(self,*,
                  dist: ngboost.distns = MultivariateNormal(2), score: ngboost.scores = LogScore, 
                  base: ngboost.learners = default_tree_learner, natural_gradient: bool = True,
                  n_estimators: int = 500, learning_rate: float = 0.01, minibatch_frac: float = 1.0,
                  col_sample: float =1.0, verbose: bool =True, verbose_eval: int = 100, tol: float = 1e-4,
-                 validation_fraction: float = 0.09, 
-                 early_stopping_rounds: None | int = None):
+                 random_seed_idx = None, validation_fraction: float = 0.09, early_stopping_rounds: None | int = None):
         
         super().__init__(
         Dist=dist,
@@ -70,7 +68,7 @@ class MVN_ngboost(NGBRegressor):
         training_response_vars = training_data[response_var_labels]
         validation_response_vars = validation_data[response_var_labels]
 
-        output_file = file_name +'test_data'
+        output_file = file_name +'_test_data'
 
         if not os.path.isfile(output_file):
             self.fit(training_explanatory_vars, training_response_vars, 
