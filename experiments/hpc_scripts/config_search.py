@@ -1,5 +1,4 @@
 import pickle
-import numpy as np
  
 def model_config(config_id,model_filepath,*,
                          verbose=False):
@@ -25,6 +24,3 @@ def model_config(config_id,model_filepath,*,
         print(f'Uses velocities in polar form: {config[4]}')
 
     return config
-
-
-
