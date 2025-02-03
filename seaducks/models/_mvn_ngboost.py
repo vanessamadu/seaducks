@@ -46,7 +46,6 @@ class MVN_ngboost(NGBRegressor):
     def save_model(self, file_name):
         filehandler = open(f"{file_name}.p","wb")
         pickle.dump(self,filehandler)
-        print(self.random_seed_idx)
 
     def run_model_and_save(self,data,explanatory_var_labels,response_var_labels,file_name,
                                 test_frac = 0.10,
