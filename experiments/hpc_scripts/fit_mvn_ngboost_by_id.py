@@ -108,7 +108,7 @@ if __name__=='__main__':
         print(f'In hours: {runtime/60**2}')
 
     print(f'Number of Iterations: {multivariate_ngboost.best_val_loss_itr}')
-    
+
     print(f'\n Model Hyperparameters:')
     param_names = ['learning rate', 'minimum samples per leaf', 'maximum leaves per node', 'replication number', 'Uses SST gradient', 'Uses polar (r,theta) velocity and wind data']
     params = [eta,min_leaf_data,max_leaves,rep,sst_flag,polar_flag]
