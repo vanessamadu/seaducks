@@ -42,7 +42,7 @@ if __name__=='__main__':
     max_depth = 15
 
     # file naming 
-    date = datetime.today().strftime('%d-%m-%Y')
+    date = datetime.today().strftime('%Y-%m-%d')
     filename = f"experiment_{index}_date_{date}_early_stopping_{early_stopping_rounds}"
     output_dir = "./"
 
