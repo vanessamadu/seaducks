@@ -13,19 +13,20 @@ def rmse(vec1,vec2):
     return np.sqrt(np.mean(np.square(vec1-vec2)))
 
 # initialisation
-num_experiments = 1440
+num_experiments = 960 # for 0.1 and 1
 num_reps = 10
 experiment_results = pd.DataFrame(columns=['Experiment ID','RMSE'])
-root_dir = r'/rds/general/user/vm2218/home/phd-project1/SeaDucks/seaducks/experiments/mvn_ngboost_fit_experiments/early_stopping_100/'
+root_dir = r'/rds/general/user/vm2218/home/phd-project1/SeaDucks/seaducks/experiments/mvn_ngboost_fit_experiments/early_stopping_100/2025-02-03/'
+date = '03-02-2025'
 file_prefix = "experiment_"
-file_suffix = "_early_stopping_100"
+file_suffix = f"_date_{date}_early_stopping_100"
 date = datetime.today().strftime('%d-%m-%Y')
 experiment_results['experiment ID'] = np.arange(1,num_experiments+1,dtype=int)
 experiment_results['config ID'] = experiment_results['experiment ID'].apply(lambda index: int(np.floor((index-1)/num_reps)))
 
 for ii in range(1,num_experiments+1):
     try:
-        with open(fr'{root_dir}model_test_data/{file_prefix}{ii}{file_suffix}test_data.p', 'rb') as pickle_file:
+        with open(fr'{root_dir}model_test_data/{file_prefix}{ii}{file_suffix}_test_data.p', 'rb') as pickle_file:
             test_data = pickle.load(pickle_file)
 
         with open(fr'{root_dir}fit_models/{file_prefix}{ii}{file_suffix}.p', 'rb') as pickle_file:
@@ -51,7 +52,7 @@ grouped.index = grouped.index.astype(int)
 
 grouped = grouped[['RMSE']]
 
-file_name = 'full_experiment_grid_search'
+file_name = f'experiment_date_{date}_grid_search'
 filehandler = open(f"{file_name}.p","wb")
 pickle.dump(grouped,filehandler)
 end = time.time()
