@@ -22,7 +22,7 @@ if __name__=='__main__':
         configurations_dict = pickle.load(pickle_file)
     
     num_reps = 100
-    config_ids = [] # optimal hyperparameters
+    config_ids = [36,37,38,39] # optimal hyperparameters
 
     # initialise indexing
     index = int(sys.argv[1])
