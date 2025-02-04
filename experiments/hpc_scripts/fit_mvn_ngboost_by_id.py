@@ -43,7 +43,7 @@ if __name__=='__main__':
 
     # file naming 
     date = datetime.today().strftime('%Y-%m-%d')
-    filename = f"experiment_{index}_date_{date}_early_stopping_{early_stopping_rounds}"
+    filename = f"long_experiment_{index}_date_{date}_early_stopping_{early_stopping_rounds}"
     output_dir = "./"
 
     # ---------- load data --------- # 

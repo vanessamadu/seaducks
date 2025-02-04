@@ -6,13 +6,20 @@
 module load anaconda3/personal
 eval "$(mamba shell hook --shell bash)"
 export MAMBA_ROOT_PREFIX="$HOME/anaconda3"
+export TODAY="$(date +%F)"
 mamba activate SeaDucks
 
 cd $PBS_O_WORKDIR
 
-python experiments/hpc_scripts/fit_mvn_ngboost_by_id.py ${PBS_ARRAY_INDEX} > full_experiment_${PBS_ARRAY_INDEX}_early_stopping_50_logs
+# create directories that don't exist
+mkdir -p experiments/mvn_ngboost_fit_experiments/early_stopping_100/long_experiments/${TODAY}/experiment_logs
+mkdir -p experiments/mvn_ngboost_fit_experiments/early_stopping_100/long_experiments/${TODAY}/fit_models
+mkdir -p experiments/mvn_ngboost_fit_experiments/early_stopping_100/long_experiments/${TODAY}/model_test_data
+mkdir -p experiments/mvn_ngboost_fit_experiments/early_stopping_100/long_experiments/${TODAY}/out
+
+python experiments/hpc_scripts/fit_mvn_ngboost_by_id.py ${PBS_ARRAY_INDEX} > long_experiment_${PBS_ARRAY_INDEX}_date_${TODAY}_early_stopping_100_logs
 
 # copy files back
-mv full_experiment_${PBS_ARRAY_INDEX}_early_stopping_50_logs experiments/mvn_ngboost_fit_experiments/early_stopping_50/22-01-2025_100_replications/experiment_logs
-mv full_experiment_${PBS_ARRAY_INDEX}_early_stopping_50.p experiments/mvn_ngboost_fit_experiments/early_stopping_50/22-01-2025_100_replications/fit_models
-mv full_experiment_${PBS_ARRAY_INDEX}_early_stopping_50test_data.p experiments/mvn_ngboost_fit_experiments/early_stopping_50/22-01-2025_100_replications/model_test_data
+mv long_experiment_${PBS_ARRAY_INDEX}_date_${TODAY}_early_stopping_100_logs experiments/mvn_ngboost_fit_experiments/early_stopping_100/long_experiments/${TODAY}/experiment_logs
+mv long_experiment_${PBS_ARRAY_INDEX}_date_${TODAY}_early_stopping_100.p experiments/mvn_ngboost_fit_experiments/early_stopping_100/long_experiments/${TODAY}/fit_models
+mv long_experiment_${PBS_ARRAY_INDEX}_date_${TODAY}_early_stopping_100_test_data.p mkdir -p experiments/mvn_ngboost_fit_experiments/early_stopping_100/long_experiments/${TODAY}/model_test_data
