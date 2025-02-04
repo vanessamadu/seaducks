@@ -37,15 +37,15 @@ if __name__=='__main__':
     max_leaves = int(max_leaves)
     random_seed_idx = config['81-10-9_random_seeds'][rep] # get random seed indices that produce 81-10-9 split
     
-    # file naming 
-    date = datetime.today().strftime('%d-%m-%Y')
-    filename =f"experiment_{index}_date_{date}_early_stopping_100"
-    output_dir = "./"
-
     # --------- set fixed hyperparameters --------- #
     early_stopping_rounds = 100
     max_boosting_iter = 10000
     max_depth = 15
+
+    # file naming 
+    date = datetime.today().strftime('%d-%m-%Y')
+    filename =f"experiment_{index}_date_{date}_early_stopping_{early_stopping_rounds}"
+    output_dir = "./"
 
     # ---------- load data --------- # 
     path_to_data = r'./data/complete_filtered_nao_drifter_dataset.h5'

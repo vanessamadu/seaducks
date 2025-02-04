@@ -34,7 +34,7 @@ if __name__=='__main__':
     eta = float(eta)
     min_leaf_data = int(min_leaf_data)
     max_leaves = int(max_leaves)
-    random_state = config['81-10-9_random_states'][rep]
+    random_seed_idx = config['81-10-9_random_seeds'][rep] # get random seed indices that produce 81-10-9 split
     
     # --------- set fixed hyperparameters --------- #
     early_stopping_rounds = 100
@@ -43,8 +43,10 @@ if __name__=='__main__':
 
     # file naming 
     date = datetime.today().strftime('%d-%m-%Y')
-    filename = f"full_experiment_{index}_early_stopping_{early_stopping_rounds}"
+    filename = f"experiment_{index}_date_{date}_early_stopping_{early_stopping_rounds}"
     output_dir = "./"
+
+
 
     # ---------- load data --------- # 
     path_to_data = r'./data/complete_filtered_nao_drifter_dataset.h5'
