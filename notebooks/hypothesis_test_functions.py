@@ -1,5 +1,7 @@
 import pickle
 import numpy as np
+import scipy
+import matplotlib.pyplot as plt
 
 def generate_samples(metric, config_1_ID, config_2_ID,
                      num_reps, root_dir,file_name_prefix,replication_ids,file_name_suffix,invalid_vals = []):
@@ -26,3 +28,45 @@ def generate_samples(metric, config_1_ID, config_2_ID,
         X_2.append(metric(np.array(testing_data_2[['u','v']]),np.array(locs_2)))
 
     return np.array(X_1),np.array(X_2)
+
+def two_sample_one_sided_t_test(X_1,X_2,num_reps,X_1_name,X_2_name):
+    
+    # set up for t-statistic
+    mean_X_1, mean_X_2 = np.mean(X_1), np.mean(X_2)
+    N = num_reps
+
+    # scipy
+    t_stat, p = scipy.stats.ttest_ind(X_1, X_2, alternative = 'greater')
+
+    # parameters for plot t-distribution
+    x = np.linspace(-4, 4, 1000) # range for t-distribution
+    t_dist = scipy.stats.t.pdf(x, df = 2*(N-1)) # pdf for t-distribution
+
+    # plot t-distribution
+    plt.plot(x, t_dist, label = f"t-distribution (df = {2*(N-1)})")
+    plt.axvline(t_stat, color = "red", linestyle = "--", label = f"T statistic = {t_stat:.2f}")
+    plt.axvline(-t_stat, color = "red", linestyle = "--")
+    plt.fill_between(x, t_dist, where = (x >= abs(t_stat)), color = "red", alpha = 0.3, label = "Rejection Region (one side)")
+    plt.fill_between(x, t_dist, where = (x <= -abs(t_stat)), color = "red", alpha = 0.3)
+    plt.title("t-distribution and observed t statistic")
+    plt.xlabel("t value")
+    plt.ylabel("Density")
+    plt.legend()
+    plt.show()
+
+    # interpret result (significance level 0.05)
+    print(f"\nFor mu_X_1: mu_{X_1_name}, mu_X_2: mu_{X_2_name} \n----------------------")
+    alpha = 0.05
+    if p < alpha:
+        print("Reject H0: mu_X_1 >= mu_X_2")
+        print(f"p = {p:.2f}")
+        print(f"\n mu_X_1 = {mean_X_1:.2f}")
+        print(f"mean_0 = {mean_X_2:.2f}")
+    else:
+        if p<=1-alpha:
+            print("Fail to Reject H0: mu_X_1 may be less than mu_X_2")
+        else:
+            print("Fail to Reject H0: mu_X_1 < mu_X_2")
+        print(f"p = {p:.2f}")
+        print(f"\nmu_X_1 = {mean_X_1:.2f}")
+        print(f"mean_0 = {mean_X_2:.2f}")
