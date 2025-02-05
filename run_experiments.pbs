@@ -2,6 +2,8 @@
 #PBS -l walltime=8:00:00
 #PBS -l select=1:ncpus=1:mem=1gb
 #PBS -J 1-960
+#PBS -o /rds/general/user/vm2218/home/phd-project1/SeaDucks/seaducks/experiments/mvn_ngboost_fit_experiments/early_stopping_100/
+#PBS -e /rds/general/user/vm2218/home/phd-project1/SeaDucks/seaducks/experiments/mvn_ngboost_fit_experiments/early_stopping_100/
 
 # for LR 1 and 0.1 (config IDs 0 - 95)
 module load anaconda3/personal
