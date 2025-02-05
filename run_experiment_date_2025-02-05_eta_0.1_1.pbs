@@ -10,7 +10,7 @@ mamba activate SeaDucks
 
 cd $PBS_O_WORKDIR
 
-python experiments/hpc_scripts/fit_mvn_ngboost.py ${PBS_ARRAY_INDEX} > experiment_${PBS_ARRAY_INDEX}_early_stopping_50_logs
+python experiments/hpc_scripts/fit_mvn_ngboost.py ${PBS_ARRAY_INDEX} 50 > experiment_${PBS_ARRAY_INDEX}_early_stopping_50_logs
 
 # create directories that don't exist
 mkdir -p experiments/mvn_ngboost_fit_experiments/early_stopping_50/2025-02-05/experiment_logs
