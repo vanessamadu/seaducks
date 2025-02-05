@@ -70,3 +70,18 @@ def two_sample_one_sided_t_test(X_1,X_2,num_reps,X_1_name,X_2_name):
         print(f"p = {p:.2f}")
         print(f"\nmu_X_1 = {mean_X_1:.2f}")
         print(f"mu_X_2 = {mean_X_2:.2f}")
+
+def dagostino_pearson_test(X_1,X_2,X_1_name,X_2_name,alpha=0.05):
+    _, p_1 = scipy.stats.normaltest(X_1)
+    _, p_2 = scipy.stats.normaltest(X_2)
+
+    test_pairs = [['X_1',p_1],['X_2',p_2]]
+    print(f"\nFor mu_X_1: mu_{X_1_name}, mu_X_2: mu_{X_2_name} \n----------------------")
+
+    for pair in test_pairs:
+        if pair[1] < alpha:
+            print(f"\n{pair[0]} does not follow a normal distribution.")
+            print(f"p = {pair[1]:.2f}")
+        else:
+            print(f"\n{pair[0]} follows a normal distribution.")
+            print(f"p = {pair[1]:.2f}")
