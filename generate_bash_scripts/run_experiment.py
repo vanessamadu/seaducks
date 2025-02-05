@@ -2,7 +2,7 @@ import datetime
 
 def run_experiment_for_all_configs(walltime:str,select:int,ncpus:int,mem:int,learing_rates:list,
                                    outfile_directory:str,array_indices:str,early_stopping:int,
-                                   root_dir:str = "experiments/mvn_ngboost_fit_experiments/"):
+                                   root_dir:str = "experiments/mvn_ngboost_fit_experiments"):
     '''
     walltime: "hh:mm:ss"
     array_indices: "start-end" (inclusive)
@@ -13,9 +13,31 @@ def run_experiment_for_all_configs(walltime:str,select:int,ncpus:int,mem:int,lea
     for lr in learing_rates:
         filename += f'_{lr}'
     with open (f'{filename}.pbs', 'w') as rsh:
-        rsh.write('''\
+        rsh.write(f'''\
         #! /bin/bash
-        echo "I ran this"
-        echo "more lines"
+        #PBS -l walltime={walltime}
+        #PBS -l select={select}:ncpus={ncpus}:mem={mem}gb
+        #PBS -J {array_indices}
+        #PBS -o {root_dir}/early_stopping_{early_stopping}/{date}/out
+        #PBS -e {root_dir}/early_stopping_{early_stopping}/{date}/out
+
+        module load anaconda3/personal
+        eval "$(mamba shell hook --shell bash)"
+        export MAMBA_ROOT_PREFIX="$HOME/anaconda3"
+        mamba activate SeaDucks
+
+        cd $PBS_O_WORKDIR
+
+        # create directories that don't exist
+        mkdir -p {root_dir}/early_stopping_{early_stopping}/{date}/experiment_logs
+        mkdir -p {root_dir}/early_stopping_{early_stopping}/{date}/fit_models
+        mkdir -p {root_dir}/early_stopping_{early_stopping}/{date}/model_test_data
+        mkdir -p {root_dir}/early_stopping_{early_stopping}/{date}/out
+
+        python experiments/hpc_scripts/fit_mvn_ngboost.py ${{PBS_ARRAY_INDEX}} > experiment_${{PBS_ARRAY_INDEX}}_early_stopping_{early_stopping}_logs
+
+        # copy files back
+        mv experiment_${{PBS_ARRAY_INDEX}}_date_{date}_early_stopping_{early_stopping}_logs {root_dir}/early_stopping_{early_stopping}/{date}/experiment_logs
+        mv experiment_${{PBS_ARRAY_INDEX}}_date_{date}_early_stopping_{early_stopping}.p {root_dir}/early_stopping_{early_stopping}/{date}/fit_models
+        mv experiment_${{PBS_ARRAY_INDEX}}_date_{date}_early_stopping_{early_stopping}_test_data.p {root_dir}/early_stopping_{early_stopping}/{date}/model_test_data
         ''')
-    pass
