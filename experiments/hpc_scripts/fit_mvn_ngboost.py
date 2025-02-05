@@ -25,7 +25,7 @@ if __name__=='__main__':
 
     num_reps = 10
     # --------- set fixed hyperparameters --------- #
-    early_stopping_rounds = 100
+    early_stopping_rounds = 50
     max_boosting_iter = 10000
     max_depth = 15
 
