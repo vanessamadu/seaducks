@@ -39,6 +39,6 @@ mkdir -p {root_dir}/early_stopping_{early_stopping}/{date}/out
 mv experiment_${{PBS_ARRAY_INDEX}}_date_{date}_early_stopping_{early_stopping}_logs {root_dir}/early_stopping_{early_stopping}/{date}/experiment_logs
 mv experiment_${{PBS_ARRAY_INDEX}}_date_{date}_early_stopping_{early_stopping}.p {root_dir}/early_stopping_{early_stopping}/{date}/fit_models
 mv experiment_${{PBS_ARRAY_INDEX}}_date_{date}_early_stopping_{early_stopping}_test_data.p {root_dir}/early_stopping_{early_stopping}/{date}/model_test_data
-mv {filename}.pbs.* {root_dir}/early_stopping_{early_stopping}/{date}/out
+# mv {filename}.pbs.* {root_dir}/early_stopping_{early_stopping}/{date}/out
 ''')
     subprocess.run(["sed", "-i", "-e", "'s/\r$//'", f"{filename}.pbs"])
