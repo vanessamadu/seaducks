@@ -1,7 +1,7 @@
 import datetime
 
 def run_experiment_for_all_configs(walltime:str,select:int,ncpus:int,mem:int,learing_rates:list,
-                                   outfile_directory:str,array_indices:str,early_stopping:int,
+                                   array_indices:str,early_stopping:int,
                                    root_dir:str = "experiments/mvn_ngboost_fit_experiments"):
     '''
     walltime: "hh:mm:ss"
