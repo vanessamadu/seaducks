@@ -23,6 +23,10 @@ if __name__=='__main__':
     
     num_reps = 100
     config_ids = [36,37,38,39] # optimal hyperparameters
+    # --------- set fixed hyperparameters --------- #
+    early_stopping_rounds = 100
+    max_boosting_iter = 10000
+    max_depth = 15
 
     # initialise indexing
     index = int(sys.argv[1])
@@ -35,11 +39,6 @@ if __name__=='__main__':
     min_leaf_data = int(min_leaf_data)
     max_leaves = int(max_leaves)
     random_seed_idx = config['81-10-9_random_seeds'][rep] # get random seed indices that produce 81-10-9 split
-    
-    # --------- set fixed hyperparameters --------- #
-    early_stopping_rounds = 100
-    max_boosting_iter = 10000
-    max_depth = 15
 
     # file naming 
     date = datetime.today().strftime('%Y-%m-%d')

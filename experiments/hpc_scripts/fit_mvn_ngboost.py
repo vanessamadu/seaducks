@@ -24,6 +24,10 @@ if __name__=='__main__':
         configurations_dict = pickle.load(pickle_file)
 
     num_reps = 10
+    # --------- set fixed hyperparameters --------- #
+    early_stopping_rounds = 100
+    max_boosting_iter = 10000
+    max_depth = 15
 
     # initialise indexing
     index = int(sys.argv[1])
@@ -37,11 +41,6 @@ if __name__=='__main__':
     max_leaves = int(max_leaves)
     random_seed_idx = config['81-10-9_random_seeds'][rep] # get random seed indices that produce 81-10-9 split
     
-    # --------- set fixed hyperparameters --------- #
-    early_stopping_rounds = 100
-    max_boosting_iter = 10000
-    max_depth = 15
-
     # file naming 
     date = datetime.today().strftime('%Y-%m-%d')
     filename =f"experiment_{index}_date_{date}_early_stopping_{early_stopping_rounds}"
