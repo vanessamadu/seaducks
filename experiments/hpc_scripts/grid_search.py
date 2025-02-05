@@ -4,7 +4,6 @@ import sys
 import os
 import numpy as np
 import time
-from datetime import datetime
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname('seaducks'), '..')))
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname('seaducks/models'), '..')))
 
@@ -15,12 +14,13 @@ def rmse(vec1,vec2):
 # initialisation
 num_experiments = 960 # for 0.1 and 1
 num_reps = 10
+early_stopping_rounds = int(sys.argv[1])
+date = int(sys.argv[2])
+
 experiment_results = pd.DataFrame(columns=['Experiment ID','RMSE'])
-root_dir = r'/rds/general/user/vm2218/home/phd-project1/SeaDucks/seaducks/experiments/mvn_ngboost_fit_experiments/early_stopping_100/2025-02-03/'
-date = '03-02-2025'
+root_dir = fr'/rds/general/user/vm2218/home/phd-project1/SeaDucks/seaducks/experiments/mvn_ngboost_fit_experiments/early_stopping_{early_stopping_rounds}/{date}/'
 file_prefix = "experiment_"
-file_suffix = f"_date_{date}_early_stopping_100"
-date = datetime.today().strftime('%d-%m-%Y')
+file_suffix = f"_date_{date}_early_stopping_{early_stopping_rounds}"
 experiment_results['experiment ID'] = np.arange(1,num_experiments+1,dtype=int)
 experiment_results['config ID'] = experiment_results['experiment ID'].apply(lambda index: int(np.floor((index-1)/num_reps)))
 
@@ -52,7 +52,7 @@ grouped.index = grouped.index.astype(int)
 
 grouped = grouped[['RMSE']]
 
-file_name = f'experiment_date_{date}_grid_search'
+file_name = f'experiment_date_{date}_early_stopping_{early_stopping_rounds}_grid_search'
 filehandler = open(f"{file_name}.p","wb")
 pickle.dump(grouped,filehandler)
 end = time.time()
