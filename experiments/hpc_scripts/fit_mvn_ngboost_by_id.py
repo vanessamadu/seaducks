@@ -22,9 +22,10 @@ if __name__=='__main__':
         configurations_dict = pickle.load(pickle_file)
     
     num_reps = 100
-    config_ids = [36,37,38,39] # optimal hyperparameters
+    
+    config_ids = [int(sys.argv[ii] for ii in range(3,7))] # optimal hyperparameters
     # --------- set fixed hyperparameters --------- #
-    early_stopping_rounds = 100
+    early_stopping_rounds = int(sys.argv[2])
     max_boosting_iter = 10000
     max_depth = 15
 
