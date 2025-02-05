@@ -18,8 +18,6 @@ def run_experiment_for_all_configs(walltime:str,select:int,ncpus:int,mem:int,lea
 #PBS -l walltime={walltime}
 #PBS -l select={select}:ncpus={ncpus}:mem={mem}gb
 #PBS -J {array_indices}
-#PBS -o {root_dir}/early_stopping_{early_stopping}/{date}/out
-#PBS -e {root_dir}/early_stopping_{early_stopping}/{date}/out
 
 module load anaconda3/personal
 eval "$(mamba shell hook --shell bash)"
@@ -40,4 +38,5 @@ python experiments/hpc_scripts/fit_mvn_ngboost.py ${{PBS_ARRAY_INDEX}} > experim
 mv experiment_${{PBS_ARRAY_INDEX}}_date_{date}_early_stopping_{early_stopping}_logs {root_dir}/early_stopping_{early_stopping}/{date}/experiment_logs
 mv experiment_${{PBS_ARRAY_INDEX}}_date_{date}_early_stopping_{early_stopping}.p {root_dir}/early_stopping_{early_stopping}/{date}/fit_models
 mv experiment_${{PBS_ARRAY_INDEX}}_date_{date}_early_stopping_{early_stopping}_test_data.p {root_dir}/early_stopping_{early_stopping}/{date}/model_test_data
+mv {filename}.pbs.* {root_dir}/early_stopping_{early_stopping}/{date}/out
 ''')

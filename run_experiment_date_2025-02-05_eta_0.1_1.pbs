@@ -2,8 +2,6 @@
 #PBS -l walltime=08:00:00
 #PBS -l select=1:ncpus=1:mem=1gb
 #PBS -J 1-960
-#PBS -o experiments/mvn_ngboost_fit_experiments/early_stopping_50/2025-02-05/out
-#PBS -e experiments/mvn_ngboost_fit_experiments/early_stopping_50/2025-02-05/out
 
 module load anaconda3/personal
 eval "$(mamba shell hook --shell bash)"
@@ -24,3 +22,4 @@ python experiments/hpc_scripts/fit_mvn_ngboost.py ${PBS_ARRAY_INDEX} > experimen
 mv experiment_${PBS_ARRAY_INDEX}_date_2025-02-05_early_stopping_50_logs experiments/mvn_ngboost_fit_experiments/early_stopping_50/2025-02-05/experiment_logs
 mv experiment_${PBS_ARRAY_INDEX}_date_2025-02-05_early_stopping_50.p experiments/mvn_ngboost_fit_experiments/early_stopping_50/2025-02-05/fit_models
 mv experiment_${PBS_ARRAY_INDEX}_date_2025-02-05_early_stopping_50_test_data.p experiments/mvn_ngboost_fit_experiments/early_stopping_50/2025-02-05/model_test_data
+mv run_experiment_date_2025-02-05_eta_0.1_1.pbs.* experiments/mvn_ngboost_fit_experiments/early_stopping_50/2025-02-05/out
