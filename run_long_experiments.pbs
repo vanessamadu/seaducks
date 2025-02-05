@@ -22,4 +22,4 @@ python experiments/hpc_scripts/fit_mvn_ngboost_by_id.py ${PBS_ARRAY_INDEX} > lon
 # copy files back
 mv long_experiment_${PBS_ARRAY_INDEX}_date_${TODAY}_early_stopping_100_logs experiments/mvn_ngboost_fit_experiments/early_stopping_100/long_experiments/${TODAY}/experiment_logs
 mv long_experiment_${PBS_ARRAY_INDEX}_date_${TODAY}_early_stopping_100.p experiments/mvn_ngboost_fit_experiments/early_stopping_100/long_experiments/${TODAY}/fit_models
-mv long_experiment_${PBS_ARRAY_INDEX}_date_${TODAY}_early_stopping_100_test_data.p mkdir -p experiments/mvn_ngboost_fit_experiments/early_stopping_100/long_experiments/${TODAY}/model_test_data
+mv long_experiment_${PBS_ARRAY_INDEX}_date_${TODAY}_early_stopping_100_test_data.p experiments/mvn_ngboost_fit_experiments/early_stopping_100/long_experiments/${TODAY}/model_test_data
