@@ -1,6 +1,6 @@
 import datetime
 
-def run_experiment_for_all_configs(walltime:str,select:int,ncpus:int,mem:int,learing_rates:list,
+def run_experiment_for_all_configs(walltime:str,select:int,ncpus:int,mem:int,learning_rates:list,
                                    array_indices:str,early_stopping:int,
                                    root_dir:str = "experiments/mvn_ngboost_fit_experiments"):
     '''
@@ -10,7 +10,7 @@ def run_experiment_for_all_configs(walltime:str,select:int,ncpus:int,mem:int,lea
     # initialising
     date = datetime.today().strftime('%Y-%m-%d')
     filename = f"run_experiment_date_{date}_eta"
-    for lr in learing_rates:
+    for lr in learning_rates:
         filename += f'_{lr}'
     with open (f'{filename}.pbs', 'w') as rsh:
         rsh.write(f'''\
