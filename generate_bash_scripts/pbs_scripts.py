@@ -1,4 +1,5 @@
 from datetime import datetime
+import subprocess
 
 def run_experiment_for_all_configs(walltime:str,select:int,ncpus:int,mem:int,learning_rates:list,
                                    array_indices:str,early_stopping:int,
@@ -40,3 +41,4 @@ mv experiment_${{PBS_ARRAY_INDEX}}_date_{date}_early_stopping_{early_stopping}.p
 mv experiment_${{PBS_ARRAY_INDEX}}_date_{date}_early_stopping_{early_stopping}_test_data.p {root_dir}/early_stopping_{early_stopping}/{date}/model_test_data
 mv {filename}.pbs.* {root_dir}/early_stopping_{early_stopping}/{date}/out
 ''')
+    subprocess.run(["sed", "-i", "-e", "'s/\r$//'", f"{filename}.pbs"])
