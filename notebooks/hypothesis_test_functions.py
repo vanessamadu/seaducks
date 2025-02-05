@@ -69,4 +69,4 @@ def two_sample_one_sided_t_test(X_1,X_2,num_reps,X_1_name,X_2_name):
             print("Fail to Reject H0: mu_X_1 < mu_X_2")
         print(f"p = {p:.2f}")
         print(f"\nmu_X_1 = {mean_X_1:.2f}")
-        print(f"mean_0 = {mean_X_2:.2f}")
+        print(f"mu_X_2 = {mean_X_2:.2f}")
