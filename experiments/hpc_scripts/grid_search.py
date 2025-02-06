@@ -15,7 +15,7 @@ def rmse(vec1,vec2):
 num_experiments = 960 # for 0.1 and 1
 num_reps = 10
 early_stopping_rounds = int(sys.argv[1])
-date = int(sys.argv[2])
+date = str(sys.argv[2])
 
 experiment_results = pd.DataFrame(columns=['Experiment ID','RMSE'])
 root_dir = fr'/rds/general/user/vm2218/home/phd-project1/SeaDucks/seaducks/experiments/mvn_ngboost_fit_experiments/early_stopping_{early_stopping_rounds}/{date}/'
