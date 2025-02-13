@@ -12,7 +12,7 @@ def rmse(vec1,vec2):
     return np.sqrt(np.mean(np.square(vec1-vec2)))
 
 # initialisation
-num_experiments = 960 # for 0.1 and 1
+num_experiments = 1440 
 num_reps = 10
 early_stopping_rounds = int(sys.argv[1])
 date = str(sys.argv[2])
