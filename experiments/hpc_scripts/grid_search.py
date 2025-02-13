@@ -20,7 +20,7 @@ date = str(sys.argv[2])
 experiment_results = pd.DataFrame(columns=['Experiment ID','RMSE'])
 root_dir = fr'/rds/general/user/vm2218/home/phd-project1/SeaDucks/seaducks/experiments/mvn_ngboost_fit_experiments/early_stopping_{early_stopping_rounds}/{date}/'
 file_prefix = "experiment_"
-file_suffix = f"_date_{date}_early_stopping_{early_stopping_rounds}"
+file_suffix = f"_date_03-02-2025_early_stopping_{early_stopping_rounds}"
 experiment_results['experiment ID'] = np.arange(1,num_experiments+1,dtype=int)
 experiment_results['config ID'] = experiment_results['experiment ID'].apply(lambda index: int(np.floor((index-1)/num_reps)))
 

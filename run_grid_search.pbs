@@ -9,4 +9,4 @@ mamba activate SeaDucks
 
 cd $PBS_O_WORKDIR
 
-python experiments/hpc_scripts/grid_search.py 50 '2025-02-05'> grid_search_logs
+python experiments/hpc_scripts/grid_search.py 100 '2025-02-03'> grid_search_logs
