@@ -38,7 +38,7 @@ def main():
     lat_lim_N = 60
 
     df = dataset.query('@lon_lim_W < lon < @lon_lim_E').copy()
-    df = df.query('@lat_lim_S < lat < @lat_lim_N').head(50).copy()
+    df = df.query('@lat_lim_S < lat < @lat_lim_N').copy()
 
     # add corners
     lat_grid = np.array(sst_array['latitude'])
