@@ -1,6 +1,9 @@
 from sklearn.model_selection import train_test_split
 import numpy as np
 import pickle
+# for typehinting
+from pandas import DataFrame
+from numpy import ndarray
 
 def train_test_validation_split(X, Y,*,
                                 test_frac = 0.10, validation_frac = 0.09, 
@@ -32,21 +35,48 @@ def train_test_validation_split_ids(ids,*,
         else:
             return id_train, id_test, id_val
     
-def nominal_cluster_sampling(data,*,
-                             test_frac = 0.10, validation_frac = 0.09, 
-                             tol = 5e-5, num_seeds = 1):
+def nominal_cluster_sampling(data: DataFrame,*,
+                             test_frac: float = 0.10, validation_frac: float = 0.09, 
+                             tol: float = 5e-5, num_seeds: int = 1) -> ndarray:
+    """
+    Find random seeds that ensure proportions of data in the train, validation, and test sets
+    match nominal values for cluster sampling.
+
+    Parameters:
+    -----------
+    data : pandas.DataFrame
+        DataFrame containing an 'id' column representing drifter IDs for cluster sampling.
+    test_frac : float, optional (default=0.10)
+        Target fraction of data to allocate to the test set.
+    validation_frac : float, optional (default=0.09)
+        Target fraction of data to allocate to the validation set.
+    tol : float, optional (default=5e-5)
+        Tolerance level for the deviation of actual split fractions from target values.
+    num_seeds : int, optional (default=1)
+        Number of valid random seeds to find.
+
+    Returns:
+    --------
+    seeds : array (containing integers)
+        List of random seeds that yield splits meeting the specified tolerance criteria.
+
+    Notes:
+    ------
+    The function repeatedly samples splits until it finds `num_seeds` random seeds 
+    for which the resulting splits closely match the desired fractions within `tol`.
+    """
+    
+    # initialise
     jj = 0
+    actual_test_frac = 0.0
+    actual_train_frac = 0.0
+    actual_validation_frac = 0.0
+    train_frac = 1-test_frac-validation_frac
+    seeds = []
 
     number_of_samples = len(data.index)
     count_by_id = data.groupby('id').size()
     X, Y = np.array(count_by_id.index), np.array(count_by_id)
-    train_frac = 1-test_frac-validation_frac
-
-    actual_test_frac = 0.0
-    actual_train_frac = 0.0
-    actual_validation_frac = 0.0
-    
-    seeds = []
 
     while len(seeds)<num_seeds:
             
@@ -56,6 +86,7 @@ def nominal_cluster_sampling(data,*,
                                                                     test_frac = test_frac, validation_frac = validation_frac, random_state=seed)
         actual_train_frac, actual_test_frac, actual_validation_frac = np.array([sum(Y_train),sum(Y_test),sum(Y_val)])/number_of_samples
 
+        # save seed if it is within tolerance of the nominal split
         if (np.abs(
         np.array([actual_test_frac - test_frac
                            , actual_train_frac -train_frac, 
@@ -67,10 +98,10 @@ def nominal_cluster_sampling(data,*,
         jj += 1
     return seeds
 
-def model_config(config_id,model_filepath,*,
-                         verbose=False):
+def model_config(config_id:int,model_filepath:str,*,
+                         verbose:bool=False) -> tuple:
     """
-    Load and return a specific model configuration hyperparameter settings from a 
+    Load and return a specific model configuration's hyperparameter settings from a 
     pickled file.
 
     Parameters:
