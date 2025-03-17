@@ -1,5 +1,6 @@
 from sklearn.model_selection import train_test_split
 import numpy as np
+import pickle
 
 def train_test_validation_split(X, Y,*,
                                 test_frac = 0.10, validation_frac = 0.09, 
@@ -65,3 +66,55 @@ def nominal_cluster_sampling(data,*,
 
         jj += 1
     return seeds
+
+def model_config(config_id,model_filepath,*,
+                         verbose=False):
+    """
+    Load and return a specific model configuration hyperparameter settings from a 
+    pickled file.
+
+    Parameters:
+    -----------
+    config_id : int
+        Index of the desired configuration in the dictionary of configurations.
+    model_filepath : str
+        Path to the pickled file containing stored model configurations.
+    verbose : bool, optional (default=False)
+        If True, prints detailed information about the selected configuration, 
+        including hyperparameter values and data usage options.
+
+    Returns:
+    --------
+    config : tuple
+        A tuple containing the selected configuration's hyperparameters and settings:
+        (learning_rate, min_data_per_leaf, max_leaves_per_node, 
+         uses_SST_gradient, uses_polar_form_velocities)
+
+    Notes:
+    ------
+    The expected format of the pickle file is a dictionary where each 
+    item is a tuple of the form described above.
+    """
+
+    with open(model_filepath,'rb') as pickle_file:
+        model_configs = pickle.load(pickle_file)
+    config = model_configs[config_id]
+
+    if verbose:
+        # ------------ print useful information -------------- #
+        print(f'\nconfig ID: {config_id}')
+
+        print('\n Hyperparameter Values')
+        print('---------------------------')
+
+        print(f'learning rate: {config[0]}')
+        print(f'min. data per leaf: {config[1]}')
+        print(f'max. leaves per node: {config[2]}')
+
+        print('\n Data Information')
+        print('---------------------------')
+
+        print(f'Uses SST gradient: {config[3]}')
+        print(f'Uses velocities in polar form: {config[4]}')
+
+    return config
