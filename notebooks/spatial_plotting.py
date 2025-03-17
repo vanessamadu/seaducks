@@ -32,10 +32,10 @@ def mae(vec1,vec2):
 def maao(vec1,vec2):
     elem_wise_dot_product = np.einsum('ij,ij->i',vec1,vec2)
     normalisation = np.linalg.norm(vec1,axis=1)*np.linalg.norm(vec2,axis=1)
-    return np.arccos(np.clip(
+    return np.mean(np.rad2deg(np.arccos(np.clip(
         elem_wise_dot_product/normalisation,
         -1,1
-    ))
+    ))))
 def mape(true,pred):
     return 100*np.mean(np.abs((
         true-pred
@@ -120,8 +120,12 @@ def plot_column(daf, column, ax, cmap='seismic', vmin_manual=None, vmax_manual=N
         )
     return cax
 
-def add_letters(axs):
-    for n, ax in enumerate(axs.flatten()):
+def add_letters(ax):
+    ax.text(-0.26, 0.5, '', transform=ax.transAxes, 
+        size=13, weight='bold')
+        
+def add_letters_1plot(ax):
+    for n, ax in enumerate(ax):
         ax.text(-0.26, 0.5, '', transform=ax.transAxes, 
             size=13, weight='bold')
 

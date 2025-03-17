@@ -2,6 +2,9 @@ import pickle
 import numpy as np
 import scipy
 import matplotlib.pyplot as plt
+import os
+import sys
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname('seaducks'), '..')))
 
 def generate_samples(metric, config_1_ID, config_2_ID,
                      num_reps, root_dir,file_name_prefix,replication_ids,file_name_suffix,invalid_vals = []):
@@ -53,8 +56,30 @@ def generate_rmsle_samples(metric,config_1_ID, config_2_ID,
         # add realistion to sample lists
         X_1.append(metric(np.linalg.norm(testing_data_1[['u','v']]),np.linalg.norm(np.array(locs_1))))
         X_2.append(metric(np.linalg.norm(testing_data_2[['u','v']]),np.linalg.norm(np.array(locs_2))))
-
     return np.array(X_1),np.array(X_2)
+    
+def get_dists_and_data(config_1_ID, config_2_ID,
+                     num_reps, root_dir,root_dir_model,file_name_prefix,replication_ids,file_name_suffix,invalid_vals = []):
+    dists1 = []
+    y1 = []
+    dists2 = []
+    y2 = []
+
+    for ii in range(num_reps-len(invalid_vals)):
+        #load data for variable 1
+        with open(fr'{root_dir}/{file_name_prefix}{replication_ids[config_1_ID][ii]}{file_name_suffix}_test_data.p', 'rb') as pickle_file:
+            test_data_1 = pickle.load(pickle_file)
+        # load data for variable 2
+        with open(fr'{root_dir}/{file_name_prefix}{replication_ids[config_2_ID][ii]}{file_name_suffix}_test_data.p', 'rb') as pickle_file:
+            test_data_2 = pickle.load(pickle_file)
+        
+        dists1.append(test_data_1[1])
+        dists2.append(test_data_2[1])
+        y1.append(np.array(test_data_1[0][['u','v']]))
+        y2.append(np.array(test_data_2[0][['u','v']]))
+        
+    return dists1, y1, dists2, y2
+    
 
 
 def two_sample_one_sided_t_test(X_1,X_2,num_reps,X_1_name,X_2_name,metric_name):
