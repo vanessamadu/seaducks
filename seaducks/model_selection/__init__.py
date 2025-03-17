@@ -4,6 +4,7 @@ import pickle
 # for typehinting
 from pandas import DataFrame
 from numpy import ndarray
+from pyvista import ArrayLike
 
 def train_test_validation_split(X, Y,*,
                                 test_frac = 0.10, validation_frac = 0.09, 
@@ -17,9 +18,38 @@ def train_test_validation_split(X, Y,*,
                                                         test_size=validation_frac/(1 - test_frac), random_state = np.random.seed(random_seed_idx), shuffle = shuffle, stratify = stratify)
         return X_train, X_test, X_val, Y_train, Y_test, Y_val
     
-def train_test_validation_split_ids(ids,*,
-                                test_frac = 0.10, validation_frac = 0.09, 
-                                random_seed_idx = None, shuffle = True, stratify = None, masks=False):
+def train_test_validation_split_ids(ids: ArrayLike,*,
+                                test_frac: float = 0.10, validation_frac: float = 0.09, 
+                                random_seed_idx: int = None, shuffle: bool = True, stratify:(ArrayLike|None) = None, masks: bool=False) -> ArrayLike:
+    """
+    Split a list of IDs into train, validation, and test sets or masks.
+
+    Parameters:
+    -----------
+    ids : array-like
+        Array of IDs to split.
+    test_frac : float, optional (default=0.10)
+        Fraction of the IDs to allocate to the test set.
+    validation_frac : float, optional (default=0.09)
+        Fraction of the IDs to allocate to the validation set.
+    random_seed_idx : int or None, optional
+        Random seed index.
+    shuffle : bool, optional (default=True)
+        Whether or not to shuffle the IDs before splitting.
+    stratify : array-like or None, optional
+        If not None, IDs are split in a stratified fashion using this array.
+    masks : bool, optional (default=False)
+        If True, returns boolean masks instead of ID arrays.
+
+    Returns:
+    --------
+    If validation_frac == 0:
+        id_aux, id_test : arrays or masks
+            Train/validation combined and test ID splits or their corresponding boolean masks.
+    Else:
+        id_train, id_test, id_val : arrays or masks
+            Train, test, and validation ID splits or their corresponding boolean masks.
+    """
     id_aux, id_test  = train_test_split(ids, 
                                         test_size=test_frac, random_state= np.random.seed(random_seed_idx), shuffle = shuffle, stratify = stratify)
     if validation_frac == 0:
@@ -29,13 +59,13 @@ def train_test_validation_split_ids(ids,*,
             return id_aux, id_test
     else:
         id_train, id_val = train_test_split(id_aux,
-                                                        test_size=validation_frac/(1 - test_frac), random_state= np.random.seed(random_seed_idx), shuffle = shuffle, stratify = stratify)
+                                            test_size=validation_frac/(1 - test_frac), random_state= np.random.seed(random_seed_idx), shuffle = shuffle, stratify = stratify)
         if masks:
             return np.in1d(ids,id_train), np.in1d(ids,id_test), np.in1d(ids,id_val)
         else:
             return id_train, id_test, id_val
     
-def nominal_cluster_sampling(data: DataFrame,*,
+def get_nominal_cluster_sampling_seeds(data: DataFrame,*,
                              test_frac: float = 0.10, validation_frac: float = 0.09, 
                              tol: float = 5e-5, num_seeds: int = 1) -> ndarray:
     """
@@ -98,7 +128,7 @@ def nominal_cluster_sampling(data: DataFrame,*,
         jj += 1
     return seeds
 
-def model_config(config_id:int,model_filepath:str,*,
+def get_info_from_config(config_id:int,model_filepath:str,*,
                          verbose:bool=False) -> tuple:
     """
     Load and return a specific model configuration's hyperparameter settings from a 
