@@ -4,11 +4,40 @@ import pickle
 # for typehinting
 from pandas import DataFrame
 from numpy import ndarray
-from pyvista import ArrayLike
+from pyvista import MatrixLike, ArrayLike
 
-def train_test_validation_split(X, Y,*,
-                                test_frac = 0.10, validation_frac = 0.09, 
-                                random_seed_idx = None, shuffle = True, stratify = None):
+def train_test_validation_split(X: ArrayLike, Y: ArrayLike,*,
+                                test_frac: float = 0.10, validation_frac: float = 0.09, 
+                                random_seed_idx: (int|None) = None, shuffle: bool = True, stratify: (ArrayLike|None) = None) -> MatrixLike:
+    """
+    Split data into training, validation, and test sets.
+
+    Parameters:
+    -----------
+    X : array-like
+        Explanatory variable dataset.
+    Y : array-like
+        Response variable dataset.
+    test_frac : float, optional (default=0.10)
+        Fraction of the data to allocate to the test set.
+    validation_frac : float, optional (default=0.09)
+        Fraction of the data to allocate to the validation set.
+    random_seed_idx : int or None, optional
+        Random seed index.
+    shuffle : bool, optional (default=True)
+        Whether or not to shuffle the data before splitting.
+    stratify : array-like or None, optional
+        If not None, data is split in a stratified fashion using this array.
+
+    Returns:
+    --------
+    If validation_frac == 0:
+        X_aux, X_test, Y_aux, Y_test : arrays
+            Training set and test set splits.
+    Else:
+        X_train, X_test, X_val, Y_train, Y_test, Y_val : arrays
+            Full train, test, and validation splits.
+    """
     X_aux, X_test, Y_aux, Y_test = train_test_split(X, Y, 
                                                         test_size=test_frac, random_state = np.random.seed(random_seed_idx), shuffle = shuffle, stratify = stratify)
     if validation_frac == 0:
@@ -20,7 +49,7 @@ def train_test_validation_split(X, Y,*,
     
 def train_test_validation_split_ids(ids: ArrayLike,*,
                                 test_frac: float = 0.10, validation_frac: float = 0.09, 
-                                random_seed_idx: int = None, shuffle: bool = True, stratify:(ArrayLike|None) = None, masks: bool=False) -> ArrayLike:
+                                random_seed_idx: int = None, shuffle: bool = True, stratify:(ArrayLike|None) = None, masks: bool=False) -> MatrixLike:
     """
     Split a list of IDs into train, validation, and test sets or masks.
 
@@ -45,7 +74,7 @@ def train_test_validation_split_ids(ids: ArrayLike,*,
     --------
     If validation_frac == 0:
         id_aux, id_test : arrays or masks
-            Train/validation combined and test ID splits or their corresponding boolean masks.
+            Train and test ID splits or their corresponding boolean masks.
     Else:
         id_train, id_test, id_val : arrays or masks
             Train, test, and validation ID splits or their corresponding boolean masks.
