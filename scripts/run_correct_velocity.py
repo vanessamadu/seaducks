@@ -12,12 +12,14 @@ import os
 def main():
 
     file_path = os.path.join('data', 'drifter_full.h5')
-    output_path = os.path.join('data', 'corrected_velocity_drifter_full.h5')
+    output_path = os.path.join('data', 'aux_data/corrected_velocity_with_time_drifter_full.h5')
 
     dataset = pd.read_hdf(file_path)
     # data correction
     dataset.loc[:,'u']/=100
     dataset.loc[:,'v']/=100
+    dataset['day_of_year'] = dataset['time'].apply(lambda t : t.timetuple().tm_yday)
+    # add day of year
     dataset.to_hdf(output_path, key="drifter", mode='w')
 
 if __name__ == '__main__':
