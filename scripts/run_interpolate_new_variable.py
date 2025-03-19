@@ -12,8 +12,9 @@ from seaducks.data_processing import interpolate_new_variable
 from seaducks import add_grid_box_corners_to_df
 
 ################# INFORMATION THAT NEEDS TO BE ADJUSTED ##########################
-new_variable_name = ''
-bin_size = 0.05
+new_variable_name = 'mld'
+bin_size = 0.083
+variable_name_in_dataset = 'mlotst'
 
 # spatial extent
 lon_lim_W = -83
@@ -26,8 +27,8 @@ data_sample_times = ["00:00:00"]
 
 # file paths
 filename =  'corrected_velocity_drifter_full.h5'
-output_path = f'corrected_velocity_drifter_with_{new_variable_name}.h5'
-new_variable_data_path = ""
+output_path = f'./data/corrected_velocity_drifter_with_{new_variable_name}.h5'
+new_variable_data_path = "./data/new_variable_data/copernicus_GLOBAL_MULTIYEAR_PHY_001_030_MLD_accessed_2025-03-19.nc"
 ##################################################################################
 
 # Configure logging
@@ -39,7 +40,7 @@ def main():
 
     # new variable data
     new_variable_dataset = xr.open_dataset(new_variable_data_path)
-    new_variable_array = new_variable_dataset['analysed_sst']
+    new_variable_array = new_variable_dataset[variable_name_in_dataset]
 
     # ensure correct look up (remove issues with machine precision)
     lat_str = new_variable_array.coords['latitude'].values.astype(str)  # Convert lat values to strings
