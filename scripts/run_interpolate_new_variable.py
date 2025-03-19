@@ -31,11 +31,6 @@ output_path = f'./data/corrected_velocity_drifter_with_{new_variable_name}.h5'
 new_variable_data_path = "./data/new_variable_data/copernicus_GLOBAL_MULTIYEAR_PHY_001_030_MLD_accessed_2025-03-19.nc"
 ##################################################################################
 
-# Configure logging
-logging.basicConfig(filename=os.path.join('logs', f'{new_variable_name}_interpolation.log'), 
-                    level=logging.INFO,
-                    format='%(asctime)s:%(levelname)s:%(message)s')
-
 def main():
 
     # new variable data
