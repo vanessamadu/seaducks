@@ -5,7 +5,6 @@ import os
 import pandas as pd
 import xarray as xr
 import numpy as np
-import logging
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from seaducks.data_processing import interpolate_new_variable
