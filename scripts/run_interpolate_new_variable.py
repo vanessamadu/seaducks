@@ -56,7 +56,7 @@ def main():
 
     # set condition to match the temporal resolution of the new variable data
     
-    condition = drifter_df['time'].dt.time in [pd.Timestamp(timestamp).time() for timestamp in data_sample_times]
+    condition = np.isin(drifter_df['time'].dt.time,[pd.Timestamp(timestamp).time() for timestamp in data_sample_times])
 
     new_variable = drifter_df[condition].apply(lambda row: interpolate_new_variable(row['lat'],row['lon'],row['time'],new_variable_array,row['corners']),
     axis=1,
