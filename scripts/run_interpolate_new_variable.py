@@ -43,6 +43,8 @@ def main():
     new_variable_array = new_variable_array.assign_coords(lat_str=('latitude', lat_str))
     new_variable_array = new_variable_array.assign_coords(lon_str=('longitude', lon_str))
 
+    print(lat_str)
+    
     dataset = pd.read_hdf(filename)
 
     df = dataset.query('@lon_lim_W < lon < @lon_lim_E').copy()
@@ -52,13 +54,14 @@ def main():
     lat_grid = np.array(new_variable_array['latitude'])
     lon_grid = np.array(new_variable_array['longitude'])
 
+
     drifter_df = add_grid_box_corners_to_df(df, lat_grid, lon_grid, bin_size=bin_size)
 
     # set condition to match the temporal resolution of the new variable data
     
     condition = np.isin(drifter_df['time'].dt.time,[pd.Timestamp(timestamp).time() for timestamp in data_sample_times])
 
-    new_variable = drifter_df[condition].apply(lambda row: interpolate_new_variable(row['latitude'],row['longitude'],row['time'],new_variable_array,row['corners']),
+    new_variable = drifter_df[condition].apply(lambda row: interpolate_new_variable(row['lat'],row['lon'],row['time'],new_variable_array,row['corners']),
     axis=1,
     result_type='expand')
 
