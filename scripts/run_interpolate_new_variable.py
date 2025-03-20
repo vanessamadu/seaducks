@@ -25,8 +25,8 @@ lat_lim_N = 60
 data_sample_times = ["00:00:00"]
 
 # file paths
-filename =  'corrected_velocity_drifter_full.h5'
-output_path = f'./data/corrected_velocity_drifter_with_{new_variable_name}.h5'
+filename =  './data/aux_data/corrected_velocity_with_time_drifter_full.h5'
+output_path = f'./data/aux_data/corrected_velocity_drifter_with_{new_variable_name}.h5'
 new_variable_data_path = "./data/new_variable_data/copernicus_GLOBAL_MULTIYEAR_PHY_001_030_MLD_accessed_2025-03-19.nc"
 ##################################################################################
 
