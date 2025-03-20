@@ -43,8 +43,6 @@ def main():
     new_variable_array = new_variable_array.assign_coords(lat_str=('latitude', lat_str))
     new_variable_array = new_variable_array.assign_coords(lon_str=('longitude', lon_str))
 
-    print(lat_str)
-    
     dataset = pd.read_hdf(filename)
 
     df = dataset.query('@lon_lim_W < lon < @lon_lim_E').copy()

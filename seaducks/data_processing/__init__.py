@@ -39,7 +39,7 @@ def interpolate_new_variable(drifter_lat: float, drifter_lon: float, time_val:np
 
         # add new values
         haversine_distances.append(hav_distance)
-        corner_values.append(float(new_var_array.sel(time=time_val,latitude=lat_val_str, longitude=lon_val_str).values))
+        corner_values.append(float(new_var_array.sel(time=time_val,latitude=lat_val_str, longitude=lon_val_str,method='nearest').values))
 
     return inverse_distance_interpolation(haversine_distances,corner_values)
 
